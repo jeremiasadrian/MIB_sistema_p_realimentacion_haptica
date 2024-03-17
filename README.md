@@ -7,14 +7,14 @@ Considerando la totalidad del sistema, el mismo puede ser representado mediante 
 
 El primer bloque implementado (Sistema de Control), consta esencialmente de una placa de prototipado basada en un microcontrolador PSoC-4 de la empresa Cypress, bajo el código CY8CKIT-049-42xx, cuyo núcleo se vale del integrado CY8C4245AXI-483, el cual posee una estructura interna según el siguiente diagrama:
 
-![Figura 2: Diagrama en bloques del integrado CY8C4245AXI-483, núcleo de la placa de prototipado CY8CKIT-049-42xx de Cypress.](MIB_sistema_p_realimentacion_haptica\PSoC4.png)
+![Figura 2: Diagrama en bloques del integrado CY8C4245AXI-483, núcleo de la placa de prototipado CY8CKIT-049-42xx de Cypress.](PSoC4.png)
 
 Junto con la placa mencionada, se encuentran conectados unos periféricos básicos para la interface del usuario con el menú de configuración. Puntualmente una pantallas LCD de 16x2 y tres pulsadores.
 Mediante los comando ingresados con los mencionados pulsadores (tres) y la pantalla LCD, se interactúa con un menú que permite configurar los parámetros de electroestimulación, dentro de rangos de frecuencia y ciclos de trabajo discretos estandarizados y niveles de corriente limitados por hardware en el bloque de interface analógica. La forma de onda de la señal de electroestimulación es cuadrada-bipolar de valor medio nulo, con frecuencias de trabajo configurables entre los 278Hz y 1111Hz, y ciclos de trabajo de 8%, 12% y 16%, según se detallan en la Figura 3 y Tabla 1 siguientes:
 
-![Figura 3: Forma de onda de electroestimulación por corriente.](MIB_sistema_p_realimentacion_haptica\SEÑAL.png)
+![Figura 3: Forma de onda de electroestimulación por corriente.](SEÑAL.png)
 
-![Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.](MIB_sistema_p_realimentacion_haptica\VALORE_ELECTROESTIMULACION.png)
+![Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.](VALORE_ELECTROESTIMULACION.png)
 
 Tanto la estructura de la señal como los parámetros característicos de la misma, tienen su fundamento en antecedentes de trabajos basados en el uso de electroestimulación por corriente para la generación de sensación táctil en no videntes o disminuidos visuales, a fin de implementar dispositivos para la lectura de texto Braille digitalizado, como se expone en [1] y [2].
 El segundo bloque implementado (Interface Analógica) puede dividirse en dos etapas, en primera instancia y conectada directamente con el Sistema de Control, se encuentra un circuito basado en AO, que adaptan la señal del IDAC (Conversor Digital Analógico de Corriente) del PSoC 4, para la interacción con la fuente de corriente de salida, que conecta directamente con el usuario (sujeto que recibe la electroestimulación) y generan la limitación de corriente de salida por hardware.
