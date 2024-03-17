@@ -1,0 +1,4840 @@
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"Electroestimulador-main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.global	__aeabi_idiv
+  20              		.section	.text.ACEP_INT_Handler,"ax",%progbits
+  21              		.align	2
+  22              		.global	ACEP_INT_Handler
+  23              		.code	16
+  24              		.thumb_func
+  25              		.type	ACEP_INT_Handler, %function
+  26              	ACEP_INT_Handler:
+  27              	.LFB33:
+  28              		.file 1 "Electroestimulador-main.c"
+   1:Electroestimulador-main.c **** /* ========================================
+   2:Electroestimulador-main.c ****     Programa para Electroestimulador.
+   3:Electroestimulador-main.c **** ======================================== */
+   4:Electroestimulador-main.c ****     
+   5:Electroestimulador-main.c **** #include <project.h>
+   6:Electroestimulador-main.c **** #include <stdio.h>
+   7:Electroestimulador-main.c ****     
+   8:Electroestimulador-main.c **** uint8 estadoSIS = 0;    //Bandera de estado: 0 = reiniciado; 1 = configuración de TIc; 2 = configu
+   9:Electroestimulador-main.c **** uint16 TIc = 0;         //Valor de TIc: 1=150us; 2=160us; 3=170us;....; 15=290us; 16=300us.
+  10:Electroestimulador-main.c **** uint8 TIc_sel=0;        //Bandera de señalización del valor de TIc selecionado.
+  11:Electroestimulador-main.c **** uint16 F1 = 0;          //Valor de la F1 asicoada al TIc seleccionado.
+  12:Electroestimulador-main.c **** uint16 F2 = 0;          //Valor de la F2 asicoada al TIc seleccionado.
+  13:Electroestimulador-main.c **** uint16 F3 = 0;          //Valor de la F3 asicoada al TIc seleccionado.
+  14:Electroestimulador-main.c **** uint16 FREQ = 0;        //Valor de frecuencia seleccionado de las 3 disponibles.
+  15:Electroestimulador-main.c **** uint8 F_sel=0;          //Bandera de selección de frecuencia temporal.
+  16:Electroestimulador-main.c **** uint32 Iout;            //Variable para setear la salida de IDAC_1.
+  17:Electroestimulador-main.c **** uint16 Ic=0;
+  18:Electroestimulador-main.c **** char8 printTIc[3];
+  19:Electroestimulador-main.c **** char8 printIc[3];
+  20:Electroestimulador-main.c **** char8 printF1[4];
+  21:Electroestimulador-main.c **** char8 printF2[4];
+  22:Electroestimulador-main.c **** char8 printF3[4];
+  23:Electroestimulador-main.c **** char8 printFREQ[4];
+  24:Electroestimulador-main.c **** 
+  25:Electroestimulador-main.c **** CY_ISR(ACEP_INT_Handler) //Subrutina del boton ACEPTAR/PARAR del menu.
+  26:Electroestimulador-main.c **** {
+  29              		.loc 1 26 0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 2
+
+
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  34              		.cfi_def_cfa_offset 24
+  35              		.cfi_offset 3, -24
+  36              		.cfi_offset 4, -20
+  37              		.cfi_offset 5, -16
+  38              		.cfi_offset 6, -12
+  39              		.cfi_offset 7, -8
+  40              		.cfi_offset 14, -4
+  27:Electroestimulador-main.c ****     uint32 compVal;
+  28:Electroestimulador-main.c ****     uint32 periodo;
+  29:Electroestimulador-main.c ****     if(estadoSIS==4)
+  41              		.loc 1 29 0
+  42 0002 D14B     		ldr	r3, .L32
+  43 0004 1B78     		ldrb	r3, [r3]
+  44 0006 042B     		cmp	r3, #4
+  45 0008 03D1     		bne	.L2
+  30:Electroestimulador-main.c ****         estadoSIS = 1;
+  46              		.loc 1 30 0
+  47 000a 0122     		movs	r2, #1
+  48 000c CE4B     		ldr	r3, .L32
+  49 000e 1A70     		strb	r2, [r3]
+  50 0010 02E0     		b	.L3
+  51              	.L2:
+  31:Electroestimulador-main.c ****     else
+  32:Electroestimulador-main.c ****         estadoSIS++;
+  52              		.loc 1 32 0
+  53 0012 0133     		adds	r3, r3, #1
+  54 0014 CC4A     		ldr	r2, .L32
+  55 0016 1370     		strb	r3, [r2]
+  56              	.L3:
+  33:Electroestimulador-main.c ****     switch(estadoSIS)
+  57              		.loc 1 33 0
+  58 0018 CB4B     		ldr	r3, .L32
+  59 001a 1B78     		ldrb	r3, [r3]
+  60 001c 022B     		cmp	r3, #2
+  61 001e 36D0     		beq	.L5
+  62 0020 DAB2     		uxtb	r2, r3
+  63 0022 022A     		cmp	r2, #2
+  64 0024 02D8     		bhi	.L6
+  65 0026 012B     		cmp	r3, #1
+  66 0028 07D0     		beq	.L7
+  67 002a 86E1     		b	.L4
+  68              	.L6:
+  69 002c 032B     		cmp	r3, #3
+  70 002e 00D1     		bne	.LCB45
+  71 0030 FEE0     		b	.L8	@long jump
+  72              	.LCB45:
+  73 0032 042B     		cmp	r3, #4
+  74 0034 00D1     		bne	.LCB48
+  75 0036 45E1     		b	.L9	@long jump
+  76              	.LCB48:
+  77 0038 7FE1     		b	.L4
+  78              	.L7:
+  34:Electroestimulador-main.c ****     {
+  35:Electroestimulador-main.c ****         case 1: PWM_Stop();
+  79              		.loc 1 35 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 3
+
+
+  80 003a FFF7FEFF 		bl	PWM_Stop
+  81              	.LVL0:
+  36:Electroestimulador-main.c ****                 IDAC_1_Stop();
+  82              		.loc 1 36 0
+  83 003e FFF7FEFF 		bl	IDAC_1_Stop
+  84              	.LVL1:
+  37:Electroestimulador-main.c ****                 AMux_DisconnectAll();
+  85              		.loc 1 37 0
+  86 0042 FFF7FEFF 		bl	AMux_DisconnectAll
+  87              	.LVL2:
+  38:Electroestimulador-main.c ****                 LCD_ClearDisplay();
+  88              		.loc 1 38 0
+  89 0046 0120     		movs	r0, #1
+  90 0048 FFF7FEFF 		bl	LCD_WriteControl
+  91              	.LVL3:
+  39:Electroestimulador-main.c ****                 LCD_Position(0,0);
+  92              		.loc 1 39 0
+  93 004c 0021     		movs	r1, #0
+  94 004e 0020     		movs	r0, #0
+  95 0050 FFF7FEFF 		bl	LCD_Position
+  96              	.LVL4:
+  40:Electroestimulador-main.c ****                 LCD_PrintString("Seleccione TIc");
+  97              		.loc 1 40 0
+  98 0054 BD48     		ldr	r0, .L32+4
+  99 0056 FFF7FEFF 		bl	LCD_PrintString
+ 100              	.LVL5:
+  41:Electroestimulador-main.c ****                 TIc = 150;
+ 101              		.loc 1 41 0
+ 102 005a BB4C     		ldr	r4, .L32
+ 103 005c 9623     		movs	r3, #150
+ 104 005e 6380     		strh	r3, [r4, #2]
+  42:Electroestimulador-main.c ****                 TIc_sel = 0;
+ 105              		.loc 1 42 0
+ 106 0060 0023     		movs	r3, #0
+ 107 0062 2371     		strb	r3, [r4, #4]
+  43:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 108              		.loc 1 43 0
+ 109 0064 0021     		movs	r1, #0
+ 110 0066 0120     		movs	r0, #1
+ 111 0068 FFF7FEFF 		bl	LCD_Position
+ 112              	.LVL6:
+  44:Electroestimulador-main.c ****                 sprintf(printTIc,"%3d",TIc);
+ 113              		.loc 1 44 0
+ 114 006c 6288     		ldrh	r2, [r4, #2]
+ 115 006e B84C     		ldr	r4, .L32+8
+ 116 0070 B849     		ldr	r1, .L32+12
+ 117 0072 2000     		movs	r0, r4
+ 118 0074 FFF7FEFF 		bl	sprintf
+ 119              	.LVL7:
+  45:Electroestimulador-main.c ****                 LCD_PrintString(printTIc);
+ 120              		.loc 1 45 0
+ 121 0078 2000     		movs	r0, r4
+ 122 007a FFF7FEFF 		bl	LCD_PrintString
+ 123              	.LVL8:
+  46:Electroestimulador-main.c ****                 LCD_Position(1,5);
+ 124              		.loc 1 46 0
+ 125 007e 0521     		movs	r1, #5
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 4
+
+
+ 126 0080 0120     		movs	r0, #1
+ 127 0082 FFF7FEFF 		bl	LCD_Position
+ 128              	.LVL9:
+  47:Electroestimulador-main.c ****                 LCD_PrintString("us");
+ 129              		.loc 1 47 0
+ 130 0086 B448     		ldr	r0, .L32+16
+ 131 0088 FFF7FEFF 		bl	LCD_PrintString
+ 132              	.LVL10:
+  48:Electroestimulador-main.c ****                 break;
+ 133              		.loc 1 48 0
+ 134 008c 55E1     		b	.L4
+ 135              	.L5:
+  49:Electroestimulador-main.c ****         case 2: LCD_ClearDisplay();
+ 136              		.loc 1 49 0
+ 137 008e 0120     		movs	r0, #1
+ 138 0090 FFF7FEFF 		bl	LCD_WriteControl
+ 139              	.LVL11:
+  50:Electroestimulador-main.c ****                 LCD_Position(0,0);
+ 140              		.loc 1 50 0
+ 141 0094 0021     		movs	r1, #0
+ 142 0096 0020     		movs	r0, #0
+ 143 0098 FFF7FEFF 		bl	LCD_Position
+ 144              	.LVL12:
+  51:Electroestimulador-main.c ****                 LCD_PrintString("Seleccione Freq.");
+ 145              		.loc 1 51 0
+ 146 009c AF48     		ldr	r0, .L32+20
+ 147 009e FFF7FEFF 		bl	LCD_PrintString
+ 148              	.LVL13:
+  52:Electroestimulador-main.c ****                 switch(TIc_sel)
+ 149              		.loc 1 52 0
+ 150 00a2 A94B     		ldr	r3, .L32
+ 151 00a4 1A79     		ldrb	r2, [r3, #4]
+ 152 00a6 0F2A     		cmp	r2, #15
+ 153 00a8 00D9     		bls	.LCB111
+ 154 00aa 8FE0     		b	.L10	@long jump
+ 155              	.LCB111:
+ 156 00ac 9300     		lsls	r3, r2, #2
+ 157 00ae AC4A     		ldr	r2, .L32+24
+ 158 00b0 D358     		ldr	r3, [r2, r3]
+ 159 00b2 9F46     		mov	pc, r3
+ 160              		.section	.rodata
+ 161              		.align	2
+ 162              	.L12:
+ 163 0000 B4000000 		.word	.L11
+ 164 0004 C4000000 		.word	.L13
+ 165 0008 D4000000 		.word	.L14
+ 166 000c E6000000 		.word	.L15
+ 167 0010 F8000000 		.word	.L16
+ 168 0014 0A010000 		.word	.L17
+ 169 0018 1C010000 		.word	.L18
+ 170 001c 2E010000 		.word	.L19
+ 171 0020 40010000 		.word	.L20
+ 172 0024 50010000 		.word	.L21
+ 173 0028 62010000 		.word	.L22
+ 174 002c 74010000 		.word	.L23
+ 175 0030 86010000 		.word	.L24
+ 176 0034 98010000 		.word	.L25
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 5
+
+
+ 177 0038 AA010000 		.word	.L26
+ 178 003c BC010000 		.word	.L27
+ 179              		.section	.text.ACEP_INT_Handler
+ 180              	.L11:
+  53:Electroestimulador-main.c ****                 {
+  54:Electroestimulador-main.c ****                  case 0: F1 = 1111;
+ 181              		.loc 1 54 0
+ 182 00b4 A44B     		ldr	r3, .L32
+ 183 00b6 AB4A     		ldr	r2, .L32+28
+ 184 00b8 DA80     		strh	r2, [r3, #6]
+  55:Electroestimulador-main.c ****                          F2 = 714;
+ 185              		.loc 1 55 0
+ 186 00ba AB4A     		ldr	r2, .L32+32
+ 187 00bc 1A81     		strh	r2, [r3, #8]
+  56:Electroestimulador-main.c ****                          F3 = 555;
+ 188              		.loc 1 56 0
+ 189 00be AB4A     		ldr	r2, .L32+36
+ 190 00c0 5A81     		strh	r2, [r3, #10]
+  57:Electroestimulador-main.c ****                          break;
+ 191              		.loc 1 57 0
+ 192 00c2 83E0     		b	.L10
+ 193              	.L13:
+  58:Electroestimulador-main.c ****                  case 1: 
+  59:Electroestimulador-main.c ****                          F1 = 1042;
+ 194              		.loc 1 59 0
+ 195 00c4 A04B     		ldr	r3, .L32
+ 196 00c6 AA4A     		ldr	r2, .L32+40
+ 197 00c8 DA80     		strh	r2, [r3, #6]
+  60:Electroestimulador-main.c ****                          F2 = 685;
+ 198              		.loc 1 60 0
+ 199 00ca AA4A     		ldr	r2, .L32+44
+ 200 00cc 1A81     		strh	r2, [r3, #8]
+  61:Electroestimulador-main.c ****                          F3 = 521; 
+ 201              		.loc 1 61 0
+ 202 00ce AA4A     		ldr	r2, .L32+48
+ 203 00d0 5A81     		strh	r2, [r3, #10]
+  62:Electroestimulador-main.c ****                          break;
+ 204              		.loc 1 62 0
+ 205 00d2 7BE0     		b	.L10
+ 206              	.L14:
+  63:Electroestimulador-main.c ****                  case 2: F1 = 980;
+ 207              		.loc 1 63 0
+ 208 00d4 9C4B     		ldr	r3, .L32
+ 209 00d6 F522     		movs	r2, #245
+ 210 00d8 9200     		lsls	r2, r2, #2
+ 211 00da DA80     		strh	r2, [r3, #6]
+  64:Electroestimulador-main.c ****                          F2 = 658;
+ 212              		.loc 1 64 0
+ 213 00dc A74A     		ldr	r2, .L32+52
+ 214 00de 1A81     		strh	r2, [r3, #8]
+  65:Electroestimulador-main.c ****                          F3 = 490;  
+ 215              		.loc 1 65 0
+ 216 00e0 A83A     		subs	r2, r2, #168
+ 217 00e2 5A81     		strh	r2, [r3, #10]
+  66:Electroestimulador-main.c ****                          break;
+ 218              		.loc 1 66 0
+ 219 00e4 72E0     		b	.L10
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 6
+
+
+ 220              	.L15:
+  67:Electroestimulador-main.c ****                  case 3: F1 = 926;
+ 221              		.loc 1 67 0
+ 222 00e6 984B     		ldr	r3, .L32
+ 223 00e8 A54A     		ldr	r2, .L32+56
+ 224 00ea DA80     		strh	r2, [r3, #6]
+  68:Electroestimulador-main.c ****                          F2 = 633;
+ 225              		.loc 1 68 0
+ 226 00ec A54A     		ldr	r2, .L32+60
+ 227 00ee 1A81     		strh	r2, [r3, #8]
+  69:Electroestimulador-main.c ****                          F3 = 463; 
+ 228              		.loc 1 69 0
+ 229 00f0 D022     		movs	r2, #208
+ 230 00f2 FF32     		adds	r2, r2, #255
+ 231 00f4 5A81     		strh	r2, [r3, #10]
+  70:Electroestimulador-main.c ****                          break;
+ 232              		.loc 1 70 0
+ 233 00f6 69E0     		b	.L10
+ 234              	.L16:
+  71:Electroestimulador-main.c ****                  case 4: F1 = 877;
+ 235              		.loc 1 71 0
+ 236 00f8 934B     		ldr	r3, .L32
+ 237 00fa A34A     		ldr	r2, .L32+64
+ 238 00fc DA80     		strh	r2, [r3, #6]
+  72:Electroestimulador-main.c ****                          F2 = 610;
+ 239              		.loc 1 72 0
+ 240 00fe A34A     		ldr	r2, .L32+68
+ 241 0100 1A81     		strh	r2, [r3, #8]
+  73:Electroestimulador-main.c ****                          F3 = 439;  
+ 242              		.loc 1 73 0
+ 243 0102 B822     		movs	r2, #184
+ 244 0104 FF32     		adds	r2, r2, #255
+ 245 0106 5A81     		strh	r2, [r3, #10]
+  74:Electroestimulador-main.c ****                          break;
+ 246              		.loc 1 74 0
+ 247 0108 60E0     		b	.L10
+ 248              	.L17:
+  75:Electroestimulador-main.c ****                  case 5: F1 = 833;      //TIc = 200 us.
+ 249              		.loc 1 75 0
+ 250 010a 8F4B     		ldr	r3, .L32
+ 251 010c A04A     		ldr	r2, .L32+72
+ 252 010e DA80     		strh	r2, [r3, #6]
+  76:Electroestimulador-main.c ****                          F2 = 588;
+ 253              		.loc 1 76 0
+ 254 0110 F53A     		subs	r2, r2, #245
+ 255 0112 1A81     		strh	r2, [r3, #8]
+  77:Electroestimulador-main.c ****                          F3 = 417;  
+ 256              		.loc 1 77 0
+ 257 0114 A222     		movs	r2, #162
+ 258 0116 FF32     		adds	r2, r2, #255
+ 259 0118 5A81     		strh	r2, [r3, #10]
+  78:Electroestimulador-main.c ****                          break;
+ 260              		.loc 1 78 0
+ 261 011a 57E0     		b	.L10
+ 262              	.L18:
+  79:Electroestimulador-main.c ****                  case 6: F1 = 794;
+ 263              		.loc 1 79 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 7
+
+
+ 264 011c 8A4B     		ldr	r3, .L32
+ 265 011e 9D4A     		ldr	r2, .L32+76
+ 266 0120 DA80     		strh	r2, [r3, #6]
+  80:Electroestimulador-main.c ****                          F2 = 568;
+ 267              		.loc 1 80 0
+ 268 0122 E23A     		subs	r2, r2, #226
+ 269 0124 1A81     		strh	r2, [r3, #8]
+  81:Electroestimulador-main.c ****                          F3 = 397;
+ 270              		.loc 1 81 0
+ 271 0126 8E22     		movs	r2, #142
+ 272 0128 FF32     		adds	r2, r2, #255
+ 273 012a 5A81     		strh	r2, [r3, #10]
+  82:Electroestimulador-main.c ****                          break;
+ 274              		.loc 1 82 0
+ 275 012c 4EE0     		b	.L10
+ 276              	.L19:
+  83:Electroestimulador-main.c ****                  case 7: F1 = 758;      //Tic = 220 us.
+ 277              		.loc 1 83 0
+ 278 012e 864B     		ldr	r3, .L32
+ 279 0130 994A     		ldr	r2, .L32+80
+ 280 0132 DA80     		strh	r2, [r3, #6]
+  84:Electroestimulador-main.c ****                          F2 = 549;
+ 281              		.loc 1 84 0
+ 282 0134 994A     		ldr	r2, .L32+84
+ 283 0136 1A81     		strh	r2, [r3, #8]
+  85:Electroestimulador-main.c ****                          F3 = 379;
+ 284              		.loc 1 85 0
+ 285 0138 7C22     		movs	r2, #124
+ 286 013a FF32     		adds	r2, r2, #255
+ 287 013c 5A81     		strh	r2, [r3, #10]
+  86:Electroestimulador-main.c ****                          break;
+ 288              		.loc 1 86 0
+ 289 013e 45E0     		b	.L10
+ 290              	.L20:
+  87:Electroestimulador-main.c ****                  case 8: F1 = 725;      //Tic = 230 us.
+ 291              		.loc 1 87 0
+ 292 0140 814B     		ldr	r3, .L32
+ 293 0142 974A     		ldr	r2, .L32+88
+ 294 0144 DA80     		strh	r2, [r3, #6]
+  88:Electroestimulador-main.c ****                          F2 = 532;
+ 295              		.loc 1 88 0
+ 296 0146 C13A     		subs	r2, r2, #193
+ 297 0148 1A81     		strh	r2, [r3, #8]
+  89:Electroestimulador-main.c ****                          F3 = 362; 
+ 298              		.loc 1 89 0
+ 299 014a AA3A     		subs	r2, r2, #170
+ 300 014c 5A81     		strh	r2, [r3, #10]
+  90:Electroestimulador-main.c ****                          break;
+ 301              		.loc 1 90 0
+ 302 014e 3DE0     		b	.L10
+ 303              	.L21:
+  91:Electroestimulador-main.c ****                  case 9: F1 = 695;
+ 304              		.loc 1 91 0
+ 305 0150 7D4B     		ldr	r3, .L32
+ 306 0152 944A     		ldr	r2, .L32+92
+ 307 0154 DA80     		strh	r2, [r3, #6]
+  92:Electroestimulador-main.c ****                           F2 = 515;
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 8
+
+
+ 308              		.loc 1 92 0
+ 309 0156 944A     		ldr	r2, .L32+96
+ 310 0158 1A81     		strh	r2, [r3, #8]
+  93:Electroestimulador-main.c ****                           F3 = 347; 
+ 311              		.loc 1 93 0
+ 312 015a 5C22     		movs	r2, #92
+ 313 015c FF32     		adds	r2, r2, #255
+ 314 015e 5A81     		strh	r2, [r3, #10]
+  94:Electroestimulador-main.c ****                           break;
+ 315              		.loc 1 94 0
+ 316 0160 34E0     		b	.L10
+ 317              	.L22:
+  95:Electroestimulador-main.c ****                  case 10: F1 = 666;
+ 318              		.loc 1 95 0
+ 319 0162 794B     		ldr	r3, .L32
+ 320 0164 914A     		ldr	r2, .L32+100
+ 321 0166 DA80     		strh	r2, [r3, #6]
+  96:Electroestimulador-main.c ****                           F2 = 500;
+ 322              		.loc 1 96 0
+ 323 0168 A63A     		subs	r2, r2, #166
+ 324 016a 1A81     		strh	r2, [r3, #8]
+  97:Electroestimulador-main.c ****                           F3 = 333;  
+ 325              		.loc 1 97 0
+ 326 016c 4E22     		movs	r2, #78
+ 327 016e FF32     		adds	r2, r2, #255
+ 328 0170 5A81     		strh	r2, [r3, #10]
+  98:Electroestimulador-main.c ****                           break;
+ 329              		.loc 1 98 0
+ 330 0172 2BE0     		b	.L10
+ 331              	.L23:
+  99:Electroestimulador-main.c ****                  case 11: F1 = 641;
+ 332              		.loc 1 99 0
+ 333 0174 744B     		ldr	r3, .L32
+ 334 0176 8E4A     		ldr	r2, .L32+104
+ 335 0178 DA80     		strh	r2, [r3, #6]
+ 100:Electroestimulador-main.c ****                           F2 = 485;
+ 336              		.loc 1 100 0
+ 337 017a E622     		movs	r2, #230
+ 338 017c FF32     		adds	r2, r2, #255
+ 339 017e 1A81     		strh	r2, [r3, #8]
+ 101:Electroestimulador-main.c ****                           F3 = 320;
+ 340              		.loc 1 101 0
+ 341 0180 A53A     		subs	r2, r2, #165
+ 342 0182 5A81     		strh	r2, [r3, #10]
+ 102:Electroestimulador-main.c ****                           break;
+ 343              		.loc 1 102 0
+ 344 0184 22E0     		b	.L10
+ 345              	.L24:
+ 103:Electroestimulador-main.c ****                  case 12: F1 = 617;
+ 346              		.loc 1 103 0
+ 347 0186 704B     		ldr	r3, .L32
+ 348 0188 8A4A     		ldr	r2, .L32+108
+ 349 018a DA80     		strh	r2, [r3, #6]
+ 104:Electroestimulador-main.c ****                           F2 = 472;
+ 350              		.loc 1 104 0
+ 351 018c 913A     		subs	r2, r2, #145
+ 352 018e 1A81     		strh	r2, [r3, #8]
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 9
+
+
+ 105:Electroestimulador-main.c ****                           F3 = 309;
+ 353              		.loc 1 105 0
+ 354 0190 3622     		movs	r2, #54
+ 355 0192 FF32     		adds	r2, r2, #255
+ 356 0194 5A81     		strh	r2, [r3, #10]
+ 106:Electroestimulador-main.c ****                           break;
+ 357              		.loc 1 106 0
+ 358 0196 19E0     		b	.L10
+ 359              	.L25:
+ 107:Electroestimulador-main.c ****                  case 13: F1 = 595;
+ 360              		.loc 1 107 0
+ 361 0198 6B4B     		ldr	r3, .L32
+ 362 019a 874A     		ldr	r2, .L32+112
+ 363 019c DA80     		strh	r2, [r3, #6]
+ 108:Electroestimulador-main.c ****                           F2 = 459;
+ 364              		.loc 1 108 0
+ 365 019e CC22     		movs	r2, #204
+ 366 01a0 FF32     		adds	r2, r2, #255
+ 367 01a2 1A81     		strh	r2, [r3, #8]
+ 109:Electroestimulador-main.c ****                           F3 = 298; 
+ 368              		.loc 1 109 0
+ 369 01a4 A13A     		subs	r2, r2, #161
+ 370 01a6 5A81     		strh	r2, [r3, #10]
+ 110:Electroestimulador-main.c ****                           break;
+ 371              		.loc 1 110 0
+ 372 01a8 10E0     		b	.L10
+ 373              	.L26:
+ 111:Electroestimulador-main.c ****                  case 14: F1 = 575;
+ 374              		.loc 1 111 0
+ 375 01aa 674B     		ldr	r3, .L32
+ 376 01ac 834A     		ldr	r2, .L32+116
+ 377 01ae DA80     		strh	r2, [r3, #6]
+ 112:Electroestimulador-main.c ****                           F2 = 446;
+ 378              		.loc 1 112 0
+ 379 01b0 813A     		subs	r2, r2, #129
+ 380 01b2 1A81     		strh	r2, [r3, #8]
+ 113:Electroestimulador-main.c ****                           F3 = 287;
+ 381              		.loc 1 113 0
+ 382 01b4 2022     		movs	r2, #32
+ 383 01b6 FF32     		adds	r2, r2, #255
+ 384 01b8 5A81     		strh	r2, [r3, #10]
+ 114:Electroestimulador-main.c ****                           break;
+ 385              		.loc 1 114 0
+ 386 01ba 07E0     		b	.L10
+ 387              	.L27:
+ 115:Electroestimulador-main.c ****                  case 15: F1 = 555;     //TIc = 300 us.
+ 388              		.loc 1 115 0
+ 389 01bc 624B     		ldr	r3, .L32
+ 390 01be 6B4A     		ldr	r2, .L32+36
+ 391 01c0 DA80     		strh	r2, [r3, #6]
+ 116:Electroestimulador-main.c ****                           F2 = 435;
+ 392              		.loc 1 116 0
+ 393 01c2 B422     		movs	r2, #180
+ 394 01c4 FF32     		adds	r2, r2, #255
+ 395 01c6 1A81     		strh	r2, [r3, #8]
+ 117:Electroestimulador-main.c ****                           F3 = 278;
+ 396              		.loc 1 117 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 10
+
+
+ 397 01c8 9D3A     		subs	r2, r2, #157
+ 398 01ca 5A81     		strh	r2, [r3, #10]
+ 399              	.L10:
+ 118:Electroestimulador-main.c ****                           break;
+ 119:Electroestimulador-main.c ****                  default: break;
+ 120:Electroestimulador-main.c ****                 }
+ 121:Electroestimulador-main.c ****                 sprintf(printF1,"%4d",F1);
+ 400              		.loc 1 121 0
+ 401 01cc 5E4D     		ldr	r5, .L32
+ 402 01ce EA88     		ldrh	r2, [r5, #6]
+ 403 01d0 7B4C     		ldr	r4, .L32+120
+ 404 01d2 7C4F     		ldr	r7, .L32+124
+ 405 01d4 2100     		movs	r1, r4
+ 406 01d6 3800     		movs	r0, r7
+ 407 01d8 FFF7FEFF 		bl	sprintf
+ 408              	.LVL14:
+ 122:Electroestimulador-main.c ****                 sprintf(printF2,"%4d",F2);
+ 409              		.loc 1 122 0
+ 410 01dc 2A89     		ldrh	r2, [r5, #8]
+ 411 01de 7A4E     		ldr	r6, .L32+128
+ 412 01e0 2100     		movs	r1, r4
+ 413 01e2 3000     		movs	r0, r6
+ 414 01e4 FFF7FEFF 		bl	sprintf
+ 415              	.LVL15:
+ 123:Electroestimulador-main.c ****                 sprintf(printF3,"%4d",F3);
+ 416              		.loc 1 123 0
+ 417 01e8 6A89     		ldrh	r2, [r5, #10]
+ 418 01ea 2100     		movs	r1, r4
+ 419 01ec 7748     		ldr	r0, .L32+132
+ 420 01ee FFF7FEFF 		bl	sprintf
+ 421              	.LVL16:
+ 124:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 422              		.loc 1 124 0
+ 423 01f2 0021     		movs	r1, #0
+ 424 01f4 0120     		movs	r0, #1
+ 425 01f6 FFF7FEFF 		bl	LCD_Position
+ 426              	.LVL17:
+ 125:Electroestimulador-main.c ****                 LCD_PutChar('>');
+ 427              		.loc 1 125 0
+ 428 01fa 3E20     		movs	r0, #62
+ 429 01fc FFF7FEFF 		bl	LCD_PutChar
+ 430              	.LVL18:
+ 126:Electroestimulador-main.c ****                 LCD_Position(1,1);
+ 431              		.loc 1 126 0
+ 432 0200 0121     		movs	r1, #1
+ 433 0202 0120     		movs	r0, #1
+ 434 0204 FFF7FEFF 		bl	LCD_Position
+ 435              	.LVL19:
+ 127:Electroestimulador-main.c ****                 LCD_PrintString(printF1);
+ 436              		.loc 1 127 0
+ 437 0208 3800     		movs	r0, r7
+ 438 020a FFF7FEFF 		bl	LCD_PrintString
+ 439              	.LVL20:
+ 128:Electroestimulador-main.c ****                 LCD_Position(1,6);
+ 440              		.loc 1 128 0
+ 441 020e 0621     		movs	r1, #6
+ 442 0210 0120     		movs	r0, #1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 11
+
+
+ 443 0212 FFF7FEFF 		bl	LCD_Position
+ 444              	.LVL21:
+ 129:Electroestimulador-main.c ****                 LCD_PrintString(printF2);
+ 445              		.loc 1 129 0
+ 446 0216 3000     		movs	r0, r6
+ 447 0218 FFF7FEFF 		bl	LCD_PrintString
+ 448              	.LVL22:
+ 130:Electroestimulador-main.c ****                 LCD_Position(1,11);
+ 449              		.loc 1 130 0
+ 450 021c 0B21     		movs	r1, #11
+ 451 021e 0120     		movs	r0, #1
+ 452 0220 FFF7FEFF 		bl	LCD_Position
+ 453              	.LVL23:
+ 131:Electroestimulador-main.c ****                 LCD_PrintString(printF3);
+ 454              		.loc 1 131 0
+ 455 0224 6948     		ldr	r0, .L32+132
+ 456 0226 FFF7FEFF 		bl	LCD_PrintString
+ 457              	.LVL24:
+ 132:Electroestimulador-main.c ****                 F_sel=1;
+ 458              		.loc 1 132 0
+ 459 022a 0123     		movs	r3, #1
+ 460 022c 2B73     		strb	r3, [r5, #12]
+ 133:Electroestimulador-main.c ****                 break;
+ 461              		.loc 1 133 0
+ 462 022e 84E0     		b	.L4
+ 463              	.L8:
+ 134:Electroestimulador-main.c ****         case 3: switch(F_sel)
+ 464              		.loc 1 134 0
+ 465 0230 454B     		ldr	r3, .L32
+ 466 0232 1B7B     		ldrb	r3, [r3, #12]
+ 467 0234 022B     		cmp	r3, #2
+ 468 0236 07D0     		beq	.L29
+ 469 0238 032B     		cmp	r3, #3
+ 470 023a 09D0     		beq	.L30
+ 471 023c 012B     		cmp	r3, #1
+ 472 023e 0AD1     		bne	.L28
+ 135:Electroestimulador-main.c ****                 {
+ 136:Electroestimulador-main.c ****                     case 1: FREQ = F1;
+ 473              		.loc 1 136 0
+ 474 0240 414B     		ldr	r3, .L32
+ 475 0242 DA88     		ldrh	r2, [r3, #6]
+ 476 0244 DA81     		strh	r2, [r3, #14]
+ 137:Electroestimulador-main.c ****                             break;
+ 477              		.loc 1 137 0
+ 478 0246 06E0     		b	.L28
+ 479              	.L29:
+ 138:Electroestimulador-main.c ****                     case 2: FREQ = F2;
+ 480              		.loc 1 138 0
+ 481 0248 3F4B     		ldr	r3, .L32
+ 482 024a 1A89     		ldrh	r2, [r3, #8]
+ 483 024c DA81     		strh	r2, [r3, #14]
+ 139:Electroestimulador-main.c ****                             break;
+ 484              		.loc 1 139 0
+ 485 024e 02E0     		b	.L28
+ 486              	.L30:
+ 140:Electroestimulador-main.c ****                     case 3: FREQ = F3;
+ 487              		.loc 1 140 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 12
+
+
+ 488 0250 3D4B     		ldr	r3, .L32
+ 489 0252 5A89     		ldrh	r2, [r3, #10]
+ 490 0254 DA81     		strh	r2, [r3, #14]
+ 491              	.L28:
+ 141:Electroestimulador-main.c ****                             break;
+ 142:Electroestimulador-main.c ****                     default: break;
+ 143:Electroestimulador-main.c ****                 }
+ 144:Electroestimulador-main.c ****                 LCD_ClearDisplay();
+ 492              		.loc 1 144 0
+ 493 0256 0120     		movs	r0, #1
+ 494 0258 FFF7FEFF 		bl	LCD_WriteControl
+ 495              	.LVL25:
+ 145:Electroestimulador-main.c ****                 LCD_Position(0,0);
+ 496              		.loc 1 145 0
+ 497 025c 0021     		movs	r1, #0
+ 498 025e 0020     		movs	r0, #0
+ 499 0260 FFF7FEFF 		bl	LCD_Position
+ 500              	.LVL26:
+ 146:Electroestimulador-main.c ****                 LCD_PrintString("TIc=   us");
+ 501              		.loc 1 146 0
+ 502 0264 5A48     		ldr	r0, .L32+136
+ 503 0266 FFF7FEFF 		bl	LCD_PrintString
+ 504              	.LVL27:
+ 147:Electroestimulador-main.c ****                 sprintf(printTIc,"%3d",TIc);
+ 505              		.loc 1 147 0
+ 506 026a 374C     		ldr	r4, .L32
+ 507 026c 6288     		ldrh	r2, [r4, #2]
+ 508 026e 384D     		ldr	r5, .L32+8
+ 509 0270 3849     		ldr	r1, .L32+12
+ 510 0272 2800     		movs	r0, r5
+ 511 0274 FFF7FEFF 		bl	sprintf
+ 512              	.LVL28:
+ 148:Electroestimulador-main.c ****                 LCD_Position(0,4);
+ 513              		.loc 1 148 0
+ 514 0278 0421     		movs	r1, #4
+ 515 027a 0020     		movs	r0, #0
+ 516 027c FFF7FEFF 		bl	LCD_Position
+ 517              	.LVL29:
+ 149:Electroestimulador-main.c ****                 LCD_PrintString(printTIc);
+ 518              		.loc 1 149 0
+ 519 0280 2800     		movs	r0, r5
+ 520 0282 FFF7FEFF 		bl	LCD_PrintString
+ 521              	.LVL30:
+ 150:Electroestimulador-main.c ****                 LCD_Position(0,10);
+ 522              		.loc 1 150 0
+ 523 0286 0A21     		movs	r1, #10
+ 524 0288 0020     		movs	r0, #0
+ 525 028a FFF7FEFF 		bl	LCD_Position
+ 526              	.LVL31:
+ 151:Electroestimulador-main.c ****                 LCD_PrintString("F=");
+ 527              		.loc 1 151 0
+ 528 028e 5148     		ldr	r0, .L32+140
+ 529 0290 FFF7FEFF 		bl	LCD_PrintString
+ 530              	.LVL32:
+ 152:Electroestimulador-main.c ****                 sprintf(printFREQ,"%4d",FREQ);
+ 531              		.loc 1 152 0
+ 532 0294 E289     		ldrh	r2, [r4, #14]
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 13
+
+
+ 533 0296 504C     		ldr	r4, .L32+144
+ 534 0298 4949     		ldr	r1, .L32+120
+ 535 029a 2000     		movs	r0, r4
+ 536 029c FFF7FEFF 		bl	sprintf
+ 537              	.LVL33:
+ 153:Electroestimulador-main.c ****                 LCD_Position(0,12);
+ 538              		.loc 1 153 0
+ 539 02a0 0C21     		movs	r1, #12
+ 540 02a2 0020     		movs	r0, #0
+ 541 02a4 FFF7FEFF 		bl	LCD_Position
+ 542              	.LVL34:
+ 154:Electroestimulador-main.c ****                 LCD_PrintString(printFREQ);
+ 543              		.loc 1 154 0
+ 544 02a8 2000     		movs	r0, r4
+ 545 02aa FFF7FEFF 		bl	LCD_PrintString
+ 546              	.LVL35:
+ 155:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 547              		.loc 1 155 0
+ 548 02ae 0021     		movs	r1, #0
+ 549 02b0 0120     		movs	r0, #1
+ 550 02b2 FFF7FEFF 		bl	LCD_Position
+ 551              	.LVL36:
+ 156:Electroestimulador-main.c ****                 LCD_PrintString("Ic=12uA INICIAR?");
+ 552              		.loc 1 156 0
+ 553 02b6 4948     		ldr	r0, .L32+148
+ 554 02b8 FFF7FEFF 		bl	LCD_PrintString
+ 555              	.LVL37:
+ 157:Electroestimulador-main.c ****                 Iout = 5;
+ 556              		.loc 1 157 0
+ 557 02bc 0522     		movs	r2, #5
+ 558 02be 484B     		ldr	r3, .L32+152
+ 559 02c0 1A60     		str	r2, [r3]
+ 158:Electroestimulador-main.c ****                 break;
+ 560              		.loc 1 158 0
+ 561 02c2 3AE0     		b	.L4
+ 562              	.L9:
+ 159:Electroestimulador-main.c ****         case 4: PWM_Start();
+ 563              		.loc 1 159 0
+ 564 02c4 FFF7FEFF 		bl	PWM_Start
+ 565              	.LVL38:
+ 160:Electroestimulador-main.c ****                 periodo = 450000/FREQ;  //Cálculo del valor a cargar en el periodo del TCPWM en fu
+ 566              		.loc 1 160 0
+ 567 02c8 1F4C     		ldr	r4, .L32
+ 568 02ca E189     		ldrh	r1, [r4, #14]
+ 569 02cc 4548     		ldr	r0, .L32+156
+ 570 02ce FFF7FEFF 		bl	__aeabi_idiv
+ 571              	.LVL39:
+ 572 02d2 0500     		movs	r5, r0
+ 573              	.LVL40:
+ 161:Electroestimulador-main.c ****                 compVal = (450000*TIc)/1000000; //Cálculo del valor a cargar en el registro de com
+ 574              		.loc 1 161 0
+ 575 02d4 6088     		ldrh	r0, [r4, #2]
+ 576              	.LVL41:
+ 577 02d6 434B     		ldr	r3, .L32+156
+ 578 02d8 5843     		muls	r0, r3
+ 579 02da 4349     		ldr	r1, .L32+160
+ 580 02dc FFF7FEFF 		bl	__aeabi_idiv
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 14
+
+
+ 581              	.LVL42:
+ 582 02e0 0600     		movs	r6, r0
+ 583              	.LVL43:
+ 162:Electroestimulador-main.c ****                 PWM_WritePeriod(periodo);   //Instrucciones para aceptar los valores selecionados.
+ 584              		.loc 1 162 0
+ 585 02e2 2800     		movs	r0, r5
+ 586              	.LVL44:
+ 587 02e4 FFF7FEFF 		bl	PWM_WritePeriod
+ 588              	.LVL45:
+ 163:Electroestimulador-main.c ****                 PWM_WriteCompare(compVal);
+ 589              		.loc 1 163 0
+ 590 02e8 3000     		movs	r0, r6
+ 591 02ea FFF7FEFF 		bl	PWM_WriteCompare
+ 592              	.LVL46:
+ 164:Electroestimulador-main.c ****                 IDAC_1_Start();
+ 593              		.loc 1 164 0
+ 594 02ee FFF7FEFF 		bl	IDAC_1_Start
+ 595              	.LVL47:
+ 165:Electroestimulador-main.c ****                 LCD_ClearDisplay();
+ 596              		.loc 1 165 0
+ 597 02f2 0120     		movs	r0, #1
+ 598 02f4 FFF7FEFF 		bl	LCD_WriteControl
+ 599              	.LVL48:
+ 166:Electroestimulador-main.c ****                 LCD_Position(0,0);
+ 600              		.loc 1 166 0
+ 601 02f8 0021     		movs	r1, #0
+ 602 02fa 0020     		movs	r0, #0
+ 603 02fc FFF7FEFF 		bl	LCD_Position
+ 604              	.LVL49:
+ 167:Electroestimulador-main.c ****                 LCD_PrintString("Ic=    uA  >ON< ");
+ 605              		.loc 1 167 0
+ 606 0300 3A48     		ldr	r0, .L32+164
+ 607 0302 FFF7FEFF 		bl	LCD_PrintString
+ 608              	.LVL50:
+ 168:Electroestimulador-main.c ****                 Ic = Iout;
+ 609              		.loc 1 168 0
+ 610 0306 364D     		ldr	r5, .L32+152
+ 611              	.LVL51:
+ 612 0308 2B88     		ldrh	r3, [r5]
+ 613 030a 2382     		strh	r3, [r4, #16]
+ 169:Electroestimulador-main.c ****                 LCD_Position(0,3);
+ 614              		.loc 1 169 0
+ 615 030c 0321     		movs	r1, #3
+ 616 030e 0020     		movs	r0, #0
+ 617 0310 FFF7FEFF 		bl	LCD_Position
+ 618              	.LVL52:
+ 170:Electroestimulador-main.c ****                 sprintf(printIc,"%3d",Ic);
+ 619              		.loc 1 170 0
+ 620 0314 228A     		ldrh	r2, [r4, #16]
+ 621 0316 364C     		ldr	r4, .L32+168
+ 622 0318 0E49     		ldr	r1, .L32+12
+ 623 031a 2000     		movs	r0, r4
+ 624 031c FFF7FEFF 		bl	sprintf
+ 625              	.LVL53:
+ 171:Electroestimulador-main.c ****                 LCD_PrintString(printIc);
+ 626              		.loc 1 171 0
+ 627 0320 2000     		movs	r0, r4
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 15
+
+
+ 628 0322 FFF7FEFF 		bl	LCD_PrintString
+ 629              	.LVL54:
+ 172:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 630              		.loc 1 172 0
+ 631 0326 0021     		movs	r1, #0
+ 632 0328 0120     		movs	r0, #1
+ 633 032a FFF7FEFF 		bl	LCD_Position
+ 634              	.LVL55:
+ 173:Electroestimulador-main.c ****                 LCD_PrintString("Pulse ACEP p fin");
+ 635              		.loc 1 173 0
+ 636 032e 3148     		ldr	r0, .L32+172
+ 637 0330 FFF7FEFF 		bl	LCD_PrintString
+ 638              	.LVL56:
+ 174:Electroestimulador-main.c ****                 IDAC_1_SetValue(Iout);
+ 639              		.loc 1 174 0
+ 640 0334 2868     		ldr	r0, [r5]
+ 641 0336 FFF7FEFF 		bl	IDAC_1_SetValue
+ 642              	.LVL57:
+ 643              	.L4:
+ 175:Electroestimulador-main.c ****                 break;
+ 176:Electroestimulador-main.c ****         default: break;
+ 177:Electroestimulador-main.c ****     }
+ 178:Electroestimulador-main.c ****     PIN_ACEP_ClearInterrupt();
+ 644              		.loc 1 178 0
+ 645 033a FFF7FEFF 		bl	PIN_ACEP_ClearInterrupt
+ 646              	.LVL58:
+ 179:Electroestimulador-main.c ****     CyDelay(50);
+ 647              		.loc 1 179 0
+ 648 033e 3220     		movs	r0, #50
+ 649 0340 FFF7FEFF 		bl	CyDelay
+ 650              	.LVL59:
+ 180:Electroestimulador-main.c **** }
+ 651              		.loc 1 180 0
+ 652              		@ sp needed
+ 653 0344 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 654              	.L33:
+ 655 0346 C046     		.align	2
+ 656              	.L32:
+ 657 0348 00000000 		.word	.LANCHOR0
+ 658 034c 00000000 		.word	.LC1
+ 659 0350 00000000 		.word	printTIc
+ 660 0354 10000000 		.word	.LC3
+ 661 0358 14000000 		.word	.LC6
+ 662 035c 18000000 		.word	.LC8
+ 663 0360 00000000 		.word	.L12
+ 664 0364 57040000 		.word	1111
+ 665 0368 CA020000 		.word	714
+ 666 036c 2B020000 		.word	555
+ 667 0370 12040000 		.word	1042
+ 668 0374 AD020000 		.word	685
+ 669 0378 09020000 		.word	521
+ 670 037c 92020000 		.word	658
+ 671 0380 9E030000 		.word	926
+ 672 0384 79020000 		.word	633
+ 673 0388 6D030000 		.word	877
+ 674 038c 62020000 		.word	610
+ 675 0390 41030000 		.word	833
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 16
+
+
+ 676 0394 1A030000 		.word	794
+ 677 0398 F6020000 		.word	758
+ 678 039c 25020000 		.word	549
+ 679 03a0 D5020000 		.word	725
+ 680 03a4 B7020000 		.word	695
+ 681 03a8 03020000 		.word	515
+ 682 03ac 9A020000 		.word	666
+ 683 03b0 81020000 		.word	641
+ 684 03b4 69020000 		.word	617
+ 685 03b8 53020000 		.word	595
+ 686 03bc 3F020000 		.word	575
+ 687 03c0 2C000000 		.word	.LC11
+ 688 03c4 00000000 		.word	printF1
+ 689 03c8 00000000 		.word	printF2
+ 690 03cc 00000000 		.word	printF3
+ 691 03d0 30000000 		.word	.LC16
+ 692 03d4 3C000000 		.word	.LC18
+ 693 03d8 00000000 		.word	printFREQ
+ 694 03dc 40000000 		.word	.LC21
+ 695 03e0 00000000 		.word	Iout
+ 696 03e4 D0DD0600 		.word	450000
+ 697 03e8 40420F00 		.word	1000000
+ 698 03ec 54000000 		.word	.LC24
+ 699 03f0 00000000 		.word	printIc
+ 700 03f4 68000000 		.word	.LC27
+ 701              		.cfi_endproc
+ 702              	.LFE33:
+ 703              		.size	ACEP_INT_Handler, .-ACEP_INT_Handler
+ 704              		.section	.text.DEC_INT_Handler,"ax",%progbits
+ 705              		.align	2
+ 706              		.global	DEC_INT_Handler
+ 707              		.code	16
+ 708              		.thumb_func
+ 709              		.type	DEC_INT_Handler, %function
+ 710              	DEC_INT_Handler:
+ 711              	.LFB34:
+ 181:Electroestimulador-main.c **** 
+ 182:Electroestimulador-main.c **** CY_ISR(DEC_INT_Handler) //Subrutina del boton DECREMENTAR del menu.
+ 183:Electroestimulador-main.c **** {
+ 712              		.loc 1 183 0
+ 713              		.cfi_startproc
+ 714              		@ args = 0, pretend = 0, frame = 0
+ 715              		@ frame_needed = 0, uses_anonymous_args = 0
+ 716 0000 10B5     		push	{r4, lr}
+ 717              		.cfi_def_cfa_offset 8
+ 718              		.cfi_offset 4, -8
+ 719              		.cfi_offset 14, -4
+ 184:Electroestimulador-main.c ****     switch(estadoSIS)
+ 720              		.loc 1 184 0
+ 721 0002 554B     		ldr	r3, .L48
+ 722 0004 1B78     		ldrb	r3, [r3]
+ 723 0006 022B     		cmp	r3, #2
+ 724 0008 32D0     		beq	.L36
+ 725 000a 042B     		cmp	r3, #4
+ 726 000c 00D1     		bne	.LCB599
+ 727 000e 83E0     		b	.L37	@long jump
+ 728              	.LCB599:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 17
+
+
+ 729 0010 012B     		cmp	r3, #1
+ 730 0012 00D0     		beq	.LCB602
+ 731 0014 9AE0     		b	.L35	@long jump
+ 732              	.LCB602:
+ 185:Electroestimulador-main.c ****     {
+ 186:Electroestimulador-main.c ****         case 1: if(TIc_sel==0)
+ 733              		.loc 1 186 0
+ 734 0016 504B     		ldr	r3, .L48
+ 735 0018 1B79     		ldrb	r3, [r3, #4]
+ 736 001a 002B     		cmp	r3, #0
+ 737 001c 03D1     		bne	.L39
+ 187:Electroestimulador-main.c ****                     TIc_sel = 15;
+ 738              		.loc 1 187 0
+ 739 001e 0F22     		movs	r2, #15
+ 740 0020 4D4B     		ldr	r3, .L48
+ 741 0022 1A71     		strb	r2, [r3, #4]
+ 742 0024 02E0     		b	.L40
+ 743              	.L39:
+ 188:Electroestimulador-main.c ****                 else
+ 189:Electroestimulador-main.c ****                     TIc_sel--;
+ 744              		.loc 1 189 0
+ 745 0026 013B     		subs	r3, r3, #1
+ 746 0028 4B4A     		ldr	r2, .L48
+ 747 002a 1371     		strb	r3, [r2, #4]
+ 748              	.L40:
+ 190:Electroestimulador-main.c ****                 if(TIc<=150)
+ 749              		.loc 1 190 0
+ 750 002c 4A4B     		ldr	r3, .L48
+ 751 002e 5B88     		ldrh	r3, [r3, #2]
+ 752 0030 962B     		cmp	r3, #150
+ 753 0032 04D8     		bhi	.L41
+ 191:Electroestimulador-main.c ****                     TIc = 300;
+ 754              		.loc 1 191 0
+ 755 0034 9622     		movs	r2, #150
+ 756 0036 5200     		lsls	r2, r2, #1
+ 757 0038 474B     		ldr	r3, .L48
+ 758 003a 5A80     		strh	r2, [r3, #2]
+ 759 003c 02E0     		b	.L42
+ 760              	.L41:
+ 192:Electroestimulador-main.c ****                 else
+ 193:Electroestimulador-main.c ****                     TIc=TIc-10;
+ 761              		.loc 1 193 0
+ 762 003e 0A3B     		subs	r3, r3, #10
+ 763 0040 454A     		ldr	r2, .L48
+ 764 0042 5380     		strh	r3, [r2, #2]
+ 765              	.L42:
+ 194:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 766              		.loc 1 194 0
+ 767 0044 0021     		movs	r1, #0
+ 768 0046 0120     		movs	r0, #1
+ 769 0048 FFF7FEFF 		bl	LCD_Position
+ 770              	.LVL60:
+ 195:Electroestimulador-main.c ****                 sprintf(printTIc,"%3d",TIc);
+ 771              		.loc 1 195 0
+ 772 004c 424B     		ldr	r3, .L48
+ 773 004e 5A88     		ldrh	r2, [r3, #2]
+ 774 0050 424C     		ldr	r4, .L48+4
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 18
+
+
+ 775 0052 4349     		ldr	r1, .L48+8
+ 776 0054 2000     		movs	r0, r4
+ 777 0056 FFF7FEFF 		bl	sprintf
+ 778              	.LVL61:
+ 196:Electroestimulador-main.c ****                 LCD_PrintString(printTIc);
+ 779              		.loc 1 196 0
+ 780 005a 2000     		movs	r0, r4
+ 781 005c FFF7FEFF 		bl	LCD_PrintString
+ 782              	.LVL62:
+ 197:Electroestimulador-main.c ****                 LCD_Position(1,5);
+ 783              		.loc 1 197 0
+ 784 0060 0521     		movs	r1, #5
+ 785 0062 0120     		movs	r0, #1
+ 786 0064 FFF7FEFF 		bl	LCD_Position
+ 787              	.LVL63:
+ 198:Electroestimulador-main.c ****                 LCD_PrintString("us");
+ 788              		.loc 1 198 0
+ 789 0068 3E48     		ldr	r0, .L48+12
+ 790 006a FFF7FEFF 		bl	LCD_PrintString
+ 791              	.LVL64:
+ 199:Electroestimulador-main.c ****                 break;
+ 792              		.loc 1 199 0
+ 793 006e 6DE0     		b	.L35
+ 794              	.L36:
+ 200:Electroestimulador-main.c ****         case 2: F_sel--;
+ 795              		.loc 1 200 0
+ 796 0070 394A     		ldr	r2, .L48
+ 797 0072 137B     		ldrb	r3, [r2, #12]
+ 798 0074 013B     		subs	r3, r3, #1
+ 799 0076 DBB2     		uxtb	r3, r3
+ 800 0078 1373     		strb	r3, [r2, #12]
+ 201:Electroestimulador-main.c ****                 if(F_sel<1)
+ 801              		.loc 1 201 0
+ 802 007a 002B     		cmp	r3, #0
+ 803 007c 02D1     		bne	.L43
+ 202:Electroestimulador-main.c ****                     F_sel=3;
+ 804              		.loc 1 202 0
+ 805 007e 0322     		movs	r2, #3
+ 806 0080 354B     		ldr	r3, .L48
+ 807 0082 1A73     		strb	r2, [r3, #12]
+ 808              	.L43:
+ 203:Electroestimulador-main.c ****                 else{}
+ 204:Electroestimulador-main.c ****                 switch(F_sel)
+ 809              		.loc 1 204 0
+ 810 0084 344B     		ldr	r3, .L48
+ 811 0086 1B7B     		ldrb	r3, [r3, #12]
+ 812 0088 022B     		cmp	r3, #2
+ 813 008a 19D0     		beq	.L44
+ 814 008c 032B     		cmp	r3, #3
+ 815 008e 2DD0     		beq	.L45
+ 816 0090 012B     		cmp	r3, #1
+ 817 0092 5BD1     		bne	.L35
+ 205:Electroestimulador-main.c ****                 {
+ 206:Electroestimulador-main.c ****                  case 1: LCD_Position(1,0);
+ 818              		.loc 1 206 0
+ 819 0094 0021     		movs	r1, #0
+ 820 0096 0120     		movs	r0, #1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 19
+
+
+ 821 0098 FFF7FEFF 		bl	LCD_Position
+ 822              	.LVL65:
+ 207:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 823              		.loc 1 207 0
+ 824 009c 3E20     		movs	r0, #62
+ 825 009e FFF7FEFF 		bl	LCD_PutChar
+ 826              	.LVL66:
+ 208:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 827              		.loc 1 208 0
+ 828 00a2 0621     		movs	r1, #6
+ 829 00a4 0120     		movs	r0, #1
+ 830 00a6 FFF7FEFF 		bl	LCD_Position
+ 831              	.LVL67:
+ 209:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 832              		.loc 1 209 0
+ 833 00aa 2020     		movs	r0, #32
+ 834 00ac FFF7FEFF 		bl	LCD_PutChar
+ 835              	.LVL68:
+ 210:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 836              		.loc 1 210 0
+ 837 00b0 0B21     		movs	r1, #11
+ 838 00b2 0120     		movs	r0, #1
+ 839 00b4 FFF7FEFF 		bl	LCD_Position
+ 840              	.LVL69:
+ 211:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 841              		.loc 1 211 0
+ 842 00b8 2020     		movs	r0, #32
+ 843 00ba FFF7FEFF 		bl	LCD_PutChar
+ 844              	.LVL70:
+ 212:Electroestimulador-main.c ****                          break;
+ 845              		.loc 1 212 0
+ 846 00be 45E0     		b	.L35
+ 847              	.L44:
+ 213:Electroestimulador-main.c ****                  case 2: LCD_Position(1,0);
+ 848              		.loc 1 213 0
+ 849 00c0 0021     		movs	r1, #0
+ 850 00c2 0120     		movs	r0, #1
+ 851 00c4 FFF7FEFF 		bl	LCD_Position
+ 852              	.LVL71:
+ 214:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 853              		.loc 1 214 0
+ 854 00c8 2020     		movs	r0, #32
+ 855 00ca FFF7FEFF 		bl	LCD_PutChar
+ 856              	.LVL72:
+ 215:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 857              		.loc 1 215 0
+ 858 00ce 0621     		movs	r1, #6
+ 859 00d0 0120     		movs	r0, #1
+ 860 00d2 FFF7FEFF 		bl	LCD_Position
+ 861              	.LVL73:
+ 216:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 862              		.loc 1 216 0
+ 863 00d6 3E20     		movs	r0, #62
+ 864 00d8 FFF7FEFF 		bl	LCD_PutChar
+ 865              	.LVL74:
+ 217:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 866              		.loc 1 217 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 20
+
+
+ 867 00dc 0B21     		movs	r1, #11
+ 868 00de 0120     		movs	r0, #1
+ 869 00e0 FFF7FEFF 		bl	LCD_Position
+ 870              	.LVL75:
+ 218:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 871              		.loc 1 218 0
+ 872 00e4 2020     		movs	r0, #32
+ 873 00e6 FFF7FEFF 		bl	LCD_PutChar
+ 874              	.LVL76:
+ 219:Electroestimulador-main.c ****                          break;
+ 875              		.loc 1 219 0
+ 876 00ea 2FE0     		b	.L35
+ 877              	.L45:
+ 220:Electroestimulador-main.c ****                  case 3: LCD_Position(1,0);
+ 878              		.loc 1 220 0
+ 879 00ec 0021     		movs	r1, #0
+ 880 00ee 0120     		movs	r0, #1
+ 881 00f0 FFF7FEFF 		bl	LCD_Position
+ 882              	.LVL77:
+ 221:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 883              		.loc 1 221 0
+ 884 00f4 2020     		movs	r0, #32
+ 885 00f6 FFF7FEFF 		bl	LCD_PutChar
+ 886              	.LVL78:
+ 222:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 887              		.loc 1 222 0
+ 888 00fa 0621     		movs	r1, #6
+ 889 00fc 0120     		movs	r0, #1
+ 890 00fe FFF7FEFF 		bl	LCD_Position
+ 891              	.LVL79:
+ 223:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 892              		.loc 1 223 0
+ 893 0102 2020     		movs	r0, #32
+ 894 0104 FFF7FEFF 		bl	LCD_PutChar
+ 895              	.LVL80:
+ 224:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 896              		.loc 1 224 0
+ 897 0108 0B21     		movs	r1, #11
+ 898 010a 0120     		movs	r0, #1
+ 899 010c FFF7FEFF 		bl	LCD_Position
+ 900              	.LVL81:
+ 225:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 901              		.loc 1 225 0
+ 902 0110 3E20     		movs	r0, #62
+ 903 0112 FFF7FEFF 		bl	LCD_PutChar
+ 904              	.LVL82:
+ 226:Electroestimulador-main.c ****                          break;
+ 905              		.loc 1 226 0
+ 906 0116 19E0     		b	.L35
+ 907              	.L37:
+ 227:Electroestimulador-main.c ****                  default: break;
+ 228:Electroestimulador-main.c ****                 }
+ 229:Electroestimulador-main.c ****                 break;
+ 230:Electroestimulador-main.c ****         case 4: Iout=Iout-5;
+ 908              		.loc 1 230 0
+ 909 0118 134A     		ldr	r2, .L48+16
+ 910 011a 1368     		ldr	r3, [r2]
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 21
+
+
+ 911 011c 053B     		subs	r3, r3, #5
+ 912 011e 1360     		str	r3, [r2]
+ 231:Electroestimulador-main.c ****                 if(Iout<10)
+ 913              		.loc 1 231 0
+ 914 0120 092B     		cmp	r3, #9
+ 915 0122 02D8     		bhi	.L47
+ 232:Electroestimulador-main.c ****                     Iout=10;
+ 916              		.loc 1 232 0
+ 917 0124 0A22     		movs	r2, #10
+ 918 0126 104B     		ldr	r3, .L48+16
+ 919 0128 1A60     		str	r2, [r3]
+ 920              	.L47:
+ 233:Electroestimulador-main.c ****                 else{}
+ 234:Electroestimulador-main.c ****                 Ic = Iout;
+ 921              		.loc 1 234 0
+ 922 012a 0B4C     		ldr	r4, .L48
+ 923 012c 0E4B     		ldr	r3, .L48+16
+ 924 012e 1B68     		ldr	r3, [r3]
+ 925 0130 2382     		strh	r3, [r4, #16]
+ 235:Electroestimulador-main.c ****                 LCD_Position(0,3);
+ 926              		.loc 1 235 0
+ 927 0132 0321     		movs	r1, #3
+ 928 0134 0020     		movs	r0, #0
+ 929 0136 FFF7FEFF 		bl	LCD_Position
+ 930              	.LVL83:
+ 236:Electroestimulador-main.c ****                 sprintf(printIc,"%3d",Ic);
+ 931              		.loc 1 236 0
+ 932 013a 228A     		ldrh	r2, [r4, #16]
+ 933 013c 0B4C     		ldr	r4, .L48+20
+ 934 013e 0849     		ldr	r1, .L48+8
+ 935 0140 2000     		movs	r0, r4
+ 936 0142 FFF7FEFF 		bl	sprintf
+ 937              	.LVL84:
+ 237:Electroestimulador-main.c ****                 LCD_PrintString(printIc);
+ 938              		.loc 1 237 0
+ 939 0146 2000     		movs	r0, r4
+ 940 0148 FFF7FEFF 		bl	LCD_PrintString
+ 941              	.LVL85:
+ 942              	.L35:
+ 238:Electroestimulador-main.c ****                 break;
+ 239:Electroestimulador-main.c ****         default: break;
+ 240:Electroestimulador-main.c ****     }
+ 241:Electroestimulador-main.c ****     PIN_DEC_ClearInterrupt();
+ 943              		.loc 1 241 0
+ 944 014c FFF7FEFF 		bl	PIN_DEC_ClearInterrupt
+ 945              	.LVL86:
+ 242:Electroestimulador-main.c ****     CyDelay(50);
+ 946              		.loc 1 242 0
+ 947 0150 3220     		movs	r0, #50
+ 948 0152 FFF7FEFF 		bl	CyDelay
+ 949              	.LVL87:
+ 243:Electroestimulador-main.c **** }
+ 950              		.loc 1 243 0
+ 951              		@ sp needed
+ 952 0156 10BD     		pop	{r4, pc}
+ 953              	.L49:
+ 954              		.align	2
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 22
+
+
+ 955              	.L48:
+ 956 0158 00000000 		.word	.LANCHOR0
+ 957 015c 00000000 		.word	printTIc
+ 958 0160 10000000 		.word	.LC3
+ 959 0164 14000000 		.word	.LC6
+ 960 0168 00000000 		.word	Iout
+ 961 016c 00000000 		.word	printIc
+ 962              		.cfi_endproc
+ 963              	.LFE34:
+ 964              		.size	DEC_INT_Handler, .-DEC_INT_Handler
+ 965              		.section	.text.INC_INT_Handler,"ax",%progbits
+ 966              		.align	2
+ 967              		.global	INC_INT_Handler
+ 968              		.code	16
+ 969              		.thumb_func
+ 970              		.type	INC_INT_Handler, %function
+ 971              	INC_INT_Handler:
+ 972              	.LFB35:
+ 244:Electroestimulador-main.c **** 
+ 245:Electroestimulador-main.c **** CY_ISR(INC_INT_Handler) //Subrutina del boton INCREMENTAR del menu.
+ 246:Electroestimulador-main.c **** {
+ 973              		.loc 1 246 0
+ 974              		.cfi_startproc
+ 975              		@ args = 0, pretend = 0, frame = 0
+ 976              		@ frame_needed = 0, uses_anonymous_args = 0
+ 977 0000 10B5     		push	{r4, lr}
+ 978              		.cfi_def_cfa_offset 8
+ 979              		.cfi_offset 4, -8
+ 980              		.cfi_offset 14, -4
+ 247:Electroestimulador-main.c ****     switch(estadoSIS)
+ 981              		.loc 1 247 0
+ 982 0002 564B     		ldr	r3, .L64
+ 983 0004 1B78     		ldrb	r3, [r3]
+ 984 0006 022B     		cmp	r3, #2
+ 985 0008 33D0     		beq	.L52
+ 986 000a 042B     		cmp	r3, #4
+ 987 000c 00D1     		bne	.LCB827
+ 988 000e 84E0     		b	.L53	@long jump
+ 989              	.LCB827:
+ 990 0010 012B     		cmp	r3, #1
+ 991 0012 00D0     		beq	.LCB830
+ 992 0014 9BE0     		b	.L51	@long jump
+ 993              	.LCB830:
+ 248:Electroestimulador-main.c ****     {
+ 249:Electroestimulador-main.c ****         case 1: if(TIc_sel==15)
+ 994              		.loc 1 249 0
+ 995 0016 514B     		ldr	r3, .L64
+ 996 0018 1B79     		ldrb	r3, [r3, #4]
+ 997 001a 0F2B     		cmp	r3, #15
+ 998 001c 03D1     		bne	.L55
+ 250:Electroestimulador-main.c ****                     TIc_sel = 0;
+ 999              		.loc 1 250 0
+ 1000 001e 0022     		movs	r2, #0
+ 1001 0020 4E4B     		ldr	r3, .L64
+ 1002 0022 1A71     		strb	r2, [r3, #4]
+ 1003 0024 02E0     		b	.L56
+ 1004              	.L55:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 23
+
+
+ 251:Electroestimulador-main.c ****                 else
+ 252:Electroestimulador-main.c ****                     TIc_sel++;
+ 1005              		.loc 1 252 0
+ 1006 0026 0133     		adds	r3, r3, #1
+ 1007 0028 4C4A     		ldr	r2, .L64
+ 1008 002a 1371     		strb	r3, [r2, #4]
+ 1009              	.L56:
+ 253:Electroestimulador-main.c ****                 if(TIc>=300)
+ 1010              		.loc 1 253 0
+ 1011 002c 4B4B     		ldr	r3, .L64
+ 1012 002e 5B88     		ldrh	r3, [r3, #2]
+ 1013 0030 2C22     		movs	r2, #44
+ 1014 0032 FF32     		adds	r2, r2, #255
+ 1015 0034 9342     		cmp	r3, r2
+ 1016 0036 03D9     		bls	.L57
+ 254:Electroestimulador-main.c ****                     TIc = 150;
+ 1017              		.loc 1 254 0
+ 1018 0038 953A     		subs	r2, r2, #149
+ 1019 003a 484B     		ldr	r3, .L64
+ 1020 003c 5A80     		strh	r2, [r3, #2]
+ 1021 003e 02E0     		b	.L58
+ 1022              	.L57:
+ 255:Electroestimulador-main.c ****                 else
+ 256:Electroestimulador-main.c ****                     TIc=TIc+10;
+ 1023              		.loc 1 256 0
+ 1024 0040 0A33     		adds	r3, r3, #10
+ 1025 0042 464A     		ldr	r2, .L64
+ 1026 0044 5380     		strh	r3, [r2, #2]
+ 1027              	.L58:
+ 257:Electroestimulador-main.c ****                 LCD_Position(1,0);
+ 1028              		.loc 1 257 0
+ 1029 0046 0021     		movs	r1, #0
+ 1030 0048 0120     		movs	r0, #1
+ 1031 004a FFF7FEFF 		bl	LCD_Position
+ 1032              	.LVL88:
+ 258:Electroestimulador-main.c ****                 sprintf(printTIc,"%3d",TIc);
+ 1033              		.loc 1 258 0
+ 1034 004e 434B     		ldr	r3, .L64
+ 1035 0050 5A88     		ldrh	r2, [r3, #2]
+ 1036 0052 434C     		ldr	r4, .L64+4
+ 1037 0054 4349     		ldr	r1, .L64+8
+ 1038 0056 2000     		movs	r0, r4
+ 1039 0058 FFF7FEFF 		bl	sprintf
+ 1040              	.LVL89:
+ 259:Electroestimulador-main.c ****                 LCD_PrintString(printTIc);
+ 1041              		.loc 1 259 0
+ 1042 005c 2000     		movs	r0, r4
+ 1043 005e FFF7FEFF 		bl	LCD_PrintString
+ 1044              	.LVL90:
+ 260:Electroestimulador-main.c ****                 LCD_Position(1,5);
+ 1045              		.loc 1 260 0
+ 1046 0062 0521     		movs	r1, #5
+ 1047 0064 0120     		movs	r0, #1
+ 1048 0066 FFF7FEFF 		bl	LCD_Position
+ 1049              	.LVL91:
+ 261:Electroestimulador-main.c ****                 LCD_PrintString("us");
+ 1050              		.loc 1 261 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 24
+
+
+ 1051 006a 3F48     		ldr	r0, .L64+12
+ 1052 006c FFF7FEFF 		bl	LCD_PrintString
+ 1053              	.LVL92:
+ 262:Electroestimulador-main.c ****                 break;
+ 1054              		.loc 1 262 0
+ 1055 0070 6DE0     		b	.L51
+ 1056              	.L52:
+ 263:Electroestimulador-main.c ****         case 2: F_sel++;
+ 1057              		.loc 1 263 0
+ 1058 0072 3A4A     		ldr	r2, .L64
+ 1059 0074 137B     		ldrb	r3, [r2, #12]
+ 1060 0076 0133     		adds	r3, r3, #1
+ 1061 0078 DBB2     		uxtb	r3, r3
+ 1062 007a 1373     		strb	r3, [r2, #12]
+ 264:Electroestimulador-main.c ****                 if(F_sel>3)
+ 1063              		.loc 1 264 0
+ 1064 007c 032B     		cmp	r3, #3
+ 1065 007e 02D9     		bls	.L59
+ 265:Electroestimulador-main.c ****                     F_sel=1;
+ 1066              		.loc 1 265 0
+ 1067 0080 0122     		movs	r2, #1
+ 1068 0082 364B     		ldr	r3, .L64
+ 1069 0084 1A73     		strb	r2, [r3, #12]
+ 1070              	.L59:
+ 266:Electroestimulador-main.c ****                 else{}
+ 267:Electroestimulador-main.c ****                 switch(F_sel)
+ 1071              		.loc 1 267 0
+ 1072 0086 354B     		ldr	r3, .L64
+ 1073 0088 1B7B     		ldrb	r3, [r3, #12]
+ 1074 008a 022B     		cmp	r3, #2
+ 1075 008c 19D0     		beq	.L60
+ 1076 008e 032B     		cmp	r3, #3
+ 1077 0090 2DD0     		beq	.L61
+ 1078 0092 012B     		cmp	r3, #1
+ 1079 0094 5BD1     		bne	.L51
+ 268:Electroestimulador-main.c ****                 {
+ 269:Electroestimulador-main.c ****                  case 1: LCD_Position(1,0);
+ 1080              		.loc 1 269 0
+ 1081 0096 0021     		movs	r1, #0
+ 1082 0098 0120     		movs	r0, #1
+ 1083 009a FFF7FEFF 		bl	LCD_Position
+ 1084              	.LVL93:
+ 270:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 1085              		.loc 1 270 0
+ 1086 009e 3E20     		movs	r0, #62
+ 1087 00a0 FFF7FEFF 		bl	LCD_PutChar
+ 1088              	.LVL94:
+ 271:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 1089              		.loc 1 271 0
+ 1090 00a4 0621     		movs	r1, #6
+ 1091 00a6 0120     		movs	r0, #1
+ 1092 00a8 FFF7FEFF 		bl	LCD_Position
+ 1093              	.LVL95:
+ 272:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1094              		.loc 1 272 0
+ 1095 00ac 2020     		movs	r0, #32
+ 1096 00ae FFF7FEFF 		bl	LCD_PutChar
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 25
+
+
+ 1097              	.LVL96:
+ 273:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 1098              		.loc 1 273 0
+ 1099 00b2 0B21     		movs	r1, #11
+ 1100 00b4 0120     		movs	r0, #1
+ 1101 00b6 FFF7FEFF 		bl	LCD_Position
+ 1102              	.LVL97:
+ 274:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1103              		.loc 1 274 0
+ 1104 00ba 2020     		movs	r0, #32
+ 1105 00bc FFF7FEFF 		bl	LCD_PutChar
+ 1106              	.LVL98:
+ 275:Electroestimulador-main.c ****                          break;
+ 1107              		.loc 1 275 0
+ 1108 00c0 45E0     		b	.L51
+ 1109              	.L60:
+ 276:Electroestimulador-main.c ****                  case 2: LCD_Position(1,0);
+ 1110              		.loc 1 276 0
+ 1111 00c2 0021     		movs	r1, #0
+ 1112 00c4 0120     		movs	r0, #1
+ 1113 00c6 FFF7FEFF 		bl	LCD_Position
+ 1114              	.LVL99:
+ 277:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1115              		.loc 1 277 0
+ 1116 00ca 2020     		movs	r0, #32
+ 1117 00cc FFF7FEFF 		bl	LCD_PutChar
+ 1118              	.LVL100:
+ 278:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 1119              		.loc 1 278 0
+ 1120 00d0 0621     		movs	r1, #6
+ 1121 00d2 0120     		movs	r0, #1
+ 1122 00d4 FFF7FEFF 		bl	LCD_Position
+ 1123              	.LVL101:
+ 279:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 1124              		.loc 1 279 0
+ 1125 00d8 3E20     		movs	r0, #62
+ 1126 00da FFF7FEFF 		bl	LCD_PutChar
+ 1127              	.LVL102:
+ 280:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 1128              		.loc 1 280 0
+ 1129 00de 0B21     		movs	r1, #11
+ 1130 00e0 0120     		movs	r0, #1
+ 1131 00e2 FFF7FEFF 		bl	LCD_Position
+ 1132              	.LVL103:
+ 281:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1133              		.loc 1 281 0
+ 1134 00e6 2020     		movs	r0, #32
+ 1135 00e8 FFF7FEFF 		bl	LCD_PutChar
+ 1136              	.LVL104:
+ 282:Electroestimulador-main.c ****                          break;
+ 1137              		.loc 1 282 0
+ 1138 00ec 2FE0     		b	.L51
+ 1139              	.L61:
+ 283:Electroestimulador-main.c ****                  case 3: LCD_Position(1,0);
+ 1140              		.loc 1 283 0
+ 1141 00ee 0021     		movs	r1, #0
+ 1142 00f0 0120     		movs	r0, #1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 26
+
+
+ 1143 00f2 FFF7FEFF 		bl	LCD_Position
+ 1144              	.LVL105:
+ 284:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1145              		.loc 1 284 0
+ 1146 00f6 2020     		movs	r0, #32
+ 1147 00f8 FFF7FEFF 		bl	LCD_PutChar
+ 1148              	.LVL106:
+ 285:Electroestimulador-main.c ****                          LCD_Position(1,6);
+ 1149              		.loc 1 285 0
+ 1150 00fc 0621     		movs	r1, #6
+ 1151 00fe 0120     		movs	r0, #1
+ 1152 0100 FFF7FEFF 		bl	LCD_Position
+ 1153              	.LVL107:
+ 286:Electroestimulador-main.c ****                          LCD_PutChar(' ');
+ 1154              		.loc 1 286 0
+ 1155 0104 2020     		movs	r0, #32
+ 1156 0106 FFF7FEFF 		bl	LCD_PutChar
+ 1157              	.LVL108:
+ 287:Electroestimulador-main.c ****                          LCD_Position(1,11);
+ 1158              		.loc 1 287 0
+ 1159 010a 0B21     		movs	r1, #11
+ 1160 010c 0120     		movs	r0, #1
+ 1161 010e FFF7FEFF 		bl	LCD_Position
+ 1162              	.LVL109:
+ 288:Electroestimulador-main.c ****                          LCD_PutChar('>');
+ 1163              		.loc 1 288 0
+ 1164 0112 3E20     		movs	r0, #62
+ 1165 0114 FFF7FEFF 		bl	LCD_PutChar
+ 1166              	.LVL110:
+ 289:Electroestimulador-main.c ****                          break;
+ 1167              		.loc 1 289 0
+ 1168 0118 19E0     		b	.L51
+ 1169              	.L53:
+ 290:Electroestimulador-main.c ****                  default: break;
+ 291:Electroestimulador-main.c ****                 }
+ 292:Electroestimulador-main.c ****                 break;
+ 293:Electroestimulador-main.c ****         case 4: Iout=Iout+5;
+ 1170              		.loc 1 293 0
+ 1171 011a 144A     		ldr	r2, .L64+16
+ 1172 011c 1368     		ldr	r3, [r2]
+ 1173 011e 0533     		adds	r3, r3, #5
+ 1174 0120 1360     		str	r3, [r2]
+ 294:Electroestimulador-main.c ****                 if(Iout>255)
+ 1175              		.loc 1 294 0
+ 1176 0122 FF2B     		cmp	r3, #255
+ 1177 0124 02D9     		bls	.L63
+ 295:Electroestimulador-main.c ****                     Iout=255;
+ 1178              		.loc 1 295 0
+ 1179 0126 FF22     		movs	r2, #255
+ 1180 0128 104B     		ldr	r3, .L64+16
+ 1181 012a 1A60     		str	r2, [r3]
+ 1182              	.L63:
+ 296:Electroestimulador-main.c ****                 else{}
+ 297:Electroestimulador-main.c ****                 Ic = Iout;
+ 1183              		.loc 1 297 0
+ 1184 012c 0B4C     		ldr	r4, .L64
+ 1185 012e 0F4B     		ldr	r3, .L64+16
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 27
+
+
+ 1186 0130 1B68     		ldr	r3, [r3]
+ 1187 0132 2382     		strh	r3, [r4, #16]
+ 298:Electroestimulador-main.c ****                 LCD_Position(0,3);
+ 1188              		.loc 1 298 0
+ 1189 0134 0321     		movs	r1, #3
+ 1190 0136 0020     		movs	r0, #0
+ 1191 0138 FFF7FEFF 		bl	LCD_Position
+ 1192              	.LVL111:
+ 299:Electroestimulador-main.c ****                 sprintf(printIc,"%3d",Ic);
+ 1193              		.loc 1 299 0
+ 1194 013c 228A     		ldrh	r2, [r4, #16]
+ 1195 013e 0C4C     		ldr	r4, .L64+20
+ 1196 0140 0849     		ldr	r1, .L64+8
+ 1197 0142 2000     		movs	r0, r4
+ 1198 0144 FFF7FEFF 		bl	sprintf
+ 1199              	.LVL112:
+ 300:Electroestimulador-main.c ****                 LCD_PrintString(printIc);
+ 1200              		.loc 1 300 0
+ 1201 0148 2000     		movs	r0, r4
+ 1202 014a FFF7FEFF 		bl	LCD_PrintString
+ 1203              	.LVL113:
+ 1204              	.L51:
+ 301:Electroestimulador-main.c ****                 break;
+ 302:Electroestimulador-main.c ****         default: break;
+ 303:Electroestimulador-main.c ****     }
+ 304:Electroestimulador-main.c ****     PIN_INC_ClearInterrupt();
+ 1205              		.loc 1 304 0
+ 1206 014e FFF7FEFF 		bl	PIN_INC_ClearInterrupt
+ 1207              	.LVL114:
+ 305:Electroestimulador-main.c ****     CyDelay(50);
+ 1208              		.loc 1 305 0
+ 1209 0152 3220     		movs	r0, #50
+ 1210 0154 FFF7FEFF 		bl	CyDelay
+ 1211              	.LVL115:
+ 306:Electroestimulador-main.c **** }
+ 1212              		.loc 1 306 0
+ 1213              		@ sp needed
+ 1214 0158 10BD     		pop	{r4, pc}
+ 1215              	.L65:
+ 1216 015a C046     		.align	2
+ 1217              	.L64:
+ 1218 015c 00000000 		.word	.LANCHOR0
+ 1219 0160 00000000 		.word	printTIc
+ 1220 0164 10000000 		.word	.LC3
+ 1221 0168 14000000 		.word	.LC6
+ 1222 016c 00000000 		.word	Iout
+ 1223 0170 00000000 		.word	printIc
+ 1224              		.cfi_endproc
+ 1225              	.LFE35:
+ 1226              		.size	INC_INT_Handler, .-INC_INT_Handler
+ 1227              		.section	.text.PWM_INT_Handler,"ax",%progbits
+ 1228              		.align	2
+ 1229              		.global	PWM_INT_Handler
+ 1230              		.code	16
+ 1231              		.thumb_func
+ 1232              		.type	PWM_INT_Handler, %function
+ 1233              	PWM_INT_Handler:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 28
+
+
+ 1234              	.LFB36:
+ 307:Electroestimulador-main.c **** 
+ 308:Electroestimulador-main.c **** CY_ISR(PWM_INT_Handler) //Subrutina del cambio de estado de la señal.
+ 309:Electroestimulador-main.c **** {
+ 1235              		.loc 1 309 0
+ 1236              		.cfi_startproc
+ 1237              		@ args = 0, pretend = 0, frame = 0
+ 1238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1239 0000 10B5     		push	{r4, lr}
+ 1240              		.cfi_def_cfa_offset 8
+ 1241              		.cfi_offset 4, -8
+ 1242              		.cfi_offset 14, -4
+ 1243              	.LVL116:
+ 310:Electroestimulador-main.c ****     uint32 estadoINT_PWM = 0;
+ 311:Electroestimulador-main.c ****     estadoINT_PWM = PWM_GetInterruptSource();
+ 1244              		.loc 1 311 0
+ 1245 0002 FFF7FEFF 		bl	PWM_GetInterruptSource
+ 1246              	.LVL117:
+ 1247 0006 0400     		movs	r4, r0
+ 1248              	.LVL118:
+ 312:Electroestimulador-main.c ****     IDAC_1_SetValue(Iout);
+ 1249              		.loc 1 312 0
+ 1250 0008 104B     		ldr	r3, .L72
+ 1251 000a 1868     		ldr	r0, [r3]
+ 1252              	.LVL119:
+ 1253 000c FFF7FEFF 		bl	IDAC_1_SetValue
+ 1254              	.LVL120:
+ 313:Electroestimulador-main.c ****     switch(estadoINT_PWM)
+ 1255              		.loc 1 313 0
+ 1256 0010 012C     		cmp	r4, #1
+ 1257 0012 02D0     		beq	.L68
+ 1258 0014 022C     		cmp	r4, #2
+ 1259 0016 09D0     		beq	.L69
+ 1260 0018 11E0     		b	.L71
+ 1261              	.L68:
+ 314:Electroestimulador-main.c ****     {
+ 315:Electroestimulador-main.c ****         case PWM_INTR_MASK_TC:
+ 316:Electroestimulador-main.c ****             AMux_DisconnectAll();
+ 1262              		.loc 1 316 0
+ 1263 001a FFF7FEFF 		bl	AMux_DisconnectAll
+ 1264              	.LVL121:
+ 317:Electroestimulador-main.c ****             AMux_Select(1);
+ 1265              		.loc 1 317 0
+ 1266 001e 0120     		movs	r0, #1
+ 1267 0020 FFF7FEFF 		bl	AMux_FastSelect
+ 1268              	.LVL122:
+ 318:Electroestimulador-main.c ****             PWM_ClearInterrupt(PWM_INTR_MASK_TC);
+ 1269              		.loc 1 318 0
+ 1270 0024 0120     		movs	r0, #1
+ 1271 0026 FFF7FEFF 		bl	PWM_ClearInterrupt
+ 1272              	.LVL123:
+ 319:Electroestimulador-main.c ****             break;
+ 1273              		.loc 1 319 0
+ 1274 002a 0EE0     		b	.L66
+ 1275              	.L69:
+ 320:Electroestimulador-main.c ****         case PWM_INTR_MASK_CC_MATCH:
+ 321:Electroestimulador-main.c ****             AMux_DisconnectAll();
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 29
+
+
+ 1276              		.loc 1 321 0
+ 1277 002c FFF7FEFF 		bl	AMux_DisconnectAll
+ 1278              	.LVL124:
+ 322:Electroestimulador-main.c ****             AMux_Select(0);
+ 1279              		.loc 1 322 0
+ 1280 0030 0020     		movs	r0, #0
+ 1281 0032 FFF7FEFF 		bl	AMux_FastSelect
+ 1282              	.LVL125:
+ 323:Electroestimulador-main.c ****             PWM_ClearInterrupt(PWM_INTR_MASK_CC_MATCH);
+ 1283              		.loc 1 323 0
+ 1284 0036 0220     		movs	r0, #2
+ 1285 0038 FFF7FEFF 		bl	PWM_ClearInterrupt
+ 1286              	.LVL126:
+ 324:Electroestimulador-main.c ****             break;
+ 1287              		.loc 1 324 0
+ 1288 003c 05E0     		b	.L66
+ 1289              	.L71:
+ 325:Electroestimulador-main.c ****         default:
+ 326:Electroestimulador-main.c ****             PWM_ClearInterrupt(PWM_INTR_MASK_TC);
+ 1290              		.loc 1 326 0
+ 1291 003e 0120     		movs	r0, #1
+ 1292 0040 FFF7FEFF 		bl	PWM_ClearInterrupt
+ 1293              	.LVL127:
+ 327:Electroestimulador-main.c ****             PWM_ClearInterrupt(PWM_INTR_MASK_CC_MATCH);
+ 1294              		.loc 1 327 0
+ 1295 0044 0220     		movs	r0, #2
+ 1296 0046 FFF7FEFF 		bl	PWM_ClearInterrupt
+ 1297              	.LVL128:
+ 1298              	.L66:
+ 328:Electroestimulador-main.c ****             break;
+ 329:Electroestimulador-main.c ****     }
+ 330:Electroestimulador-main.c **** }
+ 1299              		.loc 1 330 0
+ 1300              		@ sp needed
+ 1301              	.LVL129:
+ 1302 004a 10BD     		pop	{r4, pc}
+ 1303              	.L73:
+ 1304              		.align	2
+ 1305              	.L72:
+ 1306 004c 00000000 		.word	Iout
+ 1307              		.cfi_endproc
+ 1308              	.LFE36:
+ 1309              		.size	PWM_INT_Handler, .-PWM_INT_Handler
+ 1310              		.section	.text.main,"ax",%progbits
+ 1311              		.align	2
+ 1312              		.global	main
+ 1313              		.code	16
+ 1314              		.thumb_func
+ 1315              		.type	main, %function
+ 1316              	main:
+ 1317              	.LFB37:
+ 331:Electroestimulador-main.c **** 
+ 332:Electroestimulador-main.c **** int main(void)
+ 333:Electroestimulador-main.c **** {
+ 1318              		.loc 1 333 0
+ 1319              		.cfi_startproc
+ 1320              		@ Volatile: function does not return.
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 30
+
+
+ 1321              		@ args = 0, pretend = 0, frame = 0
+ 1322              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1323 0000 10B5     		push	{r4, lr}
+ 1324              		.cfi_def_cfa_offset 8
+ 1325              		.cfi_offset 4, -8
+ 1326              		.cfi_offset 14, -4
+ 334:Electroestimulador-main.c ****     CyGlobalIntEnable; 
+ 1327              		.loc 1 334 0
+ 1328              		.syntax divided
+ 1329              	@ 334 "Electroestimulador-main.c" 1
+ 1330 0002 62B6     		CPSIE   i
+ 1331              	@ 0 "" 2
+ 335:Electroestimulador-main.c ****     ACEP_INT_StartEx(ACEP_INT_Handler);
+ 1332              		.loc 1 335 0
+ 1333              		.thumb
+ 1334              		.syntax unified
+ 1335 0004 1348     		ldr	r0, .L76
+ 1336 0006 FFF7FEFF 		bl	ACEP_INT_StartEx
+ 1337              	.LVL130:
+ 336:Electroestimulador-main.c ****     DEC_INT_StartEx(DEC_INT_Handler);
+ 1338              		.loc 1 336 0
+ 1339 000a 1348     		ldr	r0, .L76+4
+ 1340 000c FFF7FEFF 		bl	DEC_INT_StartEx
+ 1341              	.LVL131:
+ 337:Electroestimulador-main.c ****     INC_INT_StartEx(INC_INT_Handler);
+ 1342              		.loc 1 337 0
+ 1343 0010 1248     		ldr	r0, .L76+8
+ 1344 0012 FFF7FEFF 		bl	INC_INT_StartEx
+ 1345              	.LVL132:
+ 338:Electroestimulador-main.c ****     PWM_INT_StartEx(PWM_INT_Handler);
+ 1346              		.loc 1 338 0
+ 1347 0016 1248     		ldr	r0, .L76+12
+ 1348 0018 FFF7FEFF 		bl	PWM_INT_StartEx
+ 1349              	.LVL133:
+ 339:Electroestimulador-main.c ****     LCD_Start();
+ 1350              		.loc 1 339 0
+ 1351 001c FFF7FEFF 		bl	LCD_Start
+ 1352              	.LVL134:
+ 340:Electroestimulador-main.c ****     PWM_Init();
+ 1353              		.loc 1 340 0
+ 1354 0020 FFF7FEFF 		bl	PWM_Init
+ 1355              	.LVL135:
+ 341:Electroestimulador-main.c ****     IDAC_1_Init();
+ 1356              		.loc 1 341 0
+ 1357 0024 FFF7FEFF 		bl	IDAC_1_Init
+ 1358              	.LVL136:
+ 342:Electroestimulador-main.c ****     IDAC_1_SetValue(0);
+ 1359              		.loc 1 342 0
+ 1360 0028 0020     		movs	r0, #0
+ 1361 002a FFF7FEFF 		bl	IDAC_1_SetValue
+ 1362              	.LVL137:
+ 343:Electroestimulador-main.c ****     AMux_Start();
+ 1363              		.loc 1 343 0
+ 1364 002e FFF7FEFF 		bl	AMux_Start
+ 1365              	.LVL138:
+ 344:Electroestimulador-main.c ****     Comp_1_Start();
+ 1366              		.loc 1 344 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 31
+
+
+ 1367 0032 FFF7FEFF 		bl	Comp_1_Start
+ 1368              	.LVL139:
+ 345:Electroestimulador-main.c ****     LCD_Position(0,0);
+ 1369              		.loc 1 345 0
+ 1370 0036 0021     		movs	r1, #0
+ 1371 0038 0020     		movs	r0, #0
+ 1372 003a FFF7FEFF 		bl	LCD_Position
+ 1373              	.LVL140:
+ 346:Electroestimulador-main.c ****     LCD_PrintString("Presione ACEPTAR");
+ 1374              		.loc 1 346 0
+ 1375 003e 0948     		ldr	r0, .L76+16
+ 1376 0040 FFF7FEFF 		bl	LCD_PrintString
+ 1377              	.LVL141:
+ 347:Electroestimulador-main.c ****     LCD_Position(1,0);
+ 1378              		.loc 1 347 0
+ 1379 0044 0021     		movs	r1, #0
+ 1380 0046 0120     		movs	r0, #1
+ 1381 0048 FFF7FEFF 		bl	LCD_Position
+ 1382              	.LVL142:
+ 348:Electroestimulador-main.c ****     LCD_PrintString("para configurar:");
+ 1383              		.loc 1 348 0
+ 1384 004c 0648     		ldr	r0, .L76+20
+ 1385 004e FFF7FEFF 		bl	LCD_PrintString
+ 1386              	.LVL143:
+ 1387              	.L75:
+ 1388 0052 FEE7     		b	.L75
+ 1389              	.L77:
+ 1390              		.align	2
+ 1391              	.L76:
+ 1392 0054 00000000 		.word	ACEP_INT_Handler
+ 1393 0058 00000000 		.word	DEC_INT_Handler
+ 1394 005c 00000000 		.word	INC_INT_Handler
+ 1395 0060 00000000 		.word	PWM_INT_Handler
+ 1396 0064 7C000000 		.word	.LC46
+ 1397 0068 90000000 		.word	.LC48
+ 1398              		.cfi_endproc
+ 1399              	.LFE37:
+ 1400              		.size	main, .-main
+ 1401              		.comm	printFREQ,4,4
+ 1402              		.comm	printF3,4,4
+ 1403              		.comm	printF2,4,4
+ 1404              		.comm	printF1,4,4
+ 1405              		.comm	printIc,3,4
+ 1406              		.comm	printTIc,3,4
+ 1407              		.global	Ic
+ 1408              		.comm	Iout,4,4
+ 1409              		.global	F_sel
+ 1410              		.global	FREQ
+ 1411              		.global	F3
+ 1412              		.global	F2
+ 1413              		.global	F1
+ 1414              		.global	TIc_sel
+ 1415              		.global	TIc
+ 1416              		.global	estadoSIS
+ 1417              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 1418              		.align	2
+ 1419              	.LC1:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 32
+
+
+ 1420 0000 53656C65 		.ascii	"Seleccione TIc\000"
+ 1420      6363696F 
+ 1420      6E652054 
+ 1420      496300
+ 1421 000f 00       		.space	1
+ 1422              	.LC3:
+ 1423 0010 25336400 		.ascii	"%3d\000"
+ 1424              	.LC6:
+ 1425 0014 757300   		.ascii	"us\000"
+ 1426 0017 00       		.space	1
+ 1427              	.LC8:
+ 1428 0018 53656C65 		.ascii	"Seleccione Freq.\000"
+ 1428      6363696F 
+ 1428      6E652046 
+ 1428      7265712E 
+ 1428      00
+ 1429 0029 000000   		.space	3
+ 1430              	.LC11:
+ 1431 002c 25346400 		.ascii	"%4d\000"
+ 1432              	.LC16:
+ 1433 0030 5449633D 		.ascii	"TIc=   us\000"
+ 1433      20202075 
+ 1433      7300
+ 1434 003a 0000     		.space	2
+ 1435              	.LC18:
+ 1436 003c 463D00   		.ascii	"F=\000"
+ 1437 003f 00       		.space	1
+ 1438              	.LC21:
+ 1439 0040 49633D31 		.ascii	"Ic=12uA INICIAR?\000"
+ 1439      32754120 
+ 1439      494E4943 
+ 1439      4941523F 
+ 1439      00
+ 1440 0051 000000   		.space	3
+ 1441              	.LC24:
+ 1442 0054 49633D20 		.ascii	"Ic=    uA  >ON< \000"
+ 1442      20202075 
+ 1442      4120203E 
+ 1442      4F4E3C20 
+ 1442      00
+ 1443 0065 000000   		.space	3
+ 1444              	.LC27:
+ 1445 0068 50756C73 		.ascii	"Pulse ACEP p fin\000"
+ 1445      65204143 
+ 1445      45502070 
+ 1445      2066696E 
+ 1445      00
+ 1446 0079 000000   		.space	3
+ 1447              	.LC46:
+ 1448 007c 50726573 		.ascii	"Presione ACEPTAR\000"
+ 1448      696F6E65 
+ 1448      20414345 
+ 1448      50544152 
+ 1448      00
+ 1449 008d 000000   		.space	3
+ 1450              	.LC48:
+ 1451 0090 70617261 		.ascii	"para configurar:\000"
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 33
+
+
+ 1451      20636F6E 
+ 1451      66696775 
+ 1451      7261723A 
+ 1451      00
+ 1452              		.bss
+ 1453              		.align	1
+ 1454              		.set	.LANCHOR0,. + 0
+ 1455              		.type	estadoSIS, %object
+ 1456              		.size	estadoSIS, 1
+ 1457              	estadoSIS:
+ 1458 0000 00       		.space	1
+ 1459 0001 00       		.space	1
+ 1460              		.type	TIc, %object
+ 1461              		.size	TIc, 2
+ 1462              	TIc:
+ 1463 0002 0000     		.space	2
+ 1464              		.type	TIc_sel, %object
+ 1465              		.size	TIc_sel, 1
+ 1466              	TIc_sel:
+ 1467 0004 00       		.space	1
+ 1468 0005 00       		.space	1
+ 1469              		.type	F1, %object
+ 1470              		.size	F1, 2
+ 1471              	F1:
+ 1472 0006 0000     		.space	2
+ 1473              		.type	F2, %object
+ 1474              		.size	F2, 2
+ 1475              	F2:
+ 1476 0008 0000     		.space	2
+ 1477              		.type	F3, %object
+ 1478              		.size	F3, 2
+ 1479              	F3:
+ 1480 000a 0000     		.space	2
+ 1481              		.type	F_sel, %object
+ 1482              		.size	F_sel, 1
+ 1483              	F_sel:
+ 1484 000c 00       		.space	1
+ 1485 000d 00       		.space	1
+ 1486              		.type	FREQ, %object
+ 1487              		.size	FREQ, 2
+ 1488              	FREQ:
+ 1489 000e 0000     		.space	2
+ 1490              		.type	Ic, %object
+ 1491              		.size	Ic, 2
+ 1492              	Ic:
+ 1493 0010 0000     		.space	2
+ 1494              		.text
+ 1495              	.Letext0:
+ 1496              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 1497              		.file 3 "Generated_Source\\PSoC4/PWM.h"
+ 1498              		.file 4 "Generated_Source\\PSoC4/IDAC_1.h"
+ 1499              		.file 5 "Generated_Source\\PSoC4/AMux.h"
+ 1500              		.file 6 "Generated_Source\\PSoC4/LCD.h"
+ 1501              		.file 7 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 1502              		.file 8 "Generated_Source\\PSoC4/PIN_ACEP.h"
+ 1503              		.file 9 "Generated_Source\\PSoC4/CyLib.h"
+ 1504              		.file 10 "Generated_Source\\PSoC4/PIN_DEC.h"
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 34
+
+
+ 1505              		.file 11 "Generated_Source\\PSoC4/PIN_INC.h"
+ 1506              		.file 12 "Generated_Source\\PSoC4/ACEP_INT.h"
+ 1507              		.file 13 "Generated_Source\\PSoC4/DEC_INT.h"
+ 1508              		.file 14 "Generated_Source\\PSoC4/INC_INT.h"
+ 1509              		.file 15 "Generated_Source\\PSoC4/PWM_INT.h"
+ 1510              		.file 16 "Generated_Source\\PSoC4/Comp_1.h"
+ 1511              		.section	.debug_info,"",%progbits
+ 1512              	.Ldebug_info0:
+ 1513 0000 860E0000 		.4byte	0xe86
+ 1514 0004 0400     		.2byte	0x4
+ 1515 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1516 000a 04       		.byte	0x4
+ 1517 000b 01       		.uleb128 0x1
+ 1518 000c 9D000000 		.4byte	.LASF65
+ 1519 0010 0C       		.byte	0xc
+ 1520 0011 05040000 		.4byte	.LASF66
+ 1521 0015 31010000 		.4byte	.LASF67
+ 1522 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 1523 001d 00000000 		.4byte	0
+ 1524 0021 00000000 		.4byte	.Ldebug_line0
+ 1525 0025 02       		.uleb128 0x2
+ 1526 0026 01       		.byte	0x1
+ 1527 0027 06       		.byte	0x6
+ 1528 0028 62020000 		.4byte	.LASF0
+ 1529 002c 02       		.uleb128 0x2
+ 1530 002d 01       		.byte	0x1
+ 1531 002e 08       		.byte	0x8
+ 1532 002f 35020000 		.4byte	.LASF1
+ 1533 0033 02       		.uleb128 0x2
+ 1534 0034 02       		.byte	0x2
+ 1535 0035 05       		.byte	0x5
+ 1536 0036 37000000 		.4byte	.LASF2
+ 1537 003a 02       		.uleb128 0x2
+ 1538 003b 02       		.byte	0x2
+ 1539 003c 07       		.byte	0x7
+ 1540 003d E3020000 		.4byte	.LASF3
+ 1541 0041 02       		.uleb128 0x2
+ 1542 0042 04       		.byte	0x4
+ 1543 0043 05       		.byte	0x5
+ 1544 0044 0E030000 		.4byte	.LASF4
+ 1545 0048 02       		.uleb128 0x2
+ 1546 0049 04       		.byte	0x4
+ 1547 004a 07       		.byte	0x7
+ 1548 004b 57030000 		.4byte	.LASF5
+ 1549 004f 02       		.uleb128 0x2
+ 1550 0050 08       		.byte	0x8
+ 1551 0051 05       		.byte	0x5
+ 1552 0052 69000000 		.4byte	.LASF6
+ 1553 0056 02       		.uleb128 0x2
+ 1554 0057 08       		.byte	0x8
+ 1555 0058 07       		.byte	0x7
+ 1556 0059 7E020000 		.4byte	.LASF7
+ 1557 005d 03       		.uleb128 0x3
+ 1558 005e 04       		.byte	0x4
+ 1559 005f 05       		.byte	0x5
+ 1560 0060 696E7400 		.ascii	"int\000"
+ 1561 0064 02       		.uleb128 0x2
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 35
+
+
+ 1562 0065 04       		.byte	0x4
+ 1563 0066 07       		.byte	0x7
+ 1564 0067 A5020000 		.4byte	.LASF8
+ 1565 006b 04       		.uleb128 0x4
+ 1566 006c 2B010000 		.4byte	.LASF9
+ 1567 0070 02       		.byte	0x2
+ 1568 0071 FB01     		.2byte	0x1fb
+ 1569 0073 2C000000 		.4byte	0x2c
+ 1570 0077 04       		.uleb128 0x4
+ 1571 0078 49030000 		.4byte	.LASF10
+ 1572 007c 02       		.byte	0x2
+ 1573 007d FC01     		.2byte	0x1fc
+ 1574 007f 3A000000 		.4byte	0x3a
+ 1575 0083 04       		.uleb128 0x4
+ 1576 0084 50030000 		.4byte	.LASF11
+ 1577 0088 02       		.byte	0x2
+ 1578 0089 FD01     		.2byte	0x1fd
+ 1579 008b 48000000 		.4byte	0x48
+ 1580 008f 02       		.uleb128 0x2
+ 1581 0090 04       		.byte	0x4
+ 1582 0091 04       		.byte	0x4
+ 1583 0092 C0010000 		.4byte	.LASF12
+ 1584 0096 02       		.uleb128 0x2
+ 1585 0097 08       		.byte	0x8
+ 1586 0098 04       		.byte	0x4
+ 1587 0099 D6030000 		.4byte	.LASF13
+ 1588 009d 04       		.uleb128 0x4
+ 1589 009e 63000000 		.4byte	.LASF14
+ 1590 00a2 02       		.byte	0x2
+ 1591 00a3 0C02     		.2byte	0x20c
+ 1592 00a5 A9000000 		.4byte	0xa9
+ 1593 00a9 02       		.uleb128 0x2
+ 1594 00aa 01       		.byte	0x1
+ 1595 00ab 08       		.byte	0x8
+ 1596 00ac 09030000 		.4byte	.LASF15
+ 1597 00b0 02       		.uleb128 0x2
+ 1598 00b1 08       		.byte	0x8
+ 1599 00b2 04       		.byte	0x4
+ 1600 00b3 1D020000 		.4byte	.LASF16
+ 1601 00b7 02       		.uleb128 0x2
+ 1602 00b8 04       		.byte	0x4
+ 1603 00b9 07       		.byte	0x7
+ 1604 00ba B0030000 		.4byte	.LASF17
+ 1605 00be 05       		.uleb128 0x5
+ 1606 00bf C6010000 		.4byte	.LASF20
+ 1607 00c3 01       		.byte	0x1
+ 1608 00c4 19       		.byte	0x19
+ 1609 00c5 00000000 		.4byte	.LFB33
+ 1610 00c9 F8030000 		.4byte	.LFE33-.LFB33
+ 1611 00cd 01       		.uleb128 0x1
+ 1612 00ce 9C       		.byte	0x9c
+ 1613 00cf 55050000 		.4byte	0x555
+ 1614 00d3 06       		.uleb128 0x6
+ 1615 00d4 CA020000 		.4byte	.LASF18
+ 1616 00d8 01       		.byte	0x1
+ 1617 00d9 1B       		.byte	0x1b
+ 1618 00da 83000000 		.4byte	0x83
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 36
+
+
+ 1619 00de 00000000 		.4byte	.LLST0
+ 1620 00e2 06       		.uleb128 0x6
+ 1621 00e3 C2020000 		.4byte	.LASF19
+ 1622 00e7 01       		.byte	0x1
+ 1623 00e8 1C       		.byte	0x1c
+ 1624 00e9 83000000 		.4byte	0x83
+ 1625 00ed 1E000000 		.4byte	.LLST1
+ 1626 00f1 07       		.uleb128 0x7
+ 1627 00f2 3E000000 		.4byte	.LVL0
+ 1628 00f6 430D0000 		.4byte	0xd43
+ 1629 00fa 07       		.uleb128 0x7
+ 1630 00fb 42000000 		.4byte	.LVL1
+ 1631 00ff 4F0D0000 		.4byte	0xd4f
+ 1632 0103 07       		.uleb128 0x7
+ 1633 0104 46000000 		.4byte	.LVL2
+ 1634 0108 5A0D0000 		.4byte	0xd5a
+ 1635 010c 08       		.uleb128 0x8
+ 1636 010d 4C000000 		.4byte	.LVL3
+ 1637 0111 650D0000 		.4byte	0xd65
+ 1638 0115 1F010000 		.4byte	0x11f
+ 1639 0119 09       		.uleb128 0x9
+ 1640 011a 01       		.uleb128 0x1
+ 1641 011b 50       		.byte	0x50
+ 1642 011c 01       		.uleb128 0x1
+ 1643 011d 31       		.byte	0x31
+ 1644 011e 00       		.byte	0
+ 1645 011f 08       		.uleb128 0x8
+ 1646 0120 54000000 		.4byte	.LVL4
+ 1647 0124 700D0000 		.4byte	0xd70
+ 1648 0128 37010000 		.4byte	0x137
+ 1649 012c 09       		.uleb128 0x9
+ 1650 012d 01       		.uleb128 0x1
+ 1651 012e 50       		.byte	0x50
+ 1652 012f 01       		.uleb128 0x1
+ 1653 0130 30       		.byte	0x30
+ 1654 0131 09       		.uleb128 0x9
+ 1655 0132 01       		.uleb128 0x1
+ 1656 0133 51       		.byte	0x51
+ 1657 0134 01       		.uleb128 0x1
+ 1658 0135 30       		.byte	0x30
+ 1659 0136 00       		.byte	0
+ 1660 0137 08       		.uleb128 0x8
+ 1661 0138 5A000000 		.4byte	.LVL5
+ 1662 013c 7B0D0000 		.4byte	0xd7b
+ 1663 0140 4E010000 		.4byte	0x14e
+ 1664 0144 09       		.uleb128 0x9
+ 1665 0145 01       		.uleb128 0x1
+ 1666 0146 50       		.byte	0x50
+ 1667 0147 05       		.uleb128 0x5
+ 1668 0148 03       		.byte	0x3
+ 1669 0149 00000000 		.4byte	.LC1
+ 1670 014d 00       		.byte	0
+ 1671 014e 08       		.uleb128 0x8
+ 1672 014f 6C000000 		.4byte	.LVL6
+ 1673 0153 700D0000 		.4byte	0xd70
+ 1674 0157 66010000 		.4byte	0x166
+ 1675 015b 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 37
+
+
+ 1676 015c 01       		.uleb128 0x1
+ 1677 015d 50       		.byte	0x50
+ 1678 015e 01       		.uleb128 0x1
+ 1679 015f 31       		.byte	0x31
+ 1680 0160 09       		.uleb128 0x9
+ 1681 0161 01       		.uleb128 0x1
+ 1682 0162 51       		.byte	0x51
+ 1683 0163 01       		.uleb128 0x1
+ 1684 0164 30       		.byte	0x30
+ 1685 0165 00       		.byte	0
+ 1686 0166 08       		.uleb128 0x8
+ 1687 0167 78000000 		.4byte	.LVL7
+ 1688 016b 860D0000 		.4byte	0xd86
+ 1689 016f 83010000 		.4byte	0x183
+ 1690 0173 09       		.uleb128 0x9
+ 1691 0174 01       		.uleb128 0x1
+ 1692 0175 50       		.byte	0x50
+ 1693 0176 02       		.uleb128 0x2
+ 1694 0177 74       		.byte	0x74
+ 1695 0178 00       		.sleb128 0
+ 1696 0179 09       		.uleb128 0x9
+ 1697 017a 01       		.uleb128 0x1
+ 1698 017b 51       		.byte	0x51
+ 1699 017c 05       		.uleb128 0x5
+ 1700 017d 03       		.byte	0x3
+ 1701 017e 10000000 		.4byte	.LC3
+ 1702 0182 00       		.byte	0
+ 1703 0183 08       		.uleb128 0x8
+ 1704 0184 7E000000 		.4byte	.LVL8
+ 1705 0188 7B0D0000 		.4byte	0xd7b
+ 1706 018c 97010000 		.4byte	0x197
+ 1707 0190 09       		.uleb128 0x9
+ 1708 0191 01       		.uleb128 0x1
+ 1709 0192 50       		.byte	0x50
+ 1710 0193 02       		.uleb128 0x2
+ 1711 0194 74       		.byte	0x74
+ 1712 0195 00       		.sleb128 0
+ 1713 0196 00       		.byte	0
+ 1714 0197 08       		.uleb128 0x8
+ 1715 0198 86000000 		.4byte	.LVL9
+ 1716 019c 700D0000 		.4byte	0xd70
+ 1717 01a0 AF010000 		.4byte	0x1af
+ 1718 01a4 09       		.uleb128 0x9
+ 1719 01a5 01       		.uleb128 0x1
+ 1720 01a6 50       		.byte	0x50
+ 1721 01a7 01       		.uleb128 0x1
+ 1722 01a8 31       		.byte	0x31
+ 1723 01a9 09       		.uleb128 0x9
+ 1724 01aa 01       		.uleb128 0x1
+ 1725 01ab 51       		.byte	0x51
+ 1726 01ac 01       		.uleb128 0x1
+ 1727 01ad 35       		.byte	0x35
+ 1728 01ae 00       		.byte	0
+ 1729 01af 08       		.uleb128 0x8
+ 1730 01b0 8C000000 		.4byte	.LVL10
+ 1731 01b4 7B0D0000 		.4byte	0xd7b
+ 1732 01b8 C6010000 		.4byte	0x1c6
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 38
+
+
+ 1733 01bc 09       		.uleb128 0x9
+ 1734 01bd 01       		.uleb128 0x1
+ 1735 01be 50       		.byte	0x50
+ 1736 01bf 05       		.uleb128 0x5
+ 1737 01c0 03       		.byte	0x3
+ 1738 01c1 14000000 		.4byte	.LC6
+ 1739 01c5 00       		.byte	0
+ 1740 01c6 08       		.uleb128 0x8
+ 1741 01c7 94000000 		.4byte	.LVL11
+ 1742 01cb 650D0000 		.4byte	0xd65
+ 1743 01cf D9010000 		.4byte	0x1d9
+ 1744 01d3 09       		.uleb128 0x9
+ 1745 01d4 01       		.uleb128 0x1
+ 1746 01d5 50       		.byte	0x50
+ 1747 01d6 01       		.uleb128 0x1
+ 1748 01d7 31       		.byte	0x31
+ 1749 01d8 00       		.byte	0
+ 1750 01d9 08       		.uleb128 0x8
+ 1751 01da 9C000000 		.4byte	.LVL12
+ 1752 01de 700D0000 		.4byte	0xd70
+ 1753 01e2 F1010000 		.4byte	0x1f1
+ 1754 01e6 09       		.uleb128 0x9
+ 1755 01e7 01       		.uleb128 0x1
+ 1756 01e8 50       		.byte	0x50
+ 1757 01e9 01       		.uleb128 0x1
+ 1758 01ea 30       		.byte	0x30
+ 1759 01eb 09       		.uleb128 0x9
+ 1760 01ec 01       		.uleb128 0x1
+ 1761 01ed 51       		.byte	0x51
+ 1762 01ee 01       		.uleb128 0x1
+ 1763 01ef 30       		.byte	0x30
+ 1764 01f0 00       		.byte	0
+ 1765 01f1 08       		.uleb128 0x8
+ 1766 01f2 A2000000 		.4byte	.LVL13
+ 1767 01f6 7B0D0000 		.4byte	0xd7b
+ 1768 01fa 08020000 		.4byte	0x208
+ 1769 01fe 09       		.uleb128 0x9
+ 1770 01ff 01       		.uleb128 0x1
+ 1771 0200 50       		.byte	0x50
+ 1772 0201 05       		.uleb128 0x5
+ 1773 0202 03       		.byte	0x3
+ 1774 0203 18000000 		.4byte	.LC8
+ 1775 0207 00       		.byte	0
+ 1776 0208 08       		.uleb128 0x8
+ 1777 0209 DC010000 		.4byte	.LVL14
+ 1778 020d 860D0000 		.4byte	0xd86
+ 1779 0211 22020000 		.4byte	0x222
+ 1780 0215 09       		.uleb128 0x9
+ 1781 0216 01       		.uleb128 0x1
+ 1782 0217 50       		.byte	0x50
+ 1783 0218 02       		.uleb128 0x2
+ 1784 0219 77       		.byte	0x77
+ 1785 021a 00       		.sleb128 0
+ 1786 021b 09       		.uleb128 0x9
+ 1787 021c 01       		.uleb128 0x1
+ 1788 021d 51       		.byte	0x51
+ 1789 021e 02       		.uleb128 0x2
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 39
+
+
+ 1790 021f 74       		.byte	0x74
+ 1791 0220 00       		.sleb128 0
+ 1792 0221 00       		.byte	0
+ 1793 0222 08       		.uleb128 0x8
+ 1794 0223 E8010000 		.4byte	.LVL15
+ 1795 0227 860D0000 		.4byte	0xd86
+ 1796 022b 3C020000 		.4byte	0x23c
+ 1797 022f 09       		.uleb128 0x9
+ 1798 0230 01       		.uleb128 0x1
+ 1799 0231 50       		.byte	0x50
+ 1800 0232 02       		.uleb128 0x2
+ 1801 0233 76       		.byte	0x76
+ 1802 0234 00       		.sleb128 0
+ 1803 0235 09       		.uleb128 0x9
+ 1804 0236 01       		.uleb128 0x1
+ 1805 0237 51       		.byte	0x51
+ 1806 0238 02       		.uleb128 0x2
+ 1807 0239 74       		.byte	0x74
+ 1808 023a 00       		.sleb128 0
+ 1809 023b 00       		.byte	0
+ 1810 023c 08       		.uleb128 0x8
+ 1811 023d F2010000 		.4byte	.LVL16
+ 1812 0241 860D0000 		.4byte	0xd86
+ 1813 0245 59020000 		.4byte	0x259
+ 1814 0249 09       		.uleb128 0x9
+ 1815 024a 01       		.uleb128 0x1
+ 1816 024b 50       		.byte	0x50
+ 1817 024c 05       		.uleb128 0x5
+ 1818 024d 03       		.byte	0x3
+ 1819 024e 00000000 		.4byte	printF3
+ 1820 0252 09       		.uleb128 0x9
+ 1821 0253 01       		.uleb128 0x1
+ 1822 0254 51       		.byte	0x51
+ 1823 0255 02       		.uleb128 0x2
+ 1824 0256 74       		.byte	0x74
+ 1825 0257 00       		.sleb128 0
+ 1826 0258 00       		.byte	0
+ 1827 0259 08       		.uleb128 0x8
+ 1828 025a FA010000 		.4byte	.LVL17
+ 1829 025e 700D0000 		.4byte	0xd70
+ 1830 0262 71020000 		.4byte	0x271
+ 1831 0266 09       		.uleb128 0x9
+ 1832 0267 01       		.uleb128 0x1
+ 1833 0268 50       		.byte	0x50
+ 1834 0269 01       		.uleb128 0x1
+ 1835 026a 31       		.byte	0x31
+ 1836 026b 09       		.uleb128 0x9
+ 1837 026c 01       		.uleb128 0x1
+ 1838 026d 51       		.byte	0x51
+ 1839 026e 01       		.uleb128 0x1
+ 1840 026f 30       		.byte	0x30
+ 1841 0270 00       		.byte	0
+ 1842 0271 08       		.uleb128 0x8
+ 1843 0272 00020000 		.4byte	.LVL18
+ 1844 0276 910D0000 		.4byte	0xd91
+ 1845 027a 85020000 		.4byte	0x285
+ 1846 027e 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 40
+
+
+ 1847 027f 01       		.uleb128 0x1
+ 1848 0280 50       		.byte	0x50
+ 1849 0281 02       		.uleb128 0x2
+ 1850 0282 08       		.byte	0x8
+ 1851 0283 3E       		.byte	0x3e
+ 1852 0284 00       		.byte	0
+ 1853 0285 08       		.uleb128 0x8
+ 1854 0286 08020000 		.4byte	.LVL19
+ 1855 028a 700D0000 		.4byte	0xd70
+ 1856 028e 9D020000 		.4byte	0x29d
+ 1857 0292 09       		.uleb128 0x9
+ 1858 0293 01       		.uleb128 0x1
+ 1859 0294 50       		.byte	0x50
+ 1860 0295 01       		.uleb128 0x1
+ 1861 0296 31       		.byte	0x31
+ 1862 0297 09       		.uleb128 0x9
+ 1863 0298 01       		.uleb128 0x1
+ 1864 0299 51       		.byte	0x51
+ 1865 029a 01       		.uleb128 0x1
+ 1866 029b 31       		.byte	0x31
+ 1867 029c 00       		.byte	0
+ 1868 029d 08       		.uleb128 0x8
+ 1869 029e 0E020000 		.4byte	.LVL20
+ 1870 02a2 7B0D0000 		.4byte	0xd7b
+ 1871 02a6 B1020000 		.4byte	0x2b1
+ 1872 02aa 09       		.uleb128 0x9
+ 1873 02ab 01       		.uleb128 0x1
+ 1874 02ac 50       		.byte	0x50
+ 1875 02ad 02       		.uleb128 0x2
+ 1876 02ae 77       		.byte	0x77
+ 1877 02af 00       		.sleb128 0
+ 1878 02b0 00       		.byte	0
+ 1879 02b1 08       		.uleb128 0x8
+ 1880 02b2 16020000 		.4byte	.LVL21
+ 1881 02b6 700D0000 		.4byte	0xd70
+ 1882 02ba C9020000 		.4byte	0x2c9
+ 1883 02be 09       		.uleb128 0x9
+ 1884 02bf 01       		.uleb128 0x1
+ 1885 02c0 50       		.byte	0x50
+ 1886 02c1 01       		.uleb128 0x1
+ 1887 02c2 31       		.byte	0x31
+ 1888 02c3 09       		.uleb128 0x9
+ 1889 02c4 01       		.uleb128 0x1
+ 1890 02c5 51       		.byte	0x51
+ 1891 02c6 01       		.uleb128 0x1
+ 1892 02c7 36       		.byte	0x36
+ 1893 02c8 00       		.byte	0
+ 1894 02c9 08       		.uleb128 0x8
+ 1895 02ca 1C020000 		.4byte	.LVL22
+ 1896 02ce 7B0D0000 		.4byte	0xd7b
+ 1897 02d2 DD020000 		.4byte	0x2dd
+ 1898 02d6 09       		.uleb128 0x9
+ 1899 02d7 01       		.uleb128 0x1
+ 1900 02d8 50       		.byte	0x50
+ 1901 02d9 02       		.uleb128 0x2
+ 1902 02da 76       		.byte	0x76
+ 1903 02db 00       		.sleb128 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 41
+
+
+ 1904 02dc 00       		.byte	0
+ 1905 02dd 08       		.uleb128 0x8
+ 1906 02de 24020000 		.4byte	.LVL23
+ 1907 02e2 700D0000 		.4byte	0xd70
+ 1908 02e6 F5020000 		.4byte	0x2f5
+ 1909 02ea 09       		.uleb128 0x9
+ 1910 02eb 01       		.uleb128 0x1
+ 1911 02ec 50       		.byte	0x50
+ 1912 02ed 01       		.uleb128 0x1
+ 1913 02ee 31       		.byte	0x31
+ 1914 02ef 09       		.uleb128 0x9
+ 1915 02f0 01       		.uleb128 0x1
+ 1916 02f1 51       		.byte	0x51
+ 1917 02f2 01       		.uleb128 0x1
+ 1918 02f3 3B       		.byte	0x3b
+ 1919 02f4 00       		.byte	0
+ 1920 02f5 08       		.uleb128 0x8
+ 1921 02f6 2A020000 		.4byte	.LVL24
+ 1922 02fa 7B0D0000 		.4byte	0xd7b
+ 1923 02fe 0C030000 		.4byte	0x30c
+ 1924 0302 09       		.uleb128 0x9
+ 1925 0303 01       		.uleb128 0x1
+ 1926 0304 50       		.byte	0x50
+ 1927 0305 05       		.uleb128 0x5
+ 1928 0306 03       		.byte	0x3
+ 1929 0307 00000000 		.4byte	printF3
+ 1930 030b 00       		.byte	0
+ 1931 030c 08       		.uleb128 0x8
+ 1932 030d 5C020000 		.4byte	.LVL25
+ 1933 0311 650D0000 		.4byte	0xd65
+ 1934 0315 1F030000 		.4byte	0x31f
+ 1935 0319 09       		.uleb128 0x9
+ 1936 031a 01       		.uleb128 0x1
+ 1937 031b 50       		.byte	0x50
+ 1938 031c 01       		.uleb128 0x1
+ 1939 031d 31       		.byte	0x31
+ 1940 031e 00       		.byte	0
+ 1941 031f 08       		.uleb128 0x8
+ 1942 0320 64020000 		.4byte	.LVL26
+ 1943 0324 700D0000 		.4byte	0xd70
+ 1944 0328 37030000 		.4byte	0x337
+ 1945 032c 09       		.uleb128 0x9
+ 1946 032d 01       		.uleb128 0x1
+ 1947 032e 50       		.byte	0x50
+ 1948 032f 01       		.uleb128 0x1
+ 1949 0330 30       		.byte	0x30
+ 1950 0331 09       		.uleb128 0x9
+ 1951 0332 01       		.uleb128 0x1
+ 1952 0333 51       		.byte	0x51
+ 1953 0334 01       		.uleb128 0x1
+ 1954 0335 30       		.byte	0x30
+ 1955 0336 00       		.byte	0
+ 1956 0337 08       		.uleb128 0x8
+ 1957 0338 6A020000 		.4byte	.LVL27
+ 1958 033c 7B0D0000 		.4byte	0xd7b
+ 1959 0340 4E030000 		.4byte	0x34e
+ 1960 0344 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 42
+
+
+ 1961 0345 01       		.uleb128 0x1
+ 1962 0346 50       		.byte	0x50
+ 1963 0347 05       		.uleb128 0x5
+ 1964 0348 03       		.byte	0x3
+ 1965 0349 30000000 		.4byte	.LC16
+ 1966 034d 00       		.byte	0
+ 1967 034e 08       		.uleb128 0x8
+ 1968 034f 78020000 		.4byte	.LVL28
+ 1969 0353 860D0000 		.4byte	0xd86
+ 1970 0357 6B030000 		.4byte	0x36b
+ 1971 035b 09       		.uleb128 0x9
+ 1972 035c 01       		.uleb128 0x1
+ 1973 035d 50       		.byte	0x50
+ 1974 035e 02       		.uleb128 0x2
+ 1975 035f 75       		.byte	0x75
+ 1976 0360 00       		.sleb128 0
+ 1977 0361 09       		.uleb128 0x9
+ 1978 0362 01       		.uleb128 0x1
+ 1979 0363 51       		.byte	0x51
+ 1980 0364 05       		.uleb128 0x5
+ 1981 0365 03       		.byte	0x3
+ 1982 0366 10000000 		.4byte	.LC3
+ 1983 036a 00       		.byte	0
+ 1984 036b 08       		.uleb128 0x8
+ 1985 036c 80020000 		.4byte	.LVL29
+ 1986 0370 700D0000 		.4byte	0xd70
+ 1987 0374 83030000 		.4byte	0x383
+ 1988 0378 09       		.uleb128 0x9
+ 1989 0379 01       		.uleb128 0x1
+ 1990 037a 50       		.byte	0x50
+ 1991 037b 01       		.uleb128 0x1
+ 1992 037c 30       		.byte	0x30
+ 1993 037d 09       		.uleb128 0x9
+ 1994 037e 01       		.uleb128 0x1
+ 1995 037f 51       		.byte	0x51
+ 1996 0380 01       		.uleb128 0x1
+ 1997 0381 34       		.byte	0x34
+ 1998 0382 00       		.byte	0
+ 1999 0383 08       		.uleb128 0x8
+ 2000 0384 86020000 		.4byte	.LVL30
+ 2001 0388 7B0D0000 		.4byte	0xd7b
+ 2002 038c 97030000 		.4byte	0x397
+ 2003 0390 09       		.uleb128 0x9
+ 2004 0391 01       		.uleb128 0x1
+ 2005 0392 50       		.byte	0x50
+ 2006 0393 02       		.uleb128 0x2
+ 2007 0394 75       		.byte	0x75
+ 2008 0395 00       		.sleb128 0
+ 2009 0396 00       		.byte	0
+ 2010 0397 08       		.uleb128 0x8
+ 2011 0398 8E020000 		.4byte	.LVL31
+ 2012 039c 700D0000 		.4byte	0xd70
+ 2013 03a0 AF030000 		.4byte	0x3af
+ 2014 03a4 09       		.uleb128 0x9
+ 2015 03a5 01       		.uleb128 0x1
+ 2016 03a6 50       		.byte	0x50
+ 2017 03a7 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 43
+
+
+ 2018 03a8 30       		.byte	0x30
+ 2019 03a9 09       		.uleb128 0x9
+ 2020 03aa 01       		.uleb128 0x1
+ 2021 03ab 51       		.byte	0x51
+ 2022 03ac 01       		.uleb128 0x1
+ 2023 03ad 3A       		.byte	0x3a
+ 2024 03ae 00       		.byte	0
+ 2025 03af 08       		.uleb128 0x8
+ 2026 03b0 94020000 		.4byte	.LVL32
+ 2027 03b4 7B0D0000 		.4byte	0xd7b
+ 2028 03b8 C6030000 		.4byte	0x3c6
+ 2029 03bc 09       		.uleb128 0x9
+ 2030 03bd 01       		.uleb128 0x1
+ 2031 03be 50       		.byte	0x50
+ 2032 03bf 05       		.uleb128 0x5
+ 2033 03c0 03       		.byte	0x3
+ 2034 03c1 3C000000 		.4byte	.LC18
+ 2035 03c5 00       		.byte	0
+ 2036 03c6 08       		.uleb128 0x8
+ 2037 03c7 A0020000 		.4byte	.LVL33
+ 2038 03cb 860D0000 		.4byte	0xd86
+ 2039 03cf E3030000 		.4byte	0x3e3
+ 2040 03d3 09       		.uleb128 0x9
+ 2041 03d4 01       		.uleb128 0x1
+ 2042 03d5 50       		.byte	0x50
+ 2043 03d6 02       		.uleb128 0x2
+ 2044 03d7 74       		.byte	0x74
+ 2045 03d8 00       		.sleb128 0
+ 2046 03d9 09       		.uleb128 0x9
+ 2047 03da 01       		.uleb128 0x1
+ 2048 03db 51       		.byte	0x51
+ 2049 03dc 05       		.uleb128 0x5
+ 2050 03dd 03       		.byte	0x3
+ 2051 03de 2C000000 		.4byte	.LC11
+ 2052 03e2 00       		.byte	0
+ 2053 03e3 08       		.uleb128 0x8
+ 2054 03e4 A8020000 		.4byte	.LVL34
+ 2055 03e8 700D0000 		.4byte	0xd70
+ 2056 03ec FB030000 		.4byte	0x3fb
+ 2057 03f0 09       		.uleb128 0x9
+ 2058 03f1 01       		.uleb128 0x1
+ 2059 03f2 50       		.byte	0x50
+ 2060 03f3 01       		.uleb128 0x1
+ 2061 03f4 30       		.byte	0x30
+ 2062 03f5 09       		.uleb128 0x9
+ 2063 03f6 01       		.uleb128 0x1
+ 2064 03f7 51       		.byte	0x51
+ 2065 03f8 01       		.uleb128 0x1
+ 2066 03f9 3C       		.byte	0x3c
+ 2067 03fa 00       		.byte	0
+ 2068 03fb 08       		.uleb128 0x8
+ 2069 03fc AE020000 		.4byte	.LVL35
+ 2070 0400 7B0D0000 		.4byte	0xd7b
+ 2071 0404 0F040000 		.4byte	0x40f
+ 2072 0408 09       		.uleb128 0x9
+ 2073 0409 01       		.uleb128 0x1
+ 2074 040a 50       		.byte	0x50
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 44
+
+
+ 2075 040b 02       		.uleb128 0x2
+ 2076 040c 74       		.byte	0x74
+ 2077 040d 00       		.sleb128 0
+ 2078 040e 00       		.byte	0
+ 2079 040f 08       		.uleb128 0x8
+ 2080 0410 B6020000 		.4byte	.LVL36
+ 2081 0414 700D0000 		.4byte	0xd70
+ 2082 0418 27040000 		.4byte	0x427
+ 2083 041c 09       		.uleb128 0x9
+ 2084 041d 01       		.uleb128 0x1
+ 2085 041e 50       		.byte	0x50
+ 2086 041f 01       		.uleb128 0x1
+ 2087 0420 31       		.byte	0x31
+ 2088 0421 09       		.uleb128 0x9
+ 2089 0422 01       		.uleb128 0x1
+ 2090 0423 51       		.byte	0x51
+ 2091 0424 01       		.uleb128 0x1
+ 2092 0425 30       		.byte	0x30
+ 2093 0426 00       		.byte	0
+ 2094 0427 08       		.uleb128 0x8
+ 2095 0428 BC020000 		.4byte	.LVL37
+ 2096 042c 7B0D0000 		.4byte	0xd7b
+ 2097 0430 3E040000 		.4byte	0x43e
+ 2098 0434 09       		.uleb128 0x9
+ 2099 0435 01       		.uleb128 0x1
+ 2100 0436 50       		.byte	0x50
+ 2101 0437 05       		.uleb128 0x5
+ 2102 0438 03       		.byte	0x3
+ 2103 0439 40000000 		.4byte	.LC21
+ 2104 043d 00       		.byte	0
+ 2105 043e 07       		.uleb128 0x7
+ 2106 043f C8020000 		.4byte	.LVL38
+ 2107 0443 9C0D0000 		.4byte	0xd9c
+ 2108 0447 08       		.uleb128 0x8
+ 2109 0448 E8020000 		.4byte	.LVL45
+ 2110 044c A80D0000 		.4byte	0xda8
+ 2111 0450 5B040000 		.4byte	0x45b
+ 2112 0454 09       		.uleb128 0x9
+ 2113 0455 01       		.uleb128 0x1
+ 2114 0456 50       		.byte	0x50
+ 2115 0457 02       		.uleb128 0x2
+ 2116 0458 75       		.byte	0x75
+ 2117 0459 00       		.sleb128 0
+ 2118 045a 00       		.byte	0
+ 2119 045b 08       		.uleb128 0x8
+ 2120 045c EE020000 		.4byte	.LVL46
+ 2121 0460 B40D0000 		.4byte	0xdb4
+ 2122 0464 6F040000 		.4byte	0x46f
+ 2123 0468 09       		.uleb128 0x9
+ 2124 0469 01       		.uleb128 0x1
+ 2125 046a 50       		.byte	0x50
+ 2126 046b 02       		.uleb128 0x2
+ 2127 046c 76       		.byte	0x76
+ 2128 046d 00       		.sleb128 0
+ 2129 046e 00       		.byte	0
+ 2130 046f 07       		.uleb128 0x7
+ 2131 0470 F2020000 		.4byte	.LVL47
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 45
+
+
+ 2132 0474 C00D0000 		.4byte	0xdc0
+ 2133 0478 08       		.uleb128 0x8
+ 2134 0479 F8020000 		.4byte	.LVL48
+ 2135 047d 650D0000 		.4byte	0xd65
+ 2136 0481 8B040000 		.4byte	0x48b
+ 2137 0485 09       		.uleb128 0x9
+ 2138 0486 01       		.uleb128 0x1
+ 2139 0487 50       		.byte	0x50
+ 2140 0488 01       		.uleb128 0x1
+ 2141 0489 31       		.byte	0x31
+ 2142 048a 00       		.byte	0
+ 2143 048b 08       		.uleb128 0x8
+ 2144 048c 00030000 		.4byte	.LVL49
+ 2145 0490 700D0000 		.4byte	0xd70
+ 2146 0494 A3040000 		.4byte	0x4a3
+ 2147 0498 09       		.uleb128 0x9
+ 2148 0499 01       		.uleb128 0x1
+ 2149 049a 50       		.byte	0x50
+ 2150 049b 01       		.uleb128 0x1
+ 2151 049c 30       		.byte	0x30
+ 2152 049d 09       		.uleb128 0x9
+ 2153 049e 01       		.uleb128 0x1
+ 2154 049f 51       		.byte	0x51
+ 2155 04a0 01       		.uleb128 0x1
+ 2156 04a1 30       		.byte	0x30
+ 2157 04a2 00       		.byte	0
+ 2158 04a3 08       		.uleb128 0x8
+ 2159 04a4 06030000 		.4byte	.LVL50
+ 2160 04a8 7B0D0000 		.4byte	0xd7b
+ 2161 04ac BA040000 		.4byte	0x4ba
+ 2162 04b0 09       		.uleb128 0x9
+ 2163 04b1 01       		.uleb128 0x1
+ 2164 04b2 50       		.byte	0x50
+ 2165 04b3 05       		.uleb128 0x5
+ 2166 04b4 03       		.byte	0x3
+ 2167 04b5 54000000 		.4byte	.LC24
+ 2168 04b9 00       		.byte	0
+ 2169 04ba 08       		.uleb128 0x8
+ 2170 04bb 14030000 		.4byte	.LVL52
+ 2171 04bf 700D0000 		.4byte	0xd70
+ 2172 04c3 D2040000 		.4byte	0x4d2
+ 2173 04c7 09       		.uleb128 0x9
+ 2174 04c8 01       		.uleb128 0x1
+ 2175 04c9 50       		.byte	0x50
+ 2176 04ca 01       		.uleb128 0x1
+ 2177 04cb 30       		.byte	0x30
+ 2178 04cc 09       		.uleb128 0x9
+ 2179 04cd 01       		.uleb128 0x1
+ 2180 04ce 51       		.byte	0x51
+ 2181 04cf 01       		.uleb128 0x1
+ 2182 04d0 33       		.byte	0x33
+ 2183 04d1 00       		.byte	0
+ 2184 04d2 08       		.uleb128 0x8
+ 2185 04d3 20030000 		.4byte	.LVL53
+ 2186 04d7 860D0000 		.4byte	0xd86
+ 2187 04db EF040000 		.4byte	0x4ef
+ 2188 04df 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 46
+
+
+ 2189 04e0 01       		.uleb128 0x1
+ 2190 04e1 50       		.byte	0x50
+ 2191 04e2 02       		.uleb128 0x2
+ 2192 04e3 74       		.byte	0x74
+ 2193 04e4 00       		.sleb128 0
+ 2194 04e5 09       		.uleb128 0x9
+ 2195 04e6 01       		.uleb128 0x1
+ 2196 04e7 51       		.byte	0x51
+ 2197 04e8 05       		.uleb128 0x5
+ 2198 04e9 03       		.byte	0x3
+ 2199 04ea 10000000 		.4byte	.LC3
+ 2200 04ee 00       		.byte	0
+ 2201 04ef 08       		.uleb128 0x8
+ 2202 04f0 26030000 		.4byte	.LVL54
+ 2203 04f4 7B0D0000 		.4byte	0xd7b
+ 2204 04f8 03050000 		.4byte	0x503
+ 2205 04fc 09       		.uleb128 0x9
+ 2206 04fd 01       		.uleb128 0x1
+ 2207 04fe 50       		.byte	0x50
+ 2208 04ff 02       		.uleb128 0x2
+ 2209 0500 74       		.byte	0x74
+ 2210 0501 00       		.sleb128 0
+ 2211 0502 00       		.byte	0
+ 2212 0503 08       		.uleb128 0x8
+ 2213 0504 2E030000 		.4byte	.LVL55
+ 2214 0508 700D0000 		.4byte	0xd70
+ 2215 050c 1B050000 		.4byte	0x51b
+ 2216 0510 09       		.uleb128 0x9
+ 2217 0511 01       		.uleb128 0x1
+ 2218 0512 50       		.byte	0x50
+ 2219 0513 01       		.uleb128 0x1
+ 2220 0514 31       		.byte	0x31
+ 2221 0515 09       		.uleb128 0x9
+ 2222 0516 01       		.uleb128 0x1
+ 2223 0517 51       		.byte	0x51
+ 2224 0518 01       		.uleb128 0x1
+ 2225 0519 30       		.byte	0x30
+ 2226 051a 00       		.byte	0
+ 2227 051b 08       		.uleb128 0x8
+ 2228 051c 34030000 		.4byte	.LVL56
+ 2229 0520 7B0D0000 		.4byte	0xd7b
+ 2230 0524 32050000 		.4byte	0x532
+ 2231 0528 09       		.uleb128 0x9
+ 2232 0529 01       		.uleb128 0x1
+ 2233 052a 50       		.byte	0x50
+ 2234 052b 05       		.uleb128 0x5
+ 2235 052c 03       		.byte	0x3
+ 2236 052d 68000000 		.4byte	.LC27
+ 2237 0531 00       		.byte	0
+ 2238 0532 07       		.uleb128 0x7
+ 2239 0533 3A030000 		.4byte	.LVL57
+ 2240 0537 CB0D0000 		.4byte	0xdcb
+ 2241 053b 07       		.uleb128 0x7
+ 2242 053c 3E030000 		.4byte	.LVL58
+ 2243 0540 D60D0000 		.4byte	0xdd6
+ 2244 0544 0A       		.uleb128 0xa
+ 2245 0545 44030000 		.4byte	.LVL59
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 47
+
+
+ 2246 0549 E10D0000 		.4byte	0xde1
+ 2247 054d 09       		.uleb128 0x9
+ 2248 054e 01       		.uleb128 0x1
+ 2249 054f 50       		.byte	0x50
+ 2250 0550 02       		.uleb128 0x2
+ 2251 0551 08       		.byte	0x8
+ 2252 0552 32       		.byte	0x32
+ 2253 0553 00       		.byte	0
+ 2254 0554 00       		.byte	0
+ 2255 0555 0B       		.uleb128 0xb
+ 2256 0556 0D020000 		.4byte	.LASF21
+ 2257 055a 01       		.byte	0x1
+ 2258 055b B6       		.byte	0xb6
+ 2259 055c 00000000 		.4byte	.LFB34
+ 2260 0560 70010000 		.4byte	.LFE34-.LFB34
+ 2261 0564 01       		.uleb128 0x1
+ 2262 0565 9C       		.byte	0x9c
+ 2263 0566 D1070000 		.4byte	0x7d1
+ 2264 056a 08       		.uleb128 0x8
+ 2265 056b 4C000000 		.4byte	.LVL60
+ 2266 056f 700D0000 		.4byte	0xd70
+ 2267 0573 82050000 		.4byte	0x582
+ 2268 0577 09       		.uleb128 0x9
+ 2269 0578 01       		.uleb128 0x1
+ 2270 0579 50       		.byte	0x50
+ 2271 057a 01       		.uleb128 0x1
+ 2272 057b 31       		.byte	0x31
+ 2273 057c 09       		.uleb128 0x9
+ 2274 057d 01       		.uleb128 0x1
+ 2275 057e 51       		.byte	0x51
+ 2276 057f 01       		.uleb128 0x1
+ 2277 0580 30       		.byte	0x30
+ 2278 0581 00       		.byte	0
+ 2279 0582 08       		.uleb128 0x8
+ 2280 0583 5A000000 		.4byte	.LVL61
+ 2281 0587 860D0000 		.4byte	0xd86
+ 2282 058b 9F050000 		.4byte	0x59f
+ 2283 058f 09       		.uleb128 0x9
+ 2284 0590 01       		.uleb128 0x1
+ 2285 0591 50       		.byte	0x50
+ 2286 0592 02       		.uleb128 0x2
+ 2287 0593 74       		.byte	0x74
+ 2288 0594 00       		.sleb128 0
+ 2289 0595 09       		.uleb128 0x9
+ 2290 0596 01       		.uleb128 0x1
+ 2291 0597 51       		.byte	0x51
+ 2292 0598 05       		.uleb128 0x5
+ 2293 0599 03       		.byte	0x3
+ 2294 059a 10000000 		.4byte	.LC3
+ 2295 059e 00       		.byte	0
+ 2296 059f 08       		.uleb128 0x8
+ 2297 05a0 60000000 		.4byte	.LVL62
+ 2298 05a4 7B0D0000 		.4byte	0xd7b
+ 2299 05a8 B3050000 		.4byte	0x5b3
+ 2300 05ac 09       		.uleb128 0x9
+ 2301 05ad 01       		.uleb128 0x1
+ 2302 05ae 50       		.byte	0x50
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 48
+
+
+ 2303 05af 02       		.uleb128 0x2
+ 2304 05b0 74       		.byte	0x74
+ 2305 05b1 00       		.sleb128 0
+ 2306 05b2 00       		.byte	0
+ 2307 05b3 08       		.uleb128 0x8
+ 2308 05b4 68000000 		.4byte	.LVL63
+ 2309 05b8 700D0000 		.4byte	0xd70
+ 2310 05bc CB050000 		.4byte	0x5cb
+ 2311 05c0 09       		.uleb128 0x9
+ 2312 05c1 01       		.uleb128 0x1
+ 2313 05c2 50       		.byte	0x50
+ 2314 05c3 01       		.uleb128 0x1
+ 2315 05c4 31       		.byte	0x31
+ 2316 05c5 09       		.uleb128 0x9
+ 2317 05c6 01       		.uleb128 0x1
+ 2318 05c7 51       		.byte	0x51
+ 2319 05c8 01       		.uleb128 0x1
+ 2320 05c9 35       		.byte	0x35
+ 2321 05ca 00       		.byte	0
+ 2322 05cb 08       		.uleb128 0x8
+ 2323 05cc 6E000000 		.4byte	.LVL64
+ 2324 05d0 7B0D0000 		.4byte	0xd7b
+ 2325 05d4 E2050000 		.4byte	0x5e2
+ 2326 05d8 09       		.uleb128 0x9
+ 2327 05d9 01       		.uleb128 0x1
+ 2328 05da 50       		.byte	0x50
+ 2329 05db 05       		.uleb128 0x5
+ 2330 05dc 03       		.byte	0x3
+ 2331 05dd 14000000 		.4byte	.LC6
+ 2332 05e1 00       		.byte	0
+ 2333 05e2 08       		.uleb128 0x8
+ 2334 05e3 9C000000 		.4byte	.LVL65
+ 2335 05e7 700D0000 		.4byte	0xd70
+ 2336 05eb FA050000 		.4byte	0x5fa
+ 2337 05ef 09       		.uleb128 0x9
+ 2338 05f0 01       		.uleb128 0x1
+ 2339 05f1 50       		.byte	0x50
+ 2340 05f2 01       		.uleb128 0x1
+ 2341 05f3 31       		.byte	0x31
+ 2342 05f4 09       		.uleb128 0x9
+ 2343 05f5 01       		.uleb128 0x1
+ 2344 05f6 51       		.byte	0x51
+ 2345 05f7 01       		.uleb128 0x1
+ 2346 05f8 30       		.byte	0x30
+ 2347 05f9 00       		.byte	0
+ 2348 05fa 08       		.uleb128 0x8
+ 2349 05fb A2000000 		.4byte	.LVL66
+ 2350 05ff 910D0000 		.4byte	0xd91
+ 2351 0603 0E060000 		.4byte	0x60e
+ 2352 0607 09       		.uleb128 0x9
+ 2353 0608 01       		.uleb128 0x1
+ 2354 0609 50       		.byte	0x50
+ 2355 060a 02       		.uleb128 0x2
+ 2356 060b 08       		.byte	0x8
+ 2357 060c 3E       		.byte	0x3e
+ 2358 060d 00       		.byte	0
+ 2359 060e 08       		.uleb128 0x8
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 49
+
+
+ 2360 060f AA000000 		.4byte	.LVL67
+ 2361 0613 700D0000 		.4byte	0xd70
+ 2362 0617 26060000 		.4byte	0x626
+ 2363 061b 09       		.uleb128 0x9
+ 2364 061c 01       		.uleb128 0x1
+ 2365 061d 50       		.byte	0x50
+ 2366 061e 01       		.uleb128 0x1
+ 2367 061f 31       		.byte	0x31
+ 2368 0620 09       		.uleb128 0x9
+ 2369 0621 01       		.uleb128 0x1
+ 2370 0622 51       		.byte	0x51
+ 2371 0623 01       		.uleb128 0x1
+ 2372 0624 36       		.byte	0x36
+ 2373 0625 00       		.byte	0
+ 2374 0626 08       		.uleb128 0x8
+ 2375 0627 B0000000 		.4byte	.LVL68
+ 2376 062b 910D0000 		.4byte	0xd91
+ 2377 062f 3A060000 		.4byte	0x63a
+ 2378 0633 09       		.uleb128 0x9
+ 2379 0634 01       		.uleb128 0x1
+ 2380 0635 50       		.byte	0x50
+ 2381 0636 02       		.uleb128 0x2
+ 2382 0637 08       		.byte	0x8
+ 2383 0638 20       		.byte	0x20
+ 2384 0639 00       		.byte	0
+ 2385 063a 08       		.uleb128 0x8
+ 2386 063b B8000000 		.4byte	.LVL69
+ 2387 063f 700D0000 		.4byte	0xd70
+ 2388 0643 52060000 		.4byte	0x652
+ 2389 0647 09       		.uleb128 0x9
+ 2390 0648 01       		.uleb128 0x1
+ 2391 0649 50       		.byte	0x50
+ 2392 064a 01       		.uleb128 0x1
+ 2393 064b 31       		.byte	0x31
+ 2394 064c 09       		.uleb128 0x9
+ 2395 064d 01       		.uleb128 0x1
+ 2396 064e 51       		.byte	0x51
+ 2397 064f 01       		.uleb128 0x1
+ 2398 0650 3B       		.byte	0x3b
+ 2399 0651 00       		.byte	0
+ 2400 0652 08       		.uleb128 0x8
+ 2401 0653 BE000000 		.4byte	.LVL70
+ 2402 0657 910D0000 		.4byte	0xd91
+ 2403 065b 66060000 		.4byte	0x666
+ 2404 065f 09       		.uleb128 0x9
+ 2405 0660 01       		.uleb128 0x1
+ 2406 0661 50       		.byte	0x50
+ 2407 0662 02       		.uleb128 0x2
+ 2408 0663 08       		.byte	0x8
+ 2409 0664 20       		.byte	0x20
+ 2410 0665 00       		.byte	0
+ 2411 0666 08       		.uleb128 0x8
+ 2412 0667 C8000000 		.4byte	.LVL71
+ 2413 066b 700D0000 		.4byte	0xd70
+ 2414 066f 7E060000 		.4byte	0x67e
+ 2415 0673 09       		.uleb128 0x9
+ 2416 0674 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 50
+
+
+ 2417 0675 50       		.byte	0x50
+ 2418 0676 01       		.uleb128 0x1
+ 2419 0677 31       		.byte	0x31
+ 2420 0678 09       		.uleb128 0x9
+ 2421 0679 01       		.uleb128 0x1
+ 2422 067a 51       		.byte	0x51
+ 2423 067b 01       		.uleb128 0x1
+ 2424 067c 30       		.byte	0x30
+ 2425 067d 00       		.byte	0
+ 2426 067e 08       		.uleb128 0x8
+ 2427 067f CE000000 		.4byte	.LVL72
+ 2428 0683 910D0000 		.4byte	0xd91
+ 2429 0687 92060000 		.4byte	0x692
+ 2430 068b 09       		.uleb128 0x9
+ 2431 068c 01       		.uleb128 0x1
+ 2432 068d 50       		.byte	0x50
+ 2433 068e 02       		.uleb128 0x2
+ 2434 068f 08       		.byte	0x8
+ 2435 0690 20       		.byte	0x20
+ 2436 0691 00       		.byte	0
+ 2437 0692 08       		.uleb128 0x8
+ 2438 0693 D6000000 		.4byte	.LVL73
+ 2439 0697 700D0000 		.4byte	0xd70
+ 2440 069b AA060000 		.4byte	0x6aa
+ 2441 069f 09       		.uleb128 0x9
+ 2442 06a0 01       		.uleb128 0x1
+ 2443 06a1 50       		.byte	0x50
+ 2444 06a2 01       		.uleb128 0x1
+ 2445 06a3 31       		.byte	0x31
+ 2446 06a4 09       		.uleb128 0x9
+ 2447 06a5 01       		.uleb128 0x1
+ 2448 06a6 51       		.byte	0x51
+ 2449 06a7 01       		.uleb128 0x1
+ 2450 06a8 36       		.byte	0x36
+ 2451 06a9 00       		.byte	0
+ 2452 06aa 08       		.uleb128 0x8
+ 2453 06ab DC000000 		.4byte	.LVL74
+ 2454 06af 910D0000 		.4byte	0xd91
+ 2455 06b3 BE060000 		.4byte	0x6be
+ 2456 06b7 09       		.uleb128 0x9
+ 2457 06b8 01       		.uleb128 0x1
+ 2458 06b9 50       		.byte	0x50
+ 2459 06ba 02       		.uleb128 0x2
+ 2460 06bb 08       		.byte	0x8
+ 2461 06bc 3E       		.byte	0x3e
+ 2462 06bd 00       		.byte	0
+ 2463 06be 08       		.uleb128 0x8
+ 2464 06bf E4000000 		.4byte	.LVL75
+ 2465 06c3 700D0000 		.4byte	0xd70
+ 2466 06c7 D6060000 		.4byte	0x6d6
+ 2467 06cb 09       		.uleb128 0x9
+ 2468 06cc 01       		.uleb128 0x1
+ 2469 06cd 50       		.byte	0x50
+ 2470 06ce 01       		.uleb128 0x1
+ 2471 06cf 31       		.byte	0x31
+ 2472 06d0 09       		.uleb128 0x9
+ 2473 06d1 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 51
+
+
+ 2474 06d2 51       		.byte	0x51
+ 2475 06d3 01       		.uleb128 0x1
+ 2476 06d4 3B       		.byte	0x3b
+ 2477 06d5 00       		.byte	0
+ 2478 06d6 08       		.uleb128 0x8
+ 2479 06d7 EA000000 		.4byte	.LVL76
+ 2480 06db 910D0000 		.4byte	0xd91
+ 2481 06df EA060000 		.4byte	0x6ea
+ 2482 06e3 09       		.uleb128 0x9
+ 2483 06e4 01       		.uleb128 0x1
+ 2484 06e5 50       		.byte	0x50
+ 2485 06e6 02       		.uleb128 0x2
+ 2486 06e7 08       		.byte	0x8
+ 2487 06e8 20       		.byte	0x20
+ 2488 06e9 00       		.byte	0
+ 2489 06ea 08       		.uleb128 0x8
+ 2490 06eb F4000000 		.4byte	.LVL77
+ 2491 06ef 700D0000 		.4byte	0xd70
+ 2492 06f3 02070000 		.4byte	0x702
+ 2493 06f7 09       		.uleb128 0x9
+ 2494 06f8 01       		.uleb128 0x1
+ 2495 06f9 50       		.byte	0x50
+ 2496 06fa 01       		.uleb128 0x1
+ 2497 06fb 31       		.byte	0x31
+ 2498 06fc 09       		.uleb128 0x9
+ 2499 06fd 01       		.uleb128 0x1
+ 2500 06fe 51       		.byte	0x51
+ 2501 06ff 01       		.uleb128 0x1
+ 2502 0700 30       		.byte	0x30
+ 2503 0701 00       		.byte	0
+ 2504 0702 08       		.uleb128 0x8
+ 2505 0703 FA000000 		.4byte	.LVL78
+ 2506 0707 910D0000 		.4byte	0xd91
+ 2507 070b 16070000 		.4byte	0x716
+ 2508 070f 09       		.uleb128 0x9
+ 2509 0710 01       		.uleb128 0x1
+ 2510 0711 50       		.byte	0x50
+ 2511 0712 02       		.uleb128 0x2
+ 2512 0713 08       		.byte	0x8
+ 2513 0714 20       		.byte	0x20
+ 2514 0715 00       		.byte	0
+ 2515 0716 08       		.uleb128 0x8
+ 2516 0717 02010000 		.4byte	.LVL79
+ 2517 071b 700D0000 		.4byte	0xd70
+ 2518 071f 2E070000 		.4byte	0x72e
+ 2519 0723 09       		.uleb128 0x9
+ 2520 0724 01       		.uleb128 0x1
+ 2521 0725 50       		.byte	0x50
+ 2522 0726 01       		.uleb128 0x1
+ 2523 0727 31       		.byte	0x31
+ 2524 0728 09       		.uleb128 0x9
+ 2525 0729 01       		.uleb128 0x1
+ 2526 072a 51       		.byte	0x51
+ 2527 072b 01       		.uleb128 0x1
+ 2528 072c 36       		.byte	0x36
+ 2529 072d 00       		.byte	0
+ 2530 072e 08       		.uleb128 0x8
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 52
+
+
+ 2531 072f 08010000 		.4byte	.LVL80
+ 2532 0733 910D0000 		.4byte	0xd91
+ 2533 0737 42070000 		.4byte	0x742
+ 2534 073b 09       		.uleb128 0x9
+ 2535 073c 01       		.uleb128 0x1
+ 2536 073d 50       		.byte	0x50
+ 2537 073e 02       		.uleb128 0x2
+ 2538 073f 08       		.byte	0x8
+ 2539 0740 20       		.byte	0x20
+ 2540 0741 00       		.byte	0
+ 2541 0742 08       		.uleb128 0x8
+ 2542 0743 10010000 		.4byte	.LVL81
+ 2543 0747 700D0000 		.4byte	0xd70
+ 2544 074b 5A070000 		.4byte	0x75a
+ 2545 074f 09       		.uleb128 0x9
+ 2546 0750 01       		.uleb128 0x1
+ 2547 0751 50       		.byte	0x50
+ 2548 0752 01       		.uleb128 0x1
+ 2549 0753 31       		.byte	0x31
+ 2550 0754 09       		.uleb128 0x9
+ 2551 0755 01       		.uleb128 0x1
+ 2552 0756 51       		.byte	0x51
+ 2553 0757 01       		.uleb128 0x1
+ 2554 0758 3B       		.byte	0x3b
+ 2555 0759 00       		.byte	0
+ 2556 075a 08       		.uleb128 0x8
+ 2557 075b 16010000 		.4byte	.LVL82
+ 2558 075f 910D0000 		.4byte	0xd91
+ 2559 0763 6E070000 		.4byte	0x76e
+ 2560 0767 09       		.uleb128 0x9
+ 2561 0768 01       		.uleb128 0x1
+ 2562 0769 50       		.byte	0x50
+ 2563 076a 02       		.uleb128 0x2
+ 2564 076b 08       		.byte	0x8
+ 2565 076c 3E       		.byte	0x3e
+ 2566 076d 00       		.byte	0
+ 2567 076e 08       		.uleb128 0x8
+ 2568 076f 3A010000 		.4byte	.LVL83
+ 2569 0773 700D0000 		.4byte	0xd70
+ 2570 0777 86070000 		.4byte	0x786
+ 2571 077b 09       		.uleb128 0x9
+ 2572 077c 01       		.uleb128 0x1
+ 2573 077d 50       		.byte	0x50
+ 2574 077e 01       		.uleb128 0x1
+ 2575 077f 30       		.byte	0x30
+ 2576 0780 09       		.uleb128 0x9
+ 2577 0781 01       		.uleb128 0x1
+ 2578 0782 51       		.byte	0x51
+ 2579 0783 01       		.uleb128 0x1
+ 2580 0784 33       		.byte	0x33
+ 2581 0785 00       		.byte	0
+ 2582 0786 08       		.uleb128 0x8
+ 2583 0787 46010000 		.4byte	.LVL84
+ 2584 078b 860D0000 		.4byte	0xd86
+ 2585 078f A3070000 		.4byte	0x7a3
+ 2586 0793 09       		.uleb128 0x9
+ 2587 0794 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 53
+
+
+ 2588 0795 50       		.byte	0x50
+ 2589 0796 02       		.uleb128 0x2
+ 2590 0797 74       		.byte	0x74
+ 2591 0798 00       		.sleb128 0
+ 2592 0799 09       		.uleb128 0x9
+ 2593 079a 01       		.uleb128 0x1
+ 2594 079b 51       		.byte	0x51
+ 2595 079c 05       		.uleb128 0x5
+ 2596 079d 03       		.byte	0x3
+ 2597 079e 10000000 		.4byte	.LC3
+ 2598 07a2 00       		.byte	0
+ 2599 07a3 08       		.uleb128 0x8
+ 2600 07a4 4C010000 		.4byte	.LVL85
+ 2601 07a8 7B0D0000 		.4byte	0xd7b
+ 2602 07ac B7070000 		.4byte	0x7b7
+ 2603 07b0 09       		.uleb128 0x9
+ 2604 07b1 01       		.uleb128 0x1
+ 2605 07b2 50       		.byte	0x50
+ 2606 07b3 02       		.uleb128 0x2
+ 2607 07b4 74       		.byte	0x74
+ 2608 07b5 00       		.sleb128 0
+ 2609 07b6 00       		.byte	0
+ 2610 07b7 07       		.uleb128 0x7
+ 2611 07b8 50010000 		.4byte	.LVL86
+ 2612 07bc EC0D0000 		.4byte	0xdec
+ 2613 07c0 0A       		.uleb128 0xa
+ 2614 07c1 56010000 		.4byte	.LVL87
+ 2615 07c5 E10D0000 		.4byte	0xde1
+ 2616 07c9 09       		.uleb128 0x9
+ 2617 07ca 01       		.uleb128 0x1
+ 2618 07cb 50       		.byte	0x50
+ 2619 07cc 02       		.uleb128 0x2
+ 2620 07cd 08       		.byte	0x8
+ 2621 07ce 32       		.byte	0x32
+ 2622 07cf 00       		.byte	0
+ 2623 07d0 00       		.byte	0
+ 2624 07d1 0B       		.uleb128 0xb
+ 2625 07d2 E0010000 		.4byte	.LASF22
+ 2626 07d6 01       		.byte	0x1
+ 2627 07d7 F5       		.byte	0xf5
+ 2628 07d8 00000000 		.4byte	.LFB35
+ 2629 07dc 74010000 		.4byte	.LFE35-.LFB35
+ 2630 07e0 01       		.uleb128 0x1
+ 2631 07e1 9C       		.byte	0x9c
+ 2632 07e2 4D0A0000 		.4byte	0xa4d
+ 2633 07e6 08       		.uleb128 0x8
+ 2634 07e7 4E000000 		.4byte	.LVL88
+ 2635 07eb 700D0000 		.4byte	0xd70
+ 2636 07ef FE070000 		.4byte	0x7fe
+ 2637 07f3 09       		.uleb128 0x9
+ 2638 07f4 01       		.uleb128 0x1
+ 2639 07f5 50       		.byte	0x50
+ 2640 07f6 01       		.uleb128 0x1
+ 2641 07f7 31       		.byte	0x31
+ 2642 07f8 09       		.uleb128 0x9
+ 2643 07f9 01       		.uleb128 0x1
+ 2644 07fa 51       		.byte	0x51
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 54
+
+
+ 2645 07fb 01       		.uleb128 0x1
+ 2646 07fc 30       		.byte	0x30
+ 2647 07fd 00       		.byte	0
+ 2648 07fe 08       		.uleb128 0x8
+ 2649 07ff 5C000000 		.4byte	.LVL89
+ 2650 0803 860D0000 		.4byte	0xd86
+ 2651 0807 1B080000 		.4byte	0x81b
+ 2652 080b 09       		.uleb128 0x9
+ 2653 080c 01       		.uleb128 0x1
+ 2654 080d 50       		.byte	0x50
+ 2655 080e 02       		.uleb128 0x2
+ 2656 080f 74       		.byte	0x74
+ 2657 0810 00       		.sleb128 0
+ 2658 0811 09       		.uleb128 0x9
+ 2659 0812 01       		.uleb128 0x1
+ 2660 0813 51       		.byte	0x51
+ 2661 0814 05       		.uleb128 0x5
+ 2662 0815 03       		.byte	0x3
+ 2663 0816 10000000 		.4byte	.LC3
+ 2664 081a 00       		.byte	0
+ 2665 081b 08       		.uleb128 0x8
+ 2666 081c 62000000 		.4byte	.LVL90
+ 2667 0820 7B0D0000 		.4byte	0xd7b
+ 2668 0824 2F080000 		.4byte	0x82f
+ 2669 0828 09       		.uleb128 0x9
+ 2670 0829 01       		.uleb128 0x1
+ 2671 082a 50       		.byte	0x50
+ 2672 082b 02       		.uleb128 0x2
+ 2673 082c 74       		.byte	0x74
+ 2674 082d 00       		.sleb128 0
+ 2675 082e 00       		.byte	0
+ 2676 082f 08       		.uleb128 0x8
+ 2677 0830 6A000000 		.4byte	.LVL91
+ 2678 0834 700D0000 		.4byte	0xd70
+ 2679 0838 47080000 		.4byte	0x847
+ 2680 083c 09       		.uleb128 0x9
+ 2681 083d 01       		.uleb128 0x1
+ 2682 083e 50       		.byte	0x50
+ 2683 083f 01       		.uleb128 0x1
+ 2684 0840 31       		.byte	0x31
+ 2685 0841 09       		.uleb128 0x9
+ 2686 0842 01       		.uleb128 0x1
+ 2687 0843 51       		.byte	0x51
+ 2688 0844 01       		.uleb128 0x1
+ 2689 0845 35       		.byte	0x35
+ 2690 0846 00       		.byte	0
+ 2691 0847 08       		.uleb128 0x8
+ 2692 0848 70000000 		.4byte	.LVL92
+ 2693 084c 7B0D0000 		.4byte	0xd7b
+ 2694 0850 5E080000 		.4byte	0x85e
+ 2695 0854 09       		.uleb128 0x9
+ 2696 0855 01       		.uleb128 0x1
+ 2697 0856 50       		.byte	0x50
+ 2698 0857 05       		.uleb128 0x5
+ 2699 0858 03       		.byte	0x3
+ 2700 0859 14000000 		.4byte	.LC6
+ 2701 085d 00       		.byte	0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 55
+
+
+ 2702 085e 08       		.uleb128 0x8
+ 2703 085f 9E000000 		.4byte	.LVL93
+ 2704 0863 700D0000 		.4byte	0xd70
+ 2705 0867 76080000 		.4byte	0x876
+ 2706 086b 09       		.uleb128 0x9
+ 2707 086c 01       		.uleb128 0x1
+ 2708 086d 50       		.byte	0x50
+ 2709 086e 01       		.uleb128 0x1
+ 2710 086f 31       		.byte	0x31
+ 2711 0870 09       		.uleb128 0x9
+ 2712 0871 01       		.uleb128 0x1
+ 2713 0872 51       		.byte	0x51
+ 2714 0873 01       		.uleb128 0x1
+ 2715 0874 30       		.byte	0x30
+ 2716 0875 00       		.byte	0
+ 2717 0876 08       		.uleb128 0x8
+ 2718 0877 A4000000 		.4byte	.LVL94
+ 2719 087b 910D0000 		.4byte	0xd91
+ 2720 087f 8A080000 		.4byte	0x88a
+ 2721 0883 09       		.uleb128 0x9
+ 2722 0884 01       		.uleb128 0x1
+ 2723 0885 50       		.byte	0x50
+ 2724 0886 02       		.uleb128 0x2
+ 2725 0887 08       		.byte	0x8
+ 2726 0888 3E       		.byte	0x3e
+ 2727 0889 00       		.byte	0
+ 2728 088a 08       		.uleb128 0x8
+ 2729 088b AC000000 		.4byte	.LVL95
+ 2730 088f 700D0000 		.4byte	0xd70
+ 2731 0893 A2080000 		.4byte	0x8a2
+ 2732 0897 09       		.uleb128 0x9
+ 2733 0898 01       		.uleb128 0x1
+ 2734 0899 50       		.byte	0x50
+ 2735 089a 01       		.uleb128 0x1
+ 2736 089b 31       		.byte	0x31
+ 2737 089c 09       		.uleb128 0x9
+ 2738 089d 01       		.uleb128 0x1
+ 2739 089e 51       		.byte	0x51
+ 2740 089f 01       		.uleb128 0x1
+ 2741 08a0 36       		.byte	0x36
+ 2742 08a1 00       		.byte	0
+ 2743 08a2 08       		.uleb128 0x8
+ 2744 08a3 B2000000 		.4byte	.LVL96
+ 2745 08a7 910D0000 		.4byte	0xd91
+ 2746 08ab B6080000 		.4byte	0x8b6
+ 2747 08af 09       		.uleb128 0x9
+ 2748 08b0 01       		.uleb128 0x1
+ 2749 08b1 50       		.byte	0x50
+ 2750 08b2 02       		.uleb128 0x2
+ 2751 08b3 08       		.byte	0x8
+ 2752 08b4 20       		.byte	0x20
+ 2753 08b5 00       		.byte	0
+ 2754 08b6 08       		.uleb128 0x8
+ 2755 08b7 BA000000 		.4byte	.LVL97
+ 2756 08bb 700D0000 		.4byte	0xd70
+ 2757 08bf CE080000 		.4byte	0x8ce
+ 2758 08c3 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 56
+
+
+ 2759 08c4 01       		.uleb128 0x1
+ 2760 08c5 50       		.byte	0x50
+ 2761 08c6 01       		.uleb128 0x1
+ 2762 08c7 31       		.byte	0x31
+ 2763 08c8 09       		.uleb128 0x9
+ 2764 08c9 01       		.uleb128 0x1
+ 2765 08ca 51       		.byte	0x51
+ 2766 08cb 01       		.uleb128 0x1
+ 2767 08cc 3B       		.byte	0x3b
+ 2768 08cd 00       		.byte	0
+ 2769 08ce 08       		.uleb128 0x8
+ 2770 08cf C0000000 		.4byte	.LVL98
+ 2771 08d3 910D0000 		.4byte	0xd91
+ 2772 08d7 E2080000 		.4byte	0x8e2
+ 2773 08db 09       		.uleb128 0x9
+ 2774 08dc 01       		.uleb128 0x1
+ 2775 08dd 50       		.byte	0x50
+ 2776 08de 02       		.uleb128 0x2
+ 2777 08df 08       		.byte	0x8
+ 2778 08e0 20       		.byte	0x20
+ 2779 08e1 00       		.byte	0
+ 2780 08e2 08       		.uleb128 0x8
+ 2781 08e3 CA000000 		.4byte	.LVL99
+ 2782 08e7 700D0000 		.4byte	0xd70
+ 2783 08eb FA080000 		.4byte	0x8fa
+ 2784 08ef 09       		.uleb128 0x9
+ 2785 08f0 01       		.uleb128 0x1
+ 2786 08f1 50       		.byte	0x50
+ 2787 08f2 01       		.uleb128 0x1
+ 2788 08f3 31       		.byte	0x31
+ 2789 08f4 09       		.uleb128 0x9
+ 2790 08f5 01       		.uleb128 0x1
+ 2791 08f6 51       		.byte	0x51
+ 2792 08f7 01       		.uleb128 0x1
+ 2793 08f8 30       		.byte	0x30
+ 2794 08f9 00       		.byte	0
+ 2795 08fa 08       		.uleb128 0x8
+ 2796 08fb D0000000 		.4byte	.LVL100
+ 2797 08ff 910D0000 		.4byte	0xd91
+ 2798 0903 0E090000 		.4byte	0x90e
+ 2799 0907 09       		.uleb128 0x9
+ 2800 0908 01       		.uleb128 0x1
+ 2801 0909 50       		.byte	0x50
+ 2802 090a 02       		.uleb128 0x2
+ 2803 090b 08       		.byte	0x8
+ 2804 090c 20       		.byte	0x20
+ 2805 090d 00       		.byte	0
+ 2806 090e 08       		.uleb128 0x8
+ 2807 090f D8000000 		.4byte	.LVL101
+ 2808 0913 700D0000 		.4byte	0xd70
+ 2809 0917 26090000 		.4byte	0x926
+ 2810 091b 09       		.uleb128 0x9
+ 2811 091c 01       		.uleb128 0x1
+ 2812 091d 50       		.byte	0x50
+ 2813 091e 01       		.uleb128 0x1
+ 2814 091f 31       		.byte	0x31
+ 2815 0920 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 57
+
+
+ 2816 0921 01       		.uleb128 0x1
+ 2817 0922 51       		.byte	0x51
+ 2818 0923 01       		.uleb128 0x1
+ 2819 0924 36       		.byte	0x36
+ 2820 0925 00       		.byte	0
+ 2821 0926 08       		.uleb128 0x8
+ 2822 0927 DE000000 		.4byte	.LVL102
+ 2823 092b 910D0000 		.4byte	0xd91
+ 2824 092f 3A090000 		.4byte	0x93a
+ 2825 0933 09       		.uleb128 0x9
+ 2826 0934 01       		.uleb128 0x1
+ 2827 0935 50       		.byte	0x50
+ 2828 0936 02       		.uleb128 0x2
+ 2829 0937 08       		.byte	0x8
+ 2830 0938 3E       		.byte	0x3e
+ 2831 0939 00       		.byte	0
+ 2832 093a 08       		.uleb128 0x8
+ 2833 093b E6000000 		.4byte	.LVL103
+ 2834 093f 700D0000 		.4byte	0xd70
+ 2835 0943 52090000 		.4byte	0x952
+ 2836 0947 09       		.uleb128 0x9
+ 2837 0948 01       		.uleb128 0x1
+ 2838 0949 50       		.byte	0x50
+ 2839 094a 01       		.uleb128 0x1
+ 2840 094b 31       		.byte	0x31
+ 2841 094c 09       		.uleb128 0x9
+ 2842 094d 01       		.uleb128 0x1
+ 2843 094e 51       		.byte	0x51
+ 2844 094f 01       		.uleb128 0x1
+ 2845 0950 3B       		.byte	0x3b
+ 2846 0951 00       		.byte	0
+ 2847 0952 08       		.uleb128 0x8
+ 2848 0953 EC000000 		.4byte	.LVL104
+ 2849 0957 910D0000 		.4byte	0xd91
+ 2850 095b 66090000 		.4byte	0x966
+ 2851 095f 09       		.uleb128 0x9
+ 2852 0960 01       		.uleb128 0x1
+ 2853 0961 50       		.byte	0x50
+ 2854 0962 02       		.uleb128 0x2
+ 2855 0963 08       		.byte	0x8
+ 2856 0964 20       		.byte	0x20
+ 2857 0965 00       		.byte	0
+ 2858 0966 08       		.uleb128 0x8
+ 2859 0967 F6000000 		.4byte	.LVL105
+ 2860 096b 700D0000 		.4byte	0xd70
+ 2861 096f 7E090000 		.4byte	0x97e
+ 2862 0973 09       		.uleb128 0x9
+ 2863 0974 01       		.uleb128 0x1
+ 2864 0975 50       		.byte	0x50
+ 2865 0976 01       		.uleb128 0x1
+ 2866 0977 31       		.byte	0x31
+ 2867 0978 09       		.uleb128 0x9
+ 2868 0979 01       		.uleb128 0x1
+ 2869 097a 51       		.byte	0x51
+ 2870 097b 01       		.uleb128 0x1
+ 2871 097c 30       		.byte	0x30
+ 2872 097d 00       		.byte	0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 58
+
+
+ 2873 097e 08       		.uleb128 0x8
+ 2874 097f FC000000 		.4byte	.LVL106
+ 2875 0983 910D0000 		.4byte	0xd91
+ 2876 0987 92090000 		.4byte	0x992
+ 2877 098b 09       		.uleb128 0x9
+ 2878 098c 01       		.uleb128 0x1
+ 2879 098d 50       		.byte	0x50
+ 2880 098e 02       		.uleb128 0x2
+ 2881 098f 08       		.byte	0x8
+ 2882 0990 20       		.byte	0x20
+ 2883 0991 00       		.byte	0
+ 2884 0992 08       		.uleb128 0x8
+ 2885 0993 04010000 		.4byte	.LVL107
+ 2886 0997 700D0000 		.4byte	0xd70
+ 2887 099b AA090000 		.4byte	0x9aa
+ 2888 099f 09       		.uleb128 0x9
+ 2889 09a0 01       		.uleb128 0x1
+ 2890 09a1 50       		.byte	0x50
+ 2891 09a2 01       		.uleb128 0x1
+ 2892 09a3 31       		.byte	0x31
+ 2893 09a4 09       		.uleb128 0x9
+ 2894 09a5 01       		.uleb128 0x1
+ 2895 09a6 51       		.byte	0x51
+ 2896 09a7 01       		.uleb128 0x1
+ 2897 09a8 36       		.byte	0x36
+ 2898 09a9 00       		.byte	0
+ 2899 09aa 08       		.uleb128 0x8
+ 2900 09ab 0A010000 		.4byte	.LVL108
+ 2901 09af 910D0000 		.4byte	0xd91
+ 2902 09b3 BE090000 		.4byte	0x9be
+ 2903 09b7 09       		.uleb128 0x9
+ 2904 09b8 01       		.uleb128 0x1
+ 2905 09b9 50       		.byte	0x50
+ 2906 09ba 02       		.uleb128 0x2
+ 2907 09bb 08       		.byte	0x8
+ 2908 09bc 20       		.byte	0x20
+ 2909 09bd 00       		.byte	0
+ 2910 09be 08       		.uleb128 0x8
+ 2911 09bf 12010000 		.4byte	.LVL109
+ 2912 09c3 700D0000 		.4byte	0xd70
+ 2913 09c7 D6090000 		.4byte	0x9d6
+ 2914 09cb 09       		.uleb128 0x9
+ 2915 09cc 01       		.uleb128 0x1
+ 2916 09cd 50       		.byte	0x50
+ 2917 09ce 01       		.uleb128 0x1
+ 2918 09cf 31       		.byte	0x31
+ 2919 09d0 09       		.uleb128 0x9
+ 2920 09d1 01       		.uleb128 0x1
+ 2921 09d2 51       		.byte	0x51
+ 2922 09d3 01       		.uleb128 0x1
+ 2923 09d4 3B       		.byte	0x3b
+ 2924 09d5 00       		.byte	0
+ 2925 09d6 08       		.uleb128 0x8
+ 2926 09d7 18010000 		.4byte	.LVL110
+ 2927 09db 910D0000 		.4byte	0xd91
+ 2928 09df EA090000 		.4byte	0x9ea
+ 2929 09e3 09       		.uleb128 0x9
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 59
+
+
+ 2930 09e4 01       		.uleb128 0x1
+ 2931 09e5 50       		.byte	0x50
+ 2932 09e6 02       		.uleb128 0x2
+ 2933 09e7 08       		.byte	0x8
+ 2934 09e8 3E       		.byte	0x3e
+ 2935 09e9 00       		.byte	0
+ 2936 09ea 08       		.uleb128 0x8
+ 2937 09eb 3C010000 		.4byte	.LVL111
+ 2938 09ef 700D0000 		.4byte	0xd70
+ 2939 09f3 020A0000 		.4byte	0xa02
+ 2940 09f7 09       		.uleb128 0x9
+ 2941 09f8 01       		.uleb128 0x1
+ 2942 09f9 50       		.byte	0x50
+ 2943 09fa 01       		.uleb128 0x1
+ 2944 09fb 30       		.byte	0x30
+ 2945 09fc 09       		.uleb128 0x9
+ 2946 09fd 01       		.uleb128 0x1
+ 2947 09fe 51       		.byte	0x51
+ 2948 09ff 01       		.uleb128 0x1
+ 2949 0a00 33       		.byte	0x33
+ 2950 0a01 00       		.byte	0
+ 2951 0a02 08       		.uleb128 0x8
+ 2952 0a03 48010000 		.4byte	.LVL112
+ 2953 0a07 860D0000 		.4byte	0xd86
+ 2954 0a0b 1F0A0000 		.4byte	0xa1f
+ 2955 0a0f 09       		.uleb128 0x9
+ 2956 0a10 01       		.uleb128 0x1
+ 2957 0a11 50       		.byte	0x50
+ 2958 0a12 02       		.uleb128 0x2
+ 2959 0a13 74       		.byte	0x74
+ 2960 0a14 00       		.sleb128 0
+ 2961 0a15 09       		.uleb128 0x9
+ 2962 0a16 01       		.uleb128 0x1
+ 2963 0a17 51       		.byte	0x51
+ 2964 0a18 05       		.uleb128 0x5
+ 2965 0a19 03       		.byte	0x3
+ 2966 0a1a 10000000 		.4byte	.LC3
+ 2967 0a1e 00       		.byte	0
+ 2968 0a1f 08       		.uleb128 0x8
+ 2969 0a20 4E010000 		.4byte	.LVL113
+ 2970 0a24 7B0D0000 		.4byte	0xd7b
+ 2971 0a28 330A0000 		.4byte	0xa33
+ 2972 0a2c 09       		.uleb128 0x9
+ 2973 0a2d 01       		.uleb128 0x1
+ 2974 0a2e 50       		.byte	0x50
+ 2975 0a2f 02       		.uleb128 0x2
+ 2976 0a30 74       		.byte	0x74
+ 2977 0a31 00       		.sleb128 0
+ 2978 0a32 00       		.byte	0
+ 2979 0a33 07       		.uleb128 0x7
+ 2980 0a34 52010000 		.4byte	.LVL114
+ 2981 0a38 F70D0000 		.4byte	0xdf7
+ 2982 0a3c 0A       		.uleb128 0xa
+ 2983 0a3d 58010000 		.4byte	.LVL115
+ 2984 0a41 E10D0000 		.4byte	0xde1
+ 2985 0a45 09       		.uleb128 0x9
+ 2986 0a46 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 60
+
+
+ 2987 0a47 50       		.byte	0x50
+ 2988 0a48 02       		.uleb128 0x2
+ 2989 0a49 08       		.byte	0x8
+ 2990 0a4a 32       		.byte	0x32
+ 2991 0a4b 00       		.byte	0
+ 2992 0a4c 00       		.byte	0
+ 2993 0a4d 0C       		.uleb128 0xc
+ 2994 0a4e 95020000 		.4byte	.LASF23
+ 2995 0a52 01       		.byte	0x1
+ 2996 0a53 3401     		.2byte	0x134
+ 2997 0a55 00000000 		.4byte	.LFB36
+ 2998 0a59 50000000 		.4byte	.LFE36-.LFB36
+ 2999 0a5d 01       		.uleb128 0x1
+ 3000 0a5e 9C       		.byte	0x9c
+ 3001 0a5f 060B0000 		.4byte	0xb06
+ 3002 0a63 0D       		.uleb128 0xd
+ 3003 0a64 F0010000 		.4byte	.LASF24
+ 3004 0a68 01       		.byte	0x1
+ 3005 0a69 3601     		.2byte	0x136
+ 3006 0a6b 83000000 		.4byte	0x83
+ 3007 0a6f 3C000000 		.4byte	.LLST2
+ 3008 0a73 07       		.uleb128 0x7
+ 3009 0a74 06000000 		.4byte	.LVL117
+ 3010 0a78 020E0000 		.4byte	0xe02
+ 3011 0a7c 07       		.uleb128 0x7
+ 3012 0a7d 10000000 		.4byte	.LVL120
+ 3013 0a81 CB0D0000 		.4byte	0xdcb
+ 3014 0a85 07       		.uleb128 0x7
+ 3015 0a86 1E000000 		.4byte	.LVL121
+ 3016 0a8a 5A0D0000 		.4byte	0xd5a
+ 3017 0a8e 08       		.uleb128 0x8
+ 3018 0a8f 24000000 		.4byte	.LVL122
+ 3019 0a93 0E0E0000 		.4byte	0xe0e
+ 3020 0a97 A10A0000 		.4byte	0xaa1
+ 3021 0a9b 09       		.uleb128 0x9
+ 3022 0a9c 01       		.uleb128 0x1
+ 3023 0a9d 50       		.byte	0x50
+ 3024 0a9e 01       		.uleb128 0x1
+ 3025 0a9f 31       		.byte	0x31
+ 3026 0aa0 00       		.byte	0
+ 3027 0aa1 08       		.uleb128 0x8
+ 3028 0aa2 2A000000 		.4byte	.LVL123
+ 3029 0aa6 190E0000 		.4byte	0xe19
+ 3030 0aaa B40A0000 		.4byte	0xab4
+ 3031 0aae 09       		.uleb128 0x9
+ 3032 0aaf 01       		.uleb128 0x1
+ 3033 0ab0 50       		.byte	0x50
+ 3034 0ab1 01       		.uleb128 0x1
+ 3035 0ab2 31       		.byte	0x31
+ 3036 0ab3 00       		.byte	0
+ 3037 0ab4 07       		.uleb128 0x7
+ 3038 0ab5 30000000 		.4byte	.LVL124
+ 3039 0ab9 5A0D0000 		.4byte	0xd5a
+ 3040 0abd 08       		.uleb128 0x8
+ 3041 0abe 36000000 		.4byte	.LVL125
+ 3042 0ac2 0E0E0000 		.4byte	0xe0e
+ 3043 0ac6 D00A0000 		.4byte	0xad0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 61
+
+
+ 3044 0aca 09       		.uleb128 0x9
+ 3045 0acb 01       		.uleb128 0x1
+ 3046 0acc 50       		.byte	0x50
+ 3047 0acd 01       		.uleb128 0x1
+ 3048 0ace 30       		.byte	0x30
+ 3049 0acf 00       		.byte	0
+ 3050 0ad0 08       		.uleb128 0x8
+ 3051 0ad1 3C000000 		.4byte	.LVL126
+ 3052 0ad5 190E0000 		.4byte	0xe19
+ 3053 0ad9 E30A0000 		.4byte	0xae3
+ 3054 0add 09       		.uleb128 0x9
+ 3055 0ade 01       		.uleb128 0x1
+ 3056 0adf 50       		.byte	0x50
+ 3057 0ae0 01       		.uleb128 0x1
+ 3058 0ae1 32       		.byte	0x32
+ 3059 0ae2 00       		.byte	0
+ 3060 0ae3 08       		.uleb128 0x8
+ 3061 0ae4 44000000 		.4byte	.LVL127
+ 3062 0ae8 190E0000 		.4byte	0xe19
+ 3063 0aec F60A0000 		.4byte	0xaf6
+ 3064 0af0 09       		.uleb128 0x9
+ 3065 0af1 01       		.uleb128 0x1
+ 3066 0af2 50       		.byte	0x50
+ 3067 0af3 01       		.uleb128 0x1
+ 3068 0af4 31       		.byte	0x31
+ 3069 0af5 00       		.byte	0
+ 3070 0af6 0A       		.uleb128 0xa
+ 3071 0af7 4A000000 		.4byte	.LVL128
+ 3072 0afb 190E0000 		.4byte	0xe19
+ 3073 0aff 09       		.uleb128 0x9
+ 3074 0b00 01       		.uleb128 0x1
+ 3075 0b01 50       		.byte	0x50
+ 3076 0b02 01       		.uleb128 0x1
+ 3077 0b03 32       		.byte	0x32
+ 3078 0b04 00       		.byte	0
+ 3079 0b05 00       		.byte	0
+ 3080 0b06 0E       		.uleb128 0xe
+ 3081 0b07 17030000 		.4byte	.LASF68
+ 3082 0b0b 01       		.byte	0x1
+ 3083 0b0c 4C01     		.2byte	0x14c
+ 3084 0b0e 5D000000 		.4byte	0x5d
+ 3085 0b12 00000000 		.4byte	.LFB37
+ 3086 0b16 6C000000 		.4byte	.LFE37-.LFB37
+ 3087 0b1a 01       		.uleb128 0x1
+ 3088 0b1b 9C       		.byte	0x9c
+ 3089 0b1c 170C0000 		.4byte	0xc17
+ 3090 0b20 08       		.uleb128 0x8
+ 3091 0b21 0A000000 		.4byte	.LVL130
+ 3092 0b25 250E0000 		.4byte	0xe25
+ 3093 0b29 370B0000 		.4byte	0xb37
+ 3094 0b2d 09       		.uleb128 0x9
+ 3095 0b2e 01       		.uleb128 0x1
+ 3096 0b2f 50       		.byte	0x50
+ 3097 0b30 05       		.uleb128 0x5
+ 3098 0b31 03       		.byte	0x3
+ 3099 0b32 00000000 		.4byte	ACEP_INT_Handler
+ 3100 0b36 00       		.byte	0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 62
+
+
+ 3101 0b37 08       		.uleb128 0x8
+ 3102 0b38 10000000 		.4byte	.LVL131
+ 3103 0b3c 300E0000 		.4byte	0xe30
+ 3104 0b40 4E0B0000 		.4byte	0xb4e
+ 3105 0b44 09       		.uleb128 0x9
+ 3106 0b45 01       		.uleb128 0x1
+ 3107 0b46 50       		.byte	0x50
+ 3108 0b47 05       		.uleb128 0x5
+ 3109 0b48 03       		.byte	0x3
+ 3110 0b49 00000000 		.4byte	DEC_INT_Handler
+ 3111 0b4d 00       		.byte	0
+ 3112 0b4e 08       		.uleb128 0x8
+ 3113 0b4f 16000000 		.4byte	.LVL132
+ 3114 0b53 3B0E0000 		.4byte	0xe3b
+ 3115 0b57 650B0000 		.4byte	0xb65
+ 3116 0b5b 09       		.uleb128 0x9
+ 3117 0b5c 01       		.uleb128 0x1
+ 3118 0b5d 50       		.byte	0x50
+ 3119 0b5e 05       		.uleb128 0x5
+ 3120 0b5f 03       		.byte	0x3
+ 3121 0b60 00000000 		.4byte	INC_INT_Handler
+ 3122 0b64 00       		.byte	0
+ 3123 0b65 08       		.uleb128 0x8
+ 3124 0b66 1C000000 		.4byte	.LVL133
+ 3125 0b6a 460E0000 		.4byte	0xe46
+ 3126 0b6e 7C0B0000 		.4byte	0xb7c
+ 3127 0b72 09       		.uleb128 0x9
+ 3128 0b73 01       		.uleb128 0x1
+ 3129 0b74 50       		.byte	0x50
+ 3130 0b75 05       		.uleb128 0x5
+ 3131 0b76 03       		.byte	0x3
+ 3132 0b77 00000000 		.4byte	PWM_INT_Handler
+ 3133 0b7b 00       		.byte	0
+ 3134 0b7c 07       		.uleb128 0x7
+ 3135 0b7d 20000000 		.4byte	.LVL134
+ 3136 0b81 510E0000 		.4byte	0xe51
+ 3137 0b85 07       		.uleb128 0x7
+ 3138 0b86 24000000 		.4byte	.LVL135
+ 3139 0b8a 5C0E0000 		.4byte	0xe5c
+ 3140 0b8e 07       		.uleb128 0x7
+ 3141 0b8f 28000000 		.4byte	.LVL136
+ 3142 0b93 680E0000 		.4byte	0xe68
+ 3143 0b97 08       		.uleb128 0x8
+ 3144 0b98 2E000000 		.4byte	.LVL137
+ 3145 0b9c CB0D0000 		.4byte	0xdcb
+ 3146 0ba0 AA0B0000 		.4byte	0xbaa
+ 3147 0ba4 09       		.uleb128 0x9
+ 3148 0ba5 01       		.uleb128 0x1
+ 3149 0ba6 50       		.byte	0x50
+ 3150 0ba7 01       		.uleb128 0x1
+ 3151 0ba8 30       		.byte	0x30
+ 3152 0ba9 00       		.byte	0
+ 3153 0baa 07       		.uleb128 0x7
+ 3154 0bab 32000000 		.4byte	.LVL138
+ 3155 0baf 730E0000 		.4byte	0xe73
+ 3156 0bb3 07       		.uleb128 0x7
+ 3157 0bb4 36000000 		.4byte	.LVL139
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 63
+
+
+ 3158 0bb8 7E0E0000 		.4byte	0xe7e
+ 3159 0bbc 08       		.uleb128 0x8
+ 3160 0bbd 3E000000 		.4byte	.LVL140
+ 3161 0bc1 700D0000 		.4byte	0xd70
+ 3162 0bc5 D40B0000 		.4byte	0xbd4
+ 3163 0bc9 09       		.uleb128 0x9
+ 3164 0bca 01       		.uleb128 0x1
+ 3165 0bcb 50       		.byte	0x50
+ 3166 0bcc 01       		.uleb128 0x1
+ 3167 0bcd 30       		.byte	0x30
+ 3168 0bce 09       		.uleb128 0x9
+ 3169 0bcf 01       		.uleb128 0x1
+ 3170 0bd0 51       		.byte	0x51
+ 3171 0bd1 01       		.uleb128 0x1
+ 3172 0bd2 30       		.byte	0x30
+ 3173 0bd3 00       		.byte	0
+ 3174 0bd4 08       		.uleb128 0x8
+ 3175 0bd5 44000000 		.4byte	.LVL141
+ 3176 0bd9 7B0D0000 		.4byte	0xd7b
+ 3177 0bdd EB0B0000 		.4byte	0xbeb
+ 3178 0be1 09       		.uleb128 0x9
+ 3179 0be2 01       		.uleb128 0x1
+ 3180 0be3 50       		.byte	0x50
+ 3181 0be4 05       		.uleb128 0x5
+ 3182 0be5 03       		.byte	0x3
+ 3183 0be6 7C000000 		.4byte	.LC46
+ 3184 0bea 00       		.byte	0
+ 3185 0beb 08       		.uleb128 0x8
+ 3186 0bec 4C000000 		.4byte	.LVL142
+ 3187 0bf0 700D0000 		.4byte	0xd70
+ 3188 0bf4 030C0000 		.4byte	0xc03
+ 3189 0bf8 09       		.uleb128 0x9
+ 3190 0bf9 01       		.uleb128 0x1
+ 3191 0bfa 50       		.byte	0x50
+ 3192 0bfb 01       		.uleb128 0x1
+ 3193 0bfc 31       		.byte	0x31
+ 3194 0bfd 09       		.uleb128 0x9
+ 3195 0bfe 01       		.uleb128 0x1
+ 3196 0bff 51       		.byte	0x51
+ 3197 0c00 01       		.uleb128 0x1
+ 3198 0c01 30       		.byte	0x30
+ 3199 0c02 00       		.byte	0
+ 3200 0c03 0A       		.uleb128 0xa
+ 3201 0c04 52000000 		.4byte	.LVL143
+ 3202 0c08 7B0D0000 		.4byte	0xd7b
+ 3203 0c0c 09       		.uleb128 0x9
+ 3204 0c0d 01       		.uleb128 0x1
+ 3205 0c0e 50       		.byte	0x50
+ 3206 0c0f 05       		.uleb128 0x5
+ 3207 0c10 03       		.byte	0x3
+ 3208 0c11 90000000 		.4byte	.LC48
+ 3209 0c15 00       		.byte	0
+ 3210 0c16 00       		.byte	0
+ 3211 0c17 0F       		.uleb128 0xf
+ 3212 0c18 24000000 		.4byte	.LASF25
+ 3213 0c1c 01       		.byte	0x1
+ 3214 0c1d 08       		.byte	0x8
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 64
+
+
+ 3215 0c1e 6B000000 		.4byte	0x6b
+ 3216 0c22 05       		.uleb128 0x5
+ 3217 0c23 03       		.byte	0x3
+ 3218 0c24 00000000 		.4byte	estadoSIS
+ 3219 0c28 10       		.uleb128 0x10
+ 3220 0c29 54496300 		.ascii	"TIc\000"
+ 3221 0c2d 01       		.byte	0x1
+ 3222 0c2e 09       		.byte	0x9
+ 3223 0c2f 77000000 		.4byte	0x77
+ 3224 0c33 05       		.uleb128 0x5
+ 3225 0c34 03       		.byte	0x3
+ 3226 0c35 00000000 		.4byte	TIc
+ 3227 0c39 0F       		.uleb128 0xf
+ 3228 0c3a 00000000 		.4byte	.LASF26
+ 3229 0c3e 01       		.byte	0x1
+ 3230 0c3f 0A       		.byte	0xa
+ 3231 0c40 6B000000 		.4byte	0x6b
+ 3232 0c44 05       		.uleb128 0x5
+ 3233 0c45 03       		.byte	0x3
+ 3234 0c46 00000000 		.4byte	TIc_sel
+ 3235 0c4a 10       		.uleb128 0x10
+ 3236 0c4b 463100   		.ascii	"F1\000"
+ 3237 0c4e 01       		.byte	0x1
+ 3238 0c4f 0B       		.byte	0xb
+ 3239 0c50 77000000 		.4byte	0x77
+ 3240 0c54 05       		.uleb128 0x5
+ 3241 0c55 03       		.byte	0x3
+ 3242 0c56 00000000 		.4byte	F1
+ 3243 0c5a 10       		.uleb128 0x10
+ 3244 0c5b 463200   		.ascii	"F2\000"
+ 3245 0c5e 01       		.byte	0x1
+ 3246 0c5f 0C       		.byte	0xc
+ 3247 0c60 77000000 		.4byte	0x77
+ 3248 0c64 05       		.uleb128 0x5
+ 3249 0c65 03       		.byte	0x3
+ 3250 0c66 00000000 		.4byte	F2
+ 3251 0c6a 10       		.uleb128 0x10
+ 3252 0c6b 463300   		.ascii	"F3\000"
+ 3253 0c6e 01       		.byte	0x1
+ 3254 0c6f 0D       		.byte	0xd
+ 3255 0c70 77000000 		.4byte	0x77
+ 3256 0c74 05       		.uleb128 0x5
+ 3257 0c75 03       		.byte	0x3
+ 3258 0c76 00000000 		.4byte	F3
+ 3259 0c7a 0F       		.uleb128 0xf
+ 3260 0c7b 1F000000 		.4byte	.LASF27
+ 3261 0c7f 01       		.byte	0x1
+ 3262 0c80 0E       		.byte	0xe
+ 3263 0c81 77000000 		.4byte	0x77
+ 3264 0c85 05       		.uleb128 0x5
+ 3265 0c86 03       		.byte	0x3
+ 3266 0c87 00000000 		.4byte	FREQ
+ 3267 0c8b 0F       		.uleb128 0xf
+ 3268 0c8c BA010000 		.4byte	.LASF28
+ 3269 0c90 01       		.byte	0x1
+ 3270 0c91 0F       		.byte	0xf
+ 3271 0c92 6B000000 		.4byte	0x6b
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 65
+
+
+ 3272 0c96 05       		.uleb128 0x5
+ 3273 0c97 03       		.byte	0x3
+ 3274 0c98 00000000 		.4byte	F_sel
+ 3275 0c9c 0F       		.uleb128 0xf
+ 3276 0c9d FE010000 		.4byte	.LASF29
+ 3277 0ca1 01       		.byte	0x1
+ 3278 0ca2 10       		.byte	0x10
+ 3279 0ca3 83000000 		.4byte	0x83
+ 3280 0ca7 05       		.uleb128 0x5
+ 3281 0ca8 03       		.byte	0x3
+ 3282 0ca9 00000000 		.4byte	Iout
+ 3283 0cad 10       		.uleb128 0x10
+ 3284 0cae 496300   		.ascii	"Ic\000"
+ 3285 0cb1 01       		.byte	0x1
+ 3286 0cb2 11       		.byte	0x11
+ 3287 0cb3 77000000 		.4byte	0x77
+ 3288 0cb7 05       		.uleb128 0x5
+ 3289 0cb8 03       		.byte	0x3
+ 3290 0cb9 00000000 		.4byte	Ic
+ 3291 0cbd 11       		.uleb128 0x11
+ 3292 0cbe 9D000000 		.4byte	0x9d
+ 3293 0cc2 CD0C0000 		.4byte	0xccd
+ 3294 0cc6 12       		.uleb128 0x12
+ 3295 0cc7 B7000000 		.4byte	0xb7
+ 3296 0ccb 02       		.byte	0x2
+ 3297 0ccc 00       		.byte	0
+ 3298 0ccd 0F       		.uleb128 0xf
+ 3299 0cce 2E000000 		.4byte	.LASF30
+ 3300 0cd2 01       		.byte	0x1
+ 3301 0cd3 12       		.byte	0x12
+ 3302 0cd4 BD0C0000 		.4byte	0xcbd
+ 3303 0cd8 05       		.uleb128 0x5
+ 3304 0cd9 03       		.byte	0x3
+ 3305 0cda 00000000 		.4byte	printTIc
+ 3306 0cde 0F       		.uleb128 0xf
+ 3307 0cdf 01030000 		.4byte	.LASF31
+ 3308 0ce3 01       		.byte	0x1
+ 3309 0ce4 13       		.byte	0x13
+ 3310 0ce5 BD0C0000 		.4byte	0xcbd
+ 3311 0ce9 05       		.uleb128 0x5
+ 3312 0cea 03       		.byte	0x3
+ 3313 0ceb 00000000 		.4byte	printIc
+ 3314 0cef 11       		.uleb128 0x11
+ 3315 0cf0 9D000000 		.4byte	0x9d
+ 3316 0cf4 FF0C0000 		.4byte	0xcff
+ 3317 0cf8 12       		.uleb128 0x12
+ 3318 0cf9 B7000000 		.4byte	0xb7
+ 3319 0cfd 03       		.byte	0x3
+ 3320 0cfe 00       		.byte	0
+ 3321 0cff 0F       		.uleb128 0xf
+ 3322 0d00 A2010000 		.4byte	.LASF32
+ 3323 0d04 01       		.byte	0x1
+ 3324 0d05 14       		.byte	0x14
+ 3325 0d06 EF0C0000 		.4byte	0xcef
+ 3326 0d0a 05       		.uleb128 0x5
+ 3327 0d0b 03       		.byte	0x3
+ 3328 0d0c 00000000 		.4byte	printF1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 66
+
+
+ 3329 0d10 0F       		.uleb128 0xf
+ 3330 0d11 AA010000 		.4byte	.LASF33
+ 3331 0d15 01       		.byte	0x1
+ 3332 0d16 15       		.byte	0x15
+ 3333 0d17 EF0C0000 		.4byte	0xcef
+ 3334 0d1b 05       		.uleb128 0x5
+ 3335 0d1c 03       		.byte	0x3
+ 3336 0d1d 00000000 		.4byte	printF2
+ 3337 0d21 0F       		.uleb128 0xf
+ 3338 0d22 B2010000 		.4byte	.LASF34
+ 3339 0d26 01       		.byte	0x1
+ 3340 0d27 16       		.byte	0x16
+ 3341 0d28 EF0C0000 		.4byte	0xcef
+ 3342 0d2c 05       		.uleb128 0x5
+ 3343 0d2d 03       		.byte	0x3
+ 3344 0d2e 00000000 		.4byte	printF3
+ 3345 0d32 0F       		.uleb128 0xf
+ 3346 0d33 41000000 		.4byte	.LASF35
+ 3347 0d37 01       		.byte	0x1
+ 3348 0d38 17       		.byte	0x17
+ 3349 0d39 EF0C0000 		.4byte	0xcef
+ 3350 0d3d 05       		.uleb128 0x5
+ 3351 0d3e 03       		.byte	0x3
+ 3352 0d3f 00000000 		.4byte	printFREQ
+ 3353 0d43 13       		.uleb128 0x13
+ 3354 0d44 40030000 		.4byte	.LASF36
+ 3355 0d48 40030000 		.4byte	.LASF36
+ 3356 0d4c 03       		.byte	0x3
+ 3357 0d4d 3301     		.2byte	0x133
+ 3358 0d4f 14       		.uleb128 0x14
+ 3359 0d50 1F040000 		.4byte	.LASF37
+ 3360 0d54 1F040000 		.4byte	.LASF37
+ 3361 0d58 04       		.byte	0x4
+ 3362 0d59 53       		.byte	0x53
+ 3363 0d5a 14       		.uleb128 0x14
+ 3364 0d5b 77000000 		.4byte	.LASF38
+ 3365 0d5f 77000000 		.4byte	.LASF38
+ 3366 0d63 05       		.byte	0x5
+ 3367 0d64 54       		.byte	0x54
+ 3368 0d65 14       		.uleb128 0x14
+ 3369 0d66 2B040000 		.4byte	.LASF39
+ 3370 0d6a 2B040000 		.4byte	.LASF39
+ 3371 0d6e 06       		.byte	0x6
+ 3372 0d6f 3A       		.byte	0x3a
+ 3373 0d70 14       		.uleb128 0x14
+ 3374 0d71 B9030000 		.4byte	.LASF40
+ 3375 0d75 B9030000 		.4byte	.LASF40
+ 3376 0d79 06       		.byte	0x6
+ 3377 0d7a 3D       		.byte	0x3d
+ 3378 0d7b 14       		.uleb128 0x14
+ 3379 0d7c B2020000 		.4byte	.LASF41
+ 3380 0d80 B2020000 		.4byte	.LASF41
+ 3381 0d84 06       		.byte	0x6
+ 3382 0d85 3C       		.byte	0x3c
+ 3383 0d86 14       		.uleb128 0x14
+ 3384 0d87 5A020000 		.4byte	.LASF42
+ 3385 0d8b 5A020000 		.4byte	.LASF42
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 67
+
+
+ 3386 0d8f 07       		.byte	0x7
+ 3387 0d90 E7       		.byte	0xe7
+ 3388 0d91 14       		.uleb128 0x14
+ 3389 0d92 69030000 		.4byte	.LASF43
+ 3390 0d96 69030000 		.4byte	.LASF43
+ 3391 0d9a 06       		.byte	0x6
+ 3392 0d9b 3E       		.byte	0x3e
+ 3393 0d9c 13       		.uleb128 0x13
+ 3394 0d9d 86030000 		.4byte	.LASF44
+ 3395 0da1 86030000 		.4byte	.LASF44
+ 3396 0da5 03       		.byte	0x3
+ 3397 0da6 3201     		.2byte	0x132
+ 3398 0da8 13       		.uleb128 0x13
+ 3399 0da9 DD030000 		.4byte	.LASF45
+ 3400 0dad DD030000 		.4byte	.LASF45
+ 3401 0db1 03       		.byte	0x3
+ 3402 0db2 5001     		.2byte	0x150
+ 3403 0db4 13       		.uleb128 0x13
+ 3404 0db5 D2020000 		.4byte	.LASF46
+ 3405 0db9 D2020000 		.4byte	.LASF46
+ 3406 0dbd 03       		.byte	0x3
+ 3407 0dbe 5501     		.2byte	0x155
+ 3408 0dc0 14       		.uleb128 0x14
+ 3409 0dc1 1C030000 		.4byte	.LASF47
+ 3410 0dc5 1C030000 		.4byte	.LASF47
+ 3411 0dc9 04       		.byte	0x4
+ 3412 0dca 52       		.byte	0x52
+ 3413 0dcb 14       		.uleb128 0x14
+ 3414 0dcc 6E020000 		.4byte	.LASF48
+ 3415 0dd0 6E020000 		.4byte	.LASF48
+ 3416 0dd4 04       		.byte	0x4
+ 3417 0dd5 54       		.byte	0x54
+ 3418 0dd6 14       		.uleb128 0x14
+ 3419 0dd7 4B000000 		.4byte	.LASF49
+ 3420 0ddb 4B000000 		.4byte	.LASF49
+ 3421 0ddf 08       		.byte	0x8
+ 3422 0de0 39       		.byte	0x39
+ 3423 0de1 14       		.uleb128 0x14
+ 3424 0de2 FD030000 		.4byte	.LASF50
+ 3425 0de6 FD030000 		.4byte	.LASF50
+ 3426 0dea 09       		.byte	0x9
+ 3427 0deb EC       		.byte	0xec
+ 3428 0dec 14       		.uleb128 0x14
+ 3429 0ded 43020000 		.4byte	.LASF51
+ 3430 0df1 43020000 		.4byte	.LASF51
+ 3431 0df5 0A       		.byte	0xa
+ 3432 0df6 39       		.byte	0x39
+ 3433 0df7 14       		.uleb128 0x14
+ 3434 0df8 08000000 		.4byte	.LASF52
+ 3435 0dfc 08000000 		.4byte	.LASF52
+ 3436 0e00 0B       		.byte	0xb
+ 3437 0e01 39       		.byte	0x39
+ 3438 0e02 13       		.uleb128 0x13
+ 3439 0e03 29030000 		.4byte	.LASF53
+ 3440 0e07 29030000 		.4byte	.LASF53
+ 3441 0e0b 03       		.byte	0x3
+ 3442 0e0c 4601     		.2byte	0x146
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 68
+
+
+ 3443 0e0e 14       		.uleb128 0x14
+ 3444 0e0f A0030000 		.4byte	.LASF54
+ 3445 0e13 A0030000 		.4byte	.LASF54
+ 3446 0e17 05       		.byte	0x5
+ 3447 0e18 27       		.byte	0x27
+ 3448 0e19 13       		.uleb128 0x13
+ 3449 0e1a 8A000000 		.4byte	.LASF55
+ 3450 0e1e 8A000000 		.4byte	.LASF55
+ 3451 0e22 03       		.byte	0x3
+ 3452 0e23 4701     		.2byte	0x147
+ 3453 0e25 14       		.uleb128 0x14
+ 3454 0e26 75030000 		.4byte	.LASF56
+ 3455 0e2a 75030000 		.4byte	.LASF56
+ 3456 0e2e 0C       		.byte	0xc
+ 3457 0e2f 18       		.byte	0x18
+ 3458 0e30 14       		.uleb128 0x14
+ 3459 0e31 ED030000 		.4byte	.LASF57
+ 3460 0e35 ED030000 		.4byte	.LASF57
+ 3461 0e39 0D       		.byte	0xd
+ 3462 0e3a 18       		.byte	0x18
+ 3463 0e3b 14       		.uleb128 0x14
+ 3464 0e3c C6030000 		.4byte	.LASF58
+ 3465 0e40 C6030000 		.4byte	.LASF58
+ 3466 0e44 0E       		.byte	0xe
+ 3467 0e45 18       		.byte	0x18
+ 3468 0e46 14       		.uleb128 0x14
+ 3469 0e47 90030000 		.4byte	.LASF59
+ 3470 0e4b 90030000 		.4byte	.LASF59
+ 3471 0e4f 0F       		.byte	0xf
+ 3472 0e50 18       		.byte	0x18
+ 3473 0e51 14       		.uleb128 0x14
+ 3474 0e52 03020000 		.4byte	.LASF60
+ 3475 0e56 03020000 		.4byte	.LASF60
+ 3476 0e5a 06       		.byte	0x6
+ 3477 0e5b 38       		.byte	0x38
+ 3478 0e5c 13       		.uleb128 0x13
+ 3479 0e5d D7010000 		.4byte	.LASF61
+ 3480 0e61 D7010000 		.4byte	.LASF61
+ 3481 0e65 03       		.byte	0x3
+ 3482 0e66 3001     		.2byte	0x130
+ 3483 0e68 14       		.uleb128 0x14
+ 3484 0e69 29020000 		.4byte	.LASF62
+ 3485 0e6d 29020000 		.4byte	.LASF62
+ 3486 0e71 04       		.byte	0x4
+ 3487 0e72 50       		.byte	0x50
+ 3488 0e73 14       		.uleb128 0x14
+ 3489 0e74 F6020000 		.4byte	.LASF63
+ 3490 0e78 F6020000 		.4byte	.LASF63
+ 3491 0e7c 05       		.byte	0x5
+ 3492 0e7d 25       		.byte	0x25
+ 3493 0e7e 14       		.uleb128 0x14
+ 3494 0e7f 3C040000 		.4byte	.LASF64
+ 3495 0e83 3C040000 		.4byte	.LASF64
+ 3496 0e87 10       		.byte	0x10
+ 3497 0e88 2B       		.byte	0x2b
+ 3498 0e89 00       		.byte	0
+ 3499              		.section	.debug_abbrev,"",%progbits
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 69
+
+
+ 3500              	.Ldebug_abbrev0:
+ 3501 0000 01       		.uleb128 0x1
+ 3502 0001 11       		.uleb128 0x11
+ 3503 0002 01       		.byte	0x1
+ 3504 0003 25       		.uleb128 0x25
+ 3505 0004 0E       		.uleb128 0xe
+ 3506 0005 13       		.uleb128 0x13
+ 3507 0006 0B       		.uleb128 0xb
+ 3508 0007 03       		.uleb128 0x3
+ 3509 0008 0E       		.uleb128 0xe
+ 3510 0009 1B       		.uleb128 0x1b
+ 3511 000a 0E       		.uleb128 0xe
+ 3512 000b 55       		.uleb128 0x55
+ 3513 000c 17       		.uleb128 0x17
+ 3514 000d 11       		.uleb128 0x11
+ 3515 000e 01       		.uleb128 0x1
+ 3516 000f 10       		.uleb128 0x10
+ 3517 0010 17       		.uleb128 0x17
+ 3518 0011 00       		.byte	0
+ 3519 0012 00       		.byte	0
+ 3520 0013 02       		.uleb128 0x2
+ 3521 0014 24       		.uleb128 0x24
+ 3522 0015 00       		.byte	0
+ 3523 0016 0B       		.uleb128 0xb
+ 3524 0017 0B       		.uleb128 0xb
+ 3525 0018 3E       		.uleb128 0x3e
+ 3526 0019 0B       		.uleb128 0xb
+ 3527 001a 03       		.uleb128 0x3
+ 3528 001b 0E       		.uleb128 0xe
+ 3529 001c 00       		.byte	0
+ 3530 001d 00       		.byte	0
+ 3531 001e 03       		.uleb128 0x3
+ 3532 001f 24       		.uleb128 0x24
+ 3533 0020 00       		.byte	0
+ 3534 0021 0B       		.uleb128 0xb
+ 3535 0022 0B       		.uleb128 0xb
+ 3536 0023 3E       		.uleb128 0x3e
+ 3537 0024 0B       		.uleb128 0xb
+ 3538 0025 03       		.uleb128 0x3
+ 3539 0026 08       		.uleb128 0x8
+ 3540 0027 00       		.byte	0
+ 3541 0028 00       		.byte	0
+ 3542 0029 04       		.uleb128 0x4
+ 3543 002a 16       		.uleb128 0x16
+ 3544 002b 00       		.byte	0
+ 3545 002c 03       		.uleb128 0x3
+ 3546 002d 0E       		.uleb128 0xe
+ 3547 002e 3A       		.uleb128 0x3a
+ 3548 002f 0B       		.uleb128 0xb
+ 3549 0030 3B       		.uleb128 0x3b
+ 3550 0031 05       		.uleb128 0x5
+ 3551 0032 49       		.uleb128 0x49
+ 3552 0033 13       		.uleb128 0x13
+ 3553 0034 00       		.byte	0
+ 3554 0035 00       		.byte	0
+ 3555 0036 05       		.uleb128 0x5
+ 3556 0037 2E       		.uleb128 0x2e
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 70
+
+
+ 3557 0038 01       		.byte	0x1
+ 3558 0039 3F       		.uleb128 0x3f
+ 3559 003a 19       		.uleb128 0x19
+ 3560 003b 03       		.uleb128 0x3
+ 3561 003c 0E       		.uleb128 0xe
+ 3562 003d 3A       		.uleb128 0x3a
+ 3563 003e 0B       		.uleb128 0xb
+ 3564 003f 3B       		.uleb128 0x3b
+ 3565 0040 0B       		.uleb128 0xb
+ 3566 0041 27       		.uleb128 0x27
+ 3567 0042 19       		.uleb128 0x19
+ 3568 0043 11       		.uleb128 0x11
+ 3569 0044 01       		.uleb128 0x1
+ 3570 0045 12       		.uleb128 0x12
+ 3571 0046 06       		.uleb128 0x6
+ 3572 0047 40       		.uleb128 0x40
+ 3573 0048 18       		.uleb128 0x18
+ 3574 0049 9642     		.uleb128 0x2116
+ 3575 004b 19       		.uleb128 0x19
+ 3576 004c 01       		.uleb128 0x1
+ 3577 004d 13       		.uleb128 0x13
+ 3578 004e 00       		.byte	0
+ 3579 004f 00       		.byte	0
+ 3580 0050 06       		.uleb128 0x6
+ 3581 0051 34       		.uleb128 0x34
+ 3582 0052 00       		.byte	0
+ 3583 0053 03       		.uleb128 0x3
+ 3584 0054 0E       		.uleb128 0xe
+ 3585 0055 3A       		.uleb128 0x3a
+ 3586 0056 0B       		.uleb128 0xb
+ 3587 0057 3B       		.uleb128 0x3b
+ 3588 0058 0B       		.uleb128 0xb
+ 3589 0059 49       		.uleb128 0x49
+ 3590 005a 13       		.uleb128 0x13
+ 3591 005b 02       		.uleb128 0x2
+ 3592 005c 17       		.uleb128 0x17
+ 3593 005d 00       		.byte	0
+ 3594 005e 00       		.byte	0
+ 3595 005f 07       		.uleb128 0x7
+ 3596 0060 898201   		.uleb128 0x4109
+ 3597 0063 00       		.byte	0
+ 3598 0064 11       		.uleb128 0x11
+ 3599 0065 01       		.uleb128 0x1
+ 3600 0066 31       		.uleb128 0x31
+ 3601 0067 13       		.uleb128 0x13
+ 3602 0068 00       		.byte	0
+ 3603 0069 00       		.byte	0
+ 3604 006a 08       		.uleb128 0x8
+ 3605 006b 898201   		.uleb128 0x4109
+ 3606 006e 01       		.byte	0x1
+ 3607 006f 11       		.uleb128 0x11
+ 3608 0070 01       		.uleb128 0x1
+ 3609 0071 31       		.uleb128 0x31
+ 3610 0072 13       		.uleb128 0x13
+ 3611 0073 01       		.uleb128 0x1
+ 3612 0074 13       		.uleb128 0x13
+ 3613 0075 00       		.byte	0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 71
+
+
+ 3614 0076 00       		.byte	0
+ 3615 0077 09       		.uleb128 0x9
+ 3616 0078 8A8201   		.uleb128 0x410a
+ 3617 007b 00       		.byte	0
+ 3618 007c 02       		.uleb128 0x2
+ 3619 007d 18       		.uleb128 0x18
+ 3620 007e 9142     		.uleb128 0x2111
+ 3621 0080 18       		.uleb128 0x18
+ 3622 0081 00       		.byte	0
+ 3623 0082 00       		.byte	0
+ 3624 0083 0A       		.uleb128 0xa
+ 3625 0084 898201   		.uleb128 0x4109
+ 3626 0087 01       		.byte	0x1
+ 3627 0088 11       		.uleb128 0x11
+ 3628 0089 01       		.uleb128 0x1
+ 3629 008a 31       		.uleb128 0x31
+ 3630 008b 13       		.uleb128 0x13
+ 3631 008c 00       		.byte	0
+ 3632 008d 00       		.byte	0
+ 3633 008e 0B       		.uleb128 0xb
+ 3634 008f 2E       		.uleb128 0x2e
+ 3635 0090 01       		.byte	0x1
+ 3636 0091 3F       		.uleb128 0x3f
+ 3637 0092 19       		.uleb128 0x19
+ 3638 0093 03       		.uleb128 0x3
+ 3639 0094 0E       		.uleb128 0xe
+ 3640 0095 3A       		.uleb128 0x3a
+ 3641 0096 0B       		.uleb128 0xb
+ 3642 0097 3B       		.uleb128 0x3b
+ 3643 0098 0B       		.uleb128 0xb
+ 3644 0099 27       		.uleb128 0x27
+ 3645 009a 19       		.uleb128 0x19
+ 3646 009b 11       		.uleb128 0x11
+ 3647 009c 01       		.uleb128 0x1
+ 3648 009d 12       		.uleb128 0x12
+ 3649 009e 06       		.uleb128 0x6
+ 3650 009f 40       		.uleb128 0x40
+ 3651 00a0 18       		.uleb128 0x18
+ 3652 00a1 9742     		.uleb128 0x2117
+ 3653 00a3 19       		.uleb128 0x19
+ 3654 00a4 01       		.uleb128 0x1
+ 3655 00a5 13       		.uleb128 0x13
+ 3656 00a6 00       		.byte	0
+ 3657 00a7 00       		.byte	0
+ 3658 00a8 0C       		.uleb128 0xc
+ 3659 00a9 2E       		.uleb128 0x2e
+ 3660 00aa 01       		.byte	0x1
+ 3661 00ab 3F       		.uleb128 0x3f
+ 3662 00ac 19       		.uleb128 0x19
+ 3663 00ad 03       		.uleb128 0x3
+ 3664 00ae 0E       		.uleb128 0xe
+ 3665 00af 3A       		.uleb128 0x3a
+ 3666 00b0 0B       		.uleb128 0xb
+ 3667 00b1 3B       		.uleb128 0x3b
+ 3668 00b2 05       		.uleb128 0x5
+ 3669 00b3 27       		.uleb128 0x27
+ 3670 00b4 19       		.uleb128 0x19
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 72
+
+
+ 3671 00b5 11       		.uleb128 0x11
+ 3672 00b6 01       		.uleb128 0x1
+ 3673 00b7 12       		.uleb128 0x12
+ 3674 00b8 06       		.uleb128 0x6
+ 3675 00b9 40       		.uleb128 0x40
+ 3676 00ba 18       		.uleb128 0x18
+ 3677 00bb 9742     		.uleb128 0x2117
+ 3678 00bd 19       		.uleb128 0x19
+ 3679 00be 01       		.uleb128 0x1
+ 3680 00bf 13       		.uleb128 0x13
+ 3681 00c0 00       		.byte	0
+ 3682 00c1 00       		.byte	0
+ 3683 00c2 0D       		.uleb128 0xd
+ 3684 00c3 34       		.uleb128 0x34
+ 3685 00c4 00       		.byte	0
+ 3686 00c5 03       		.uleb128 0x3
+ 3687 00c6 0E       		.uleb128 0xe
+ 3688 00c7 3A       		.uleb128 0x3a
+ 3689 00c8 0B       		.uleb128 0xb
+ 3690 00c9 3B       		.uleb128 0x3b
+ 3691 00ca 05       		.uleb128 0x5
+ 3692 00cb 49       		.uleb128 0x49
+ 3693 00cc 13       		.uleb128 0x13
+ 3694 00cd 02       		.uleb128 0x2
+ 3695 00ce 17       		.uleb128 0x17
+ 3696 00cf 00       		.byte	0
+ 3697 00d0 00       		.byte	0
+ 3698 00d1 0E       		.uleb128 0xe
+ 3699 00d2 2E       		.uleb128 0x2e
+ 3700 00d3 01       		.byte	0x1
+ 3701 00d4 3F       		.uleb128 0x3f
+ 3702 00d5 19       		.uleb128 0x19
+ 3703 00d6 03       		.uleb128 0x3
+ 3704 00d7 0E       		.uleb128 0xe
+ 3705 00d8 3A       		.uleb128 0x3a
+ 3706 00d9 0B       		.uleb128 0xb
+ 3707 00da 3B       		.uleb128 0x3b
+ 3708 00db 05       		.uleb128 0x5
+ 3709 00dc 27       		.uleb128 0x27
+ 3710 00dd 19       		.uleb128 0x19
+ 3711 00de 49       		.uleb128 0x49
+ 3712 00df 13       		.uleb128 0x13
+ 3713 00e0 8701     		.uleb128 0x87
+ 3714 00e2 19       		.uleb128 0x19
+ 3715 00e3 11       		.uleb128 0x11
+ 3716 00e4 01       		.uleb128 0x1
+ 3717 00e5 12       		.uleb128 0x12
+ 3718 00e6 06       		.uleb128 0x6
+ 3719 00e7 40       		.uleb128 0x40
+ 3720 00e8 18       		.uleb128 0x18
+ 3721 00e9 9742     		.uleb128 0x2117
+ 3722 00eb 19       		.uleb128 0x19
+ 3723 00ec 01       		.uleb128 0x1
+ 3724 00ed 13       		.uleb128 0x13
+ 3725 00ee 00       		.byte	0
+ 3726 00ef 00       		.byte	0
+ 3727 00f0 0F       		.uleb128 0xf
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 73
+
+
+ 3728 00f1 34       		.uleb128 0x34
+ 3729 00f2 00       		.byte	0
+ 3730 00f3 03       		.uleb128 0x3
+ 3731 00f4 0E       		.uleb128 0xe
+ 3732 00f5 3A       		.uleb128 0x3a
+ 3733 00f6 0B       		.uleb128 0xb
+ 3734 00f7 3B       		.uleb128 0x3b
+ 3735 00f8 0B       		.uleb128 0xb
+ 3736 00f9 49       		.uleb128 0x49
+ 3737 00fa 13       		.uleb128 0x13
+ 3738 00fb 3F       		.uleb128 0x3f
+ 3739 00fc 19       		.uleb128 0x19
+ 3740 00fd 02       		.uleb128 0x2
+ 3741 00fe 18       		.uleb128 0x18
+ 3742 00ff 00       		.byte	0
+ 3743 0100 00       		.byte	0
+ 3744 0101 10       		.uleb128 0x10
+ 3745 0102 34       		.uleb128 0x34
+ 3746 0103 00       		.byte	0
+ 3747 0104 03       		.uleb128 0x3
+ 3748 0105 08       		.uleb128 0x8
+ 3749 0106 3A       		.uleb128 0x3a
+ 3750 0107 0B       		.uleb128 0xb
+ 3751 0108 3B       		.uleb128 0x3b
+ 3752 0109 0B       		.uleb128 0xb
+ 3753 010a 49       		.uleb128 0x49
+ 3754 010b 13       		.uleb128 0x13
+ 3755 010c 3F       		.uleb128 0x3f
+ 3756 010d 19       		.uleb128 0x19
+ 3757 010e 02       		.uleb128 0x2
+ 3758 010f 18       		.uleb128 0x18
+ 3759 0110 00       		.byte	0
+ 3760 0111 00       		.byte	0
+ 3761 0112 11       		.uleb128 0x11
+ 3762 0113 01       		.uleb128 0x1
+ 3763 0114 01       		.byte	0x1
+ 3764 0115 49       		.uleb128 0x49
+ 3765 0116 13       		.uleb128 0x13
+ 3766 0117 01       		.uleb128 0x1
+ 3767 0118 13       		.uleb128 0x13
+ 3768 0119 00       		.byte	0
+ 3769 011a 00       		.byte	0
+ 3770 011b 12       		.uleb128 0x12
+ 3771 011c 21       		.uleb128 0x21
+ 3772 011d 00       		.byte	0
+ 3773 011e 49       		.uleb128 0x49
+ 3774 011f 13       		.uleb128 0x13
+ 3775 0120 2F       		.uleb128 0x2f
+ 3776 0121 0B       		.uleb128 0xb
+ 3777 0122 00       		.byte	0
+ 3778 0123 00       		.byte	0
+ 3779 0124 13       		.uleb128 0x13
+ 3780 0125 2E       		.uleb128 0x2e
+ 3781 0126 00       		.byte	0
+ 3782 0127 3F       		.uleb128 0x3f
+ 3783 0128 19       		.uleb128 0x19
+ 3784 0129 3C       		.uleb128 0x3c
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 74
+
+
+ 3785 012a 19       		.uleb128 0x19
+ 3786 012b 6E       		.uleb128 0x6e
+ 3787 012c 0E       		.uleb128 0xe
+ 3788 012d 03       		.uleb128 0x3
+ 3789 012e 0E       		.uleb128 0xe
+ 3790 012f 3A       		.uleb128 0x3a
+ 3791 0130 0B       		.uleb128 0xb
+ 3792 0131 3B       		.uleb128 0x3b
+ 3793 0132 05       		.uleb128 0x5
+ 3794 0133 00       		.byte	0
+ 3795 0134 00       		.byte	0
+ 3796 0135 14       		.uleb128 0x14
+ 3797 0136 2E       		.uleb128 0x2e
+ 3798 0137 00       		.byte	0
+ 3799 0138 3F       		.uleb128 0x3f
+ 3800 0139 19       		.uleb128 0x19
+ 3801 013a 3C       		.uleb128 0x3c
+ 3802 013b 19       		.uleb128 0x19
+ 3803 013c 6E       		.uleb128 0x6e
+ 3804 013d 0E       		.uleb128 0xe
+ 3805 013e 03       		.uleb128 0x3
+ 3806 013f 0E       		.uleb128 0xe
+ 3807 0140 3A       		.uleb128 0x3a
+ 3808 0141 0B       		.uleb128 0xb
+ 3809 0142 3B       		.uleb128 0x3b
+ 3810 0143 0B       		.uleb128 0xb
+ 3811 0144 00       		.byte	0
+ 3812 0145 00       		.byte	0
+ 3813 0146 00       		.byte	0
+ 3814              		.section	.debug_loc,"",%progbits
+ 3815              	.Ldebug_loc0:
+ 3816              	.LLST0:
+ 3817 0000 E2020000 		.4byte	.LVL43
+ 3818 0004 E4020000 		.4byte	.LVL44
+ 3819 0008 0100     		.2byte	0x1
+ 3820 000a 50       		.byte	0x50
+ 3821 000b E4020000 		.4byte	.LVL44
+ 3822 000f 3A030000 		.4byte	.LVL57
+ 3823 0013 0100     		.2byte	0x1
+ 3824 0015 56       		.byte	0x56
+ 3825 0016 00000000 		.4byte	0
+ 3826 001a 00000000 		.4byte	0
+ 3827              	.LLST1:
+ 3828 001e D4020000 		.4byte	.LVL40
+ 3829 0022 D6020000 		.4byte	.LVL41
+ 3830 0026 0100     		.2byte	0x1
+ 3831 0028 50       		.byte	0x50
+ 3832 0029 D6020000 		.4byte	.LVL41
+ 3833 002d 08030000 		.4byte	.LVL51
+ 3834 0031 0100     		.2byte	0x1
+ 3835 0033 55       		.byte	0x55
+ 3836 0034 00000000 		.4byte	0
+ 3837 0038 00000000 		.4byte	0
+ 3838              	.LLST2:
+ 3839 003c 02000000 		.4byte	.LVL116
+ 3840 0040 08000000 		.4byte	.LVL118
+ 3841 0044 0200     		.2byte	0x2
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 75
+
+
+ 3842 0046 30       		.byte	0x30
+ 3843 0047 9F       		.byte	0x9f
+ 3844 0048 08000000 		.4byte	.LVL118
+ 3845 004c 0C000000 		.4byte	.LVL119
+ 3846 0050 0100     		.2byte	0x1
+ 3847 0052 50       		.byte	0x50
+ 3848 0053 0C000000 		.4byte	.LVL119
+ 3849 0057 4A000000 		.4byte	.LVL129
+ 3850 005b 0100     		.2byte	0x1
+ 3851 005d 54       		.byte	0x54
+ 3852 005e 00000000 		.4byte	0
+ 3853 0062 00000000 		.4byte	0
+ 3854              		.section	.debug_aranges,"",%progbits
+ 3855 0000 3C000000 		.4byte	0x3c
+ 3856 0004 0200     		.2byte	0x2
+ 3857 0006 00000000 		.4byte	.Ldebug_info0
+ 3858 000a 04       		.byte	0x4
+ 3859 000b 00       		.byte	0
+ 3860 000c 0000     		.2byte	0
+ 3861 000e 0000     		.2byte	0
+ 3862 0010 00000000 		.4byte	.LFB33
+ 3863 0014 F8030000 		.4byte	.LFE33-.LFB33
+ 3864 0018 00000000 		.4byte	.LFB34
+ 3865 001c 70010000 		.4byte	.LFE34-.LFB34
+ 3866 0020 00000000 		.4byte	.LFB35
+ 3867 0024 74010000 		.4byte	.LFE35-.LFB35
+ 3868 0028 00000000 		.4byte	.LFB36
+ 3869 002c 50000000 		.4byte	.LFE36-.LFB36
+ 3870 0030 00000000 		.4byte	.LFB37
+ 3871 0034 6C000000 		.4byte	.LFE37-.LFB37
+ 3872 0038 00000000 		.4byte	0
+ 3873 003c 00000000 		.4byte	0
+ 3874              		.section	.debug_ranges,"",%progbits
+ 3875              	.Ldebug_ranges0:
+ 3876 0000 00000000 		.4byte	.LFB33
+ 3877 0004 F8030000 		.4byte	.LFE33
+ 3878 0008 00000000 		.4byte	.LFB34
+ 3879 000c 70010000 		.4byte	.LFE34
+ 3880 0010 00000000 		.4byte	.LFB35
+ 3881 0014 74010000 		.4byte	.LFE35
+ 3882 0018 00000000 		.4byte	.LFB36
+ 3883 001c 50000000 		.4byte	.LFE36
+ 3884 0020 00000000 		.4byte	.LFB37
+ 3885 0024 6C000000 		.4byte	.LFE37
+ 3886 0028 00000000 		.4byte	0
+ 3887 002c 00000000 		.4byte	0
+ 3888              		.section	.debug_line,"",%progbits
+ 3889              	.Ldebug_line0:
+ 3890 0000 C0020000 		.section	.debug_str,"MS",%progbits,1
+ 3890      02006301 
+ 3890      00000201 
+ 3890      FB0E0D00 
+ 3890      01010101 
+ 3891              	.LASF26:
+ 3892 0000 5449635F 		.ascii	"TIc_sel\000"
+ 3892      73656C00 
+ 3893              	.LASF52:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 76
+
+
+ 3894 0008 50494E5F 		.ascii	"PIN_INC_ClearInterrupt\000"
+ 3894      494E435F 
+ 3894      436C6561 
+ 3894      72496E74 
+ 3894      65727275 
+ 3895              	.LASF27:
+ 3896 001f 46524551 		.ascii	"FREQ\000"
+ 3896      00
+ 3897              	.LASF25:
+ 3898 0024 65737461 		.ascii	"estadoSIS\000"
+ 3898      646F5349 
+ 3898      5300
+ 3899              	.LASF30:
+ 3900 002e 7072696E 		.ascii	"printTIc\000"
+ 3900      74544963 
+ 3900      00
+ 3901              	.LASF2:
+ 3902 0037 73686F72 		.ascii	"short int\000"
+ 3902      7420696E 
+ 3902      7400
+ 3903              	.LASF35:
+ 3904 0041 7072696E 		.ascii	"printFREQ\000"
+ 3904      74465245 
+ 3904      5100
+ 3905              	.LASF49:
+ 3906 004b 50494E5F 		.ascii	"PIN_ACEP_ClearInterrupt\000"
+ 3906      41434550 
+ 3906      5F436C65 
+ 3906      6172496E 
+ 3906      74657272 
+ 3907              	.LASF14:
+ 3908 0063 63686172 		.ascii	"char8\000"
+ 3908      3800
+ 3909              	.LASF6:
+ 3910 0069 6C6F6E67 		.ascii	"long long int\000"
+ 3910      206C6F6E 
+ 3910      6720696E 
+ 3910      7400
+ 3911              	.LASF38:
+ 3912 0077 414D7578 		.ascii	"AMux_DisconnectAll\000"
+ 3912      5F446973 
+ 3912      636F6E6E 
+ 3912      65637441 
+ 3912      6C6C00
+ 3913              	.LASF55:
+ 3914 008a 50574D5F 		.ascii	"PWM_ClearInterrupt\000"
+ 3914      436C6561 
+ 3914      72496E74 
+ 3914      65727275 
+ 3914      707400
+ 3915              	.LASF65:
+ 3916 009d 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 3916      43313120 
+ 3916      352E342E 
+ 3916      31203230 
+ 3916      31363036 
+ 3917 00d0 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 77
+
+
+ 3917      20726576 
+ 3917      6973696F 
+ 3917      6E203233 
+ 3917      37373135 
+ 3918 0103 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 3918      66756E63 
+ 3918      74696F6E 
+ 3918      2D736563 
+ 3918      74696F6E 
+ 3919              	.LASF9:
+ 3920 012b 75696E74 		.ascii	"uint8\000"
+ 3920      3800
+ 3921              	.LASF67:
+ 3922 0131 443A5C54 		.ascii	"D:\\Tesis MIB\\Proyecto de Tesis\\TESIS - Desarroll"
+ 3922      65736973 
+ 3922      204D4942 
+ 3922      5C50726F 
+ 3922      79656374 
+ 3923 0161 6F5C5053 		.ascii	"o\\PSoC\\electroestimulador\\WorkspaceMIB2\\Electro"
+ 3923      6F435C65 
+ 3923      6C656374 
+ 3923      726F6573 
+ 3923      74696D75 
+ 3924 0190 65737469 		.ascii	"estimulador.cydsn\000"
+ 3924      6D756C61 
+ 3924      646F722E 
+ 3924      63796473 
+ 3924      6E00
+ 3925              	.LASF32:
+ 3926 01a2 7072696E 		.ascii	"printF1\000"
+ 3926      74463100 
+ 3927              	.LASF33:
+ 3928 01aa 7072696E 		.ascii	"printF2\000"
+ 3928      74463200 
+ 3929              	.LASF34:
+ 3930 01b2 7072696E 		.ascii	"printF3\000"
+ 3930      74463300 
+ 3931              	.LASF28:
+ 3932 01ba 465F7365 		.ascii	"F_sel\000"
+ 3932      6C00
+ 3933              	.LASF12:
+ 3934 01c0 666C6F61 		.ascii	"float\000"
+ 3934      7400
+ 3935              	.LASF20:
+ 3936 01c6 41434550 		.ascii	"ACEP_INT_Handler\000"
+ 3936      5F494E54 
+ 3936      5F48616E 
+ 3936      646C6572 
+ 3936      00
+ 3937              	.LASF61:
+ 3938 01d7 50574D5F 		.ascii	"PWM_Init\000"
+ 3938      496E6974 
+ 3938      00
+ 3939              	.LASF22:
+ 3940 01e0 494E435F 		.ascii	"INC_INT_Handler\000"
+ 3940      494E545F 
+ 3940      48616E64 
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 78
+
+
+ 3940      6C657200 
+ 3941              	.LASF24:
+ 3942 01f0 65737461 		.ascii	"estadoINT_PWM\000"
+ 3942      646F494E 
+ 3942      545F5057 
+ 3942      4D00
+ 3943              	.LASF29:
+ 3944 01fe 496F7574 		.ascii	"Iout\000"
+ 3944      00
+ 3945              	.LASF60:
+ 3946 0203 4C43445F 		.ascii	"LCD_Start\000"
+ 3946      53746172 
+ 3946      7400
+ 3947              	.LASF21:
+ 3948 020d 4445435F 		.ascii	"DEC_INT_Handler\000"
+ 3948      494E545F 
+ 3948      48616E64 
+ 3948      6C657200 
+ 3949              	.LASF16:
+ 3950 021d 6C6F6E67 		.ascii	"long double\000"
+ 3950      20646F75 
+ 3950      626C6500 
+ 3951              	.LASF62:
+ 3952 0229 49444143 		.ascii	"IDAC_1_Init\000"
+ 3952      5F315F49 
+ 3952      6E697400 
+ 3953              	.LASF1:
+ 3954 0235 756E7369 		.ascii	"unsigned char\000"
+ 3954      676E6564 
+ 3954      20636861 
+ 3954      7200
+ 3955              	.LASF51:
+ 3956 0243 50494E5F 		.ascii	"PIN_DEC_ClearInterrupt\000"
+ 3956      4445435F 
+ 3956      436C6561 
+ 3956      72496E74 
+ 3956      65727275 
+ 3957              	.LASF42:
+ 3958 025a 73707269 		.ascii	"sprintf\000"
+ 3958      6E746600 
+ 3959              	.LASF0:
+ 3960 0262 7369676E 		.ascii	"signed char\000"
+ 3960      65642063 
+ 3960      68617200 
+ 3961              	.LASF48:
+ 3962 026e 49444143 		.ascii	"IDAC_1_SetValue\000"
+ 3962      5F315F53 
+ 3962      65745661 
+ 3962      6C756500 
+ 3963              	.LASF7:
+ 3964 027e 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 3964      206C6F6E 
+ 3964      6720756E 
+ 3964      7369676E 
+ 3964      65642069 
+ 3965              	.LASF23:
+ 3966 0295 50574D5F 		.ascii	"PWM_INT_Handler\000"
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 79
+
+
+ 3966      494E545F 
+ 3966      48616E64 
+ 3966      6C657200 
+ 3967              	.LASF8:
+ 3968 02a5 756E7369 		.ascii	"unsigned int\000"
+ 3968      676E6564 
+ 3968      20696E74 
+ 3968      00
+ 3969              	.LASF41:
+ 3970 02b2 4C43445F 		.ascii	"LCD_PrintString\000"
+ 3970      5072696E 
+ 3970      74537472 
+ 3970      696E6700 
+ 3971              	.LASF19:
+ 3972 02c2 70657269 		.ascii	"periodo\000"
+ 3972      6F646F00 
+ 3973              	.LASF18:
+ 3974 02ca 636F6D70 		.ascii	"compVal\000"
+ 3974      56616C00 
+ 3975              	.LASF46:
+ 3976 02d2 50574D5F 		.ascii	"PWM_WriteCompare\000"
+ 3976      57726974 
+ 3976      65436F6D 
+ 3976      70617265 
+ 3976      00
+ 3977              	.LASF3:
+ 3978 02e3 73686F72 		.ascii	"short unsigned int\000"
+ 3978      7420756E 
+ 3978      7369676E 
+ 3978      65642069 
+ 3978      6E7400
+ 3979              	.LASF63:
+ 3980 02f6 414D7578 		.ascii	"AMux_Start\000"
+ 3980      5F537461 
+ 3980      727400
+ 3981              	.LASF31:
+ 3982 0301 7072696E 		.ascii	"printIc\000"
+ 3982      74496300 
+ 3983              	.LASF15:
+ 3984 0309 63686172 		.ascii	"char\000"
+ 3984      00
+ 3985              	.LASF4:
+ 3986 030e 6C6F6E67 		.ascii	"long int\000"
+ 3986      20696E74 
+ 3986      00
+ 3987              	.LASF68:
+ 3988 0317 6D61696E 		.ascii	"main\000"
+ 3988      00
+ 3989              	.LASF47:
+ 3990 031c 49444143 		.ascii	"IDAC_1_Start\000"
+ 3990      5F315F53 
+ 3990      74617274 
+ 3990      00
+ 3991              	.LASF53:
+ 3992 0329 50574D5F 		.ascii	"PWM_GetInterruptSource\000"
+ 3992      47657449 
+ 3992      6E746572 
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 80
+
+
+ 3992      72757074 
+ 3992      536F7572 
+ 3993              	.LASF36:
+ 3994 0340 50574D5F 		.ascii	"PWM_Stop\000"
+ 3994      53746F70 
+ 3994      00
+ 3995              	.LASF10:
+ 3996 0349 75696E74 		.ascii	"uint16\000"
+ 3996      313600
+ 3997              	.LASF11:
+ 3998 0350 75696E74 		.ascii	"uint32\000"
+ 3998      333200
+ 3999              	.LASF5:
+ 4000 0357 6C6F6E67 		.ascii	"long unsigned int\000"
+ 4000      20756E73 
+ 4000      69676E65 
+ 4000      6420696E 
+ 4000      7400
+ 4001              	.LASF43:
+ 4002 0369 4C43445F 		.ascii	"LCD_PutChar\000"
+ 4002      50757443 
+ 4002      68617200 
+ 4003              	.LASF56:
+ 4004 0375 41434550 		.ascii	"ACEP_INT_StartEx\000"
+ 4004      5F494E54 
+ 4004      5F537461 
+ 4004      72744578 
+ 4004      00
+ 4005              	.LASF44:
+ 4006 0386 50574D5F 		.ascii	"PWM_Start\000"
+ 4006      53746172 
+ 4006      7400
+ 4007              	.LASF59:
+ 4008 0390 50574D5F 		.ascii	"PWM_INT_StartEx\000"
+ 4008      494E545F 
+ 4008      53746172 
+ 4008      74457800 
+ 4009              	.LASF54:
+ 4010 03a0 414D7578 		.ascii	"AMux_FastSelect\000"
+ 4010      5F466173 
+ 4010      7453656C 
+ 4010      65637400 
+ 4011              	.LASF17:
+ 4012 03b0 73697A65 		.ascii	"sizetype\000"
+ 4012      74797065 
+ 4012      00
+ 4013              	.LASF40:
+ 4014 03b9 4C43445F 		.ascii	"LCD_Position\000"
+ 4014      506F7369 
+ 4014      74696F6E 
+ 4014      00
+ 4015              	.LASF58:
+ 4016 03c6 494E435F 		.ascii	"INC_INT_StartEx\000"
+ 4016      494E545F 
+ 4016      53746172 
+ 4016      74457800 
+ 4017              	.LASF13:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\ccAkyrf5.s 			page 81
+
+
+ 4018 03d6 646F7562 		.ascii	"double\000"
+ 4018      6C6500
+ 4019              	.LASF45:
+ 4020 03dd 50574D5F 		.ascii	"PWM_WritePeriod\000"
+ 4020      57726974 
+ 4020      65506572 
+ 4020      696F6400 
+ 4021              	.LASF57:
+ 4022 03ed 4445435F 		.ascii	"DEC_INT_StartEx\000"
+ 4022      494E545F 
+ 4022      53746172 
+ 4022      74457800 
+ 4023              	.LASF50:
+ 4024 03fd 43794465 		.ascii	"CyDelay\000"
+ 4024      6C617900 
+ 4025              	.LASF66:
+ 4026 0405 456C6563 		.ascii	"Electroestimulador-main.c\000"
+ 4026      74726F65 
+ 4026      7374696D 
+ 4026      756C6164 
+ 4026      6F722D6D 
+ 4027              	.LASF37:
+ 4028 041f 49444143 		.ascii	"IDAC_1_Stop\000"
+ 4028      5F315F53 
+ 4028      746F7000 
+ 4029              	.LASF39:
+ 4030 042b 4C43445F 		.ascii	"LCD_WriteControl\000"
+ 4030      57726974 
+ 4030      65436F6E 
+ 4030      74726F6C 
+ 4030      00
+ 4031              	.LASF64:
+ 4032 043c 436F6D70 		.ascii	"Comp_1_Start\000"
+ 4032      5F315F53 
+ 4032      74617274 
+ 4032      00
+ 4033              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

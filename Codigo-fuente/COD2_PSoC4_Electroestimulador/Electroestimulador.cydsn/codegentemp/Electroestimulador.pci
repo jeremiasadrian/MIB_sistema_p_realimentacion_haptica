@@ -1,0 +1,22 @@
+# Electroestimulador
+# 2022-12-18 13:26:38Z
+
+set_location "ClockGenBlock" m0s8clockgenblockcell -1 -1 0
+set_io "IDAC_Pos(0)" iocell 1 4
+set_io "IDAC_Neg(0)" iocell 1 2
+set_io "\LCD:LCDPort(0)\" iocell 0 0
+set_io "\LCD:LCDPort(1)\" iocell 0 1
+set_io "\LCD:LCDPort(2)\" iocell 0 2
+set_io "\LCD:LCDPort(3)\" iocell 0 3
+set_io "\LCD:LCDPort(4)\" iocell 0 4
+set_io "\LCD:LCDPort(5)\" iocell 0 5
+set_io "\LCD:LCDPort(6)\" iocell 0 6
+set_io "Vi_ninv(0)" iocell 1 0
+set_io "PIN_ACEP(0)" iocell 1 7
+set_io "PIN_INC(0)" iocell 2 0
+set_io "PIN_DEC(0)" iocell 3 0
+set_io "Pin_PWM(0)" iocell 1 6
+set_io "Vi_inv(0)" iocell 1 1
+set_io "Vo(0)" iocell 3 7
+set_location "\IDAC_1:cy_psoc4_idac\" p4csidac8cell -1 -1 0
+set_location "\Comp_1:cy_psoc4_abuf\" p4abufcell -1 -1 0

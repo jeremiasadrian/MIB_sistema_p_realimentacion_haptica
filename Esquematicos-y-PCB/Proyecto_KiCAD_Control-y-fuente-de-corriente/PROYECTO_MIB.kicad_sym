@@ -1,0 +1,42 @@
+(kicad_symbol_lib (version 20211014) (generator kicad_symbol_editor)
+  (symbol "+150V" (power) (in_bom no) (on_board no)
+    (property "Reference" "#PWR" (id 0) (at 0 0 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "+150V" (id 1) (at 0 2.54 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (id 2) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (symbol "+150V_0_0"
+      (pin power_out line (at 2.54 -5.08 90) (length 0) hide
+        (name "+150V" (effects (font (size 1.27 1.27))))
+        (number "" (effects (font (size 1.27 1.27))))
+      )
+    )
+    (symbol "+150V_0_1"
+      (polyline
+        (pts
+          (xy 2.54 -3.81)
+          (xy 2.54 -5.08)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 2.54 -1.27)
+          (xy 1.27 -3.81)
+          (xy 3.81 -3.81)
+          (xy 2.54 -1.27)
+        )
+        (stroke (width 0) (type default) (color 0 0 0 0))
+        (fill (type outline))
+      )
+    )
+  )
+)

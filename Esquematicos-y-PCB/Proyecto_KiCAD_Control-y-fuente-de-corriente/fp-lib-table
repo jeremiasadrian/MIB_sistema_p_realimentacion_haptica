@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "Proyecto_MIB")(type "KiCad")(uri "C:/Users/Jeremias/Documents/GitHub/jeremiasadrian/Tesis MIB/Proyecto de Tesis/TESIS - Desarrollo/PCB")(options "")(descr ""))
+  (lib (name "Library")(type "KiCad")(uri "C:/Users/Jeremias/Documents/GitHub/jeremiasadrian/Tesis MIB/Proyecto de Tesis/TESIS - Desarrollo/PCB/Huellas_MIB/Library.pretty")(options "")(descr ""))
+)

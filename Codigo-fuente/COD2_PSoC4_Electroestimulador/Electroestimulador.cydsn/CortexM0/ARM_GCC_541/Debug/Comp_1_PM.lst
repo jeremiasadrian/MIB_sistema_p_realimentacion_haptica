@@ -1,0 +1,879 @@
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"Comp_1_PM.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Comp_1_SaveConfig,"ax",%progbits
+  20              		.align	2
+  21              		.global	Comp_1_SaveConfig
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	Comp_1_SaveConfig, %function
+  25              	Comp_1_SaveConfig:
+  26              	.LFB0:
+  27              		.file 1 "Generated_Source\\PSoC4\\Comp_1_PM.c"
+   1:Generated_Source\PSoC4/Comp_1_PM.c **** /*******************************************************************************
+   2:Generated_Source\PSoC4/Comp_1_PM.c **** * File Name: Comp_1_PM.c
+   3:Generated_Source\PSoC4/Comp_1_PM.c **** * Version 1.20
+   4:Generated_Source\PSoC4/Comp_1_PM.c **** *
+   5:Generated_Source\PSoC4/Comp_1_PM.c **** * Description:
+   6:Generated_Source\PSoC4/Comp_1_PM.c **** *  This file provides the power management source code APIs for the
+   7:Generated_Source\PSoC4/Comp_1_PM.c **** *  Comparator.
+   8:Generated_Source\PSoC4/Comp_1_PM.c **** *
+   9:Generated_Source\PSoC4/Comp_1_PM.c **** * Note:
+  10:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  11:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  12:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************
+  13:Generated_Source\PSoC4/Comp_1_PM.c **** * Copyright 2013-2015, Cypress Semiconductor Corporation.  All rights reserved.
+  14:Generated_Source\PSoC4/Comp_1_PM.c **** * You may use this file only in accordance with the license, terms, conditions,
+  15:Generated_Source\PSoC4/Comp_1_PM.c **** * disclaimers, and limitations in the end user license agreement accompanying
+  16:Generated_Source\PSoC4/Comp_1_PM.c **** * the software package with which this file was provided.
+  17:Generated_Source\PSoC4/Comp_1_PM.c **** *******************************************************************************/
+  18:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  19:Generated_Source\PSoC4/Comp_1_PM.c **** #include "Comp_1.h"
+  20:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  21:Generated_Source\PSoC4/Comp_1_PM.c **** #if(!Comp_1_CHECK_DEEPSLEEP_SUPPORT)
+  22:Generated_Source\PSoC4/Comp_1_PM.c ****     static Comp_1_BACKUP_STRUCT Comp_1_backup =
+  23:Generated_Source\PSoC4/Comp_1_PM.c ****     {
+  24:Generated_Source\PSoC4/Comp_1_PM.c ****         0u, /* enableState */
+  25:Generated_Source\PSoC4/Comp_1_PM.c ****     };
+  26:Generated_Source\PSoC4/Comp_1_PM.c **** #endif /* (Comp_1_CHECK_DEEPSLEEP_SUPPORT) */
+  27:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  28:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  29:Generated_Source\PSoC4/Comp_1_PM.c **** /*******************************************************************************
+  30:Generated_Source\PSoC4/Comp_1_PM.c **** * Function Name: Comp_1_SaveConfig
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 2
+
+
+  31:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************
+  32:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  33:Generated_Source\PSoC4/Comp_1_PM.c **** * Summary:
+  34:Generated_Source\PSoC4/Comp_1_PM.c **** *  Empty function. Included for consistency with other components.
+  35:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  36:Generated_Source\PSoC4/Comp_1_PM.c **** * Parameters:
+  37:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  38:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  39:Generated_Source\PSoC4/Comp_1_PM.c **** * Return:
+  40:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  41:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  42:Generated_Source\PSoC4/Comp_1_PM.c **** *******************************************************************************/
+  43:Generated_Source\PSoC4/Comp_1_PM.c **** void Comp_1_SaveConfig(void)
+  44:Generated_Source\PSoC4/Comp_1_PM.c **** {
+  28              		.loc 1 44 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  45:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  46:Generated_Source\PSoC4/Comp_1_PM.c **** }
+  33              		.loc 1 46 0
+  34              		@ sp needed
+  35 0000 7047     		bx	lr
+  36              		.cfi_endproc
+  37              	.LFE0:
+  38              		.size	Comp_1_SaveConfig, .-Comp_1_SaveConfig
+  39 0002 C046     		.section	.text.Comp_1_RestoreConfig,"ax",%progbits
+  40              		.align	2
+  41              		.global	Comp_1_RestoreConfig
+  42              		.code	16
+  43              		.thumb_func
+  44              		.type	Comp_1_RestoreConfig, %function
+  45              	Comp_1_RestoreConfig:
+  46              	.LFB1:
+  47:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  48:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  49:Generated_Source\PSoC4/Comp_1_PM.c **** /*******************************************************************************
+  50:Generated_Source\PSoC4/Comp_1_PM.c **** * Function Name: Comp_1_RestoreConfig
+  51:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************
+  52:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  53:Generated_Source\PSoC4/Comp_1_PM.c **** * Summary:
+  54:Generated_Source\PSoC4/Comp_1_PM.c **** *  Empty function. Included for consistency with other components.
+  55:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  56:Generated_Source\PSoC4/Comp_1_PM.c **** * Parameters:
+  57:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  58:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  59:Generated_Source\PSoC4/Comp_1_PM.c **** * Return:
+  60:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  61:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  62:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************/
+  63:Generated_Source\PSoC4/Comp_1_PM.c **** void Comp_1_RestoreConfig(void)
+  64:Generated_Source\PSoC4/Comp_1_PM.c **** {
+  47              		.loc 1 64 0
+  48              		.cfi_startproc
+  49              		@ args = 0, pretend = 0, frame = 0
+  50              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 3
+
+
+  51              		@ link register save eliminated.
+  65:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  66:Generated_Source\PSoC4/Comp_1_PM.c **** }
+  52              		.loc 1 66 0
+  53              		@ sp needed
+  54 0000 7047     		bx	lr
+  55              		.cfi_endproc
+  56              	.LFE1:
+  57              		.size	Comp_1_RestoreConfig, .-Comp_1_RestoreConfig
+  58 0002 C046     		.section	.text.Comp_1_Sleep,"ax",%progbits
+  59              		.align	2
+  60              		.global	Comp_1_Sleep
+  61              		.code	16
+  62              		.thumb_func
+  63              		.type	Comp_1_Sleep, %function
+  64              	Comp_1_Sleep:
+  65              	.LFB2:
+  67:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  68:Generated_Source\PSoC4/Comp_1_PM.c **** 
+  69:Generated_Source\PSoC4/Comp_1_PM.c **** /*******************************************************************************
+  70:Generated_Source\PSoC4/Comp_1_PM.c **** * Function Name: Comp_1_Sleep
+  71:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************
+  72:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  73:Generated_Source\PSoC4/Comp_1_PM.c **** * Summary:
+  74:Generated_Source\PSoC4/Comp_1_PM.c **** *  This is the preferred API to prepare the component for sleep. The Sleep() API 
+  75:Generated_Source\PSoC4/Comp_1_PM.c **** *  saves the current component state. Call the Comp_Sleep() function before 
+  76:Generated_Source\PSoC4/Comp_1_PM.c **** *  calling the CySysPmDeepSleep() or the CySysPmHibernate() functions.
+  77:Generated_Source\PSoC4/Comp_1_PM.c **** *  The "Deep sleep operation" option has an influence on this function
+  78:Generated_Source\PSoC4/Comp_1_PM.c **** *  implementation.
+  79:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  80:Generated_Source\PSoC4/Comp_1_PM.c **** * Parameters:
+  81:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  82:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  83:Generated_Source\PSoC4/Comp_1_PM.c **** * Return:
+  84:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+  85:Generated_Source\PSoC4/Comp_1_PM.c **** *
+  86:Generated_Source\PSoC4/Comp_1_PM.c **** *******************************************************************************/
+  87:Generated_Source\PSoC4/Comp_1_PM.c **** void Comp_1_Sleep(void)
+  88:Generated_Source\PSoC4/Comp_1_PM.c **** {
+  66              		.loc 1 88 0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 0
+  69              		@ frame_needed = 0, uses_anonymous_args = 0
+  70 0000 10B5     		push	{r4, lr}
+  71              		.cfi_def_cfa_offset 8
+  72              		.cfi_offset 4, -8
+  73              		.cfi_offset 14, -4
+  89:Generated_Source\PSoC4/Comp_1_PM.c **** #if(!Comp_1_CHECK_DEEPSLEEP_SUPPORT)
+  90:Generated_Source\PSoC4/Comp_1_PM.c ****     if(Comp_1_CHECK_PWR_MODE_OFF)
+  74              		.loc 1 90 0
+  75 0002 074B     		ldr	r3, .L6
+  76 0004 1B68     		ldr	r3, [r3]
+  77 0006 9B07     		lsls	r3, r3, #30
+  78 0008 05D0     		beq	.L4
+  91:Generated_Source\PSoC4/Comp_1_PM.c ****     {
+  92:Generated_Source\PSoC4/Comp_1_PM.c ****         Comp_1_backup.enableState = 1u;
+  79              		.loc 1 92 0
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 4
+
+
+  80 000a 0122     		movs	r2, #1
+  81 000c 054B     		ldr	r3, .L6+4
+  82 000e 1A70     		strb	r2, [r3]
+  93:Generated_Source\PSoC4/Comp_1_PM.c ****         Comp_1_Stop();
+  83              		.loc 1 93 0
+  84 0010 FFF7FEFF 		bl	Comp_1_Stop
+  85              	.LVL0:
+  86 0014 02E0     		b	.L3
+  87              	.L4:
+  94:Generated_Source\PSoC4/Comp_1_PM.c ****     }
+  95:Generated_Source\PSoC4/Comp_1_PM.c ****     else /* Component is disabled */
+  96:Generated_Source\PSoC4/Comp_1_PM.c ****     {
+  97:Generated_Source\PSoC4/Comp_1_PM.c ****         Comp_1_backup.enableState = 0u;
+  88              		.loc 1 97 0
+  89 0016 0022     		movs	r2, #0
+  90 0018 024B     		ldr	r3, .L6+4
+  91 001a 1A70     		strb	r2, [r3]
+  92              	.L3:
+  98:Generated_Source\PSoC4/Comp_1_PM.c ****     }
+  99:Generated_Source\PSoC4/Comp_1_PM.c **** #endif /* (Comp_1_CHECK_DEEPSLEEP_SUPPORT) */
+ 100:Generated_Source\PSoC4/Comp_1_PM.c **** }
+  93              		.loc 1 100 0
+  94              		@ sp needed
+  95 001c 10BD     		pop	{r4, pc}
+  96              	.L7:
+  97 001e C046     		.align	2
+  98              	.L6:
+  99 0020 04001040 		.word	1074790404
+ 100 0024 00000000 		.word	.LANCHOR0
+ 101              		.cfi_endproc
+ 102              	.LFE2:
+ 103              		.size	Comp_1_Sleep, .-Comp_1_Sleep
+ 104              		.section	.text.Comp_1_Wakeup,"ax",%progbits
+ 105              		.align	2
+ 106              		.global	Comp_1_Wakeup
+ 107              		.code	16
+ 108              		.thumb_func
+ 109              		.type	Comp_1_Wakeup, %function
+ 110              	Comp_1_Wakeup:
+ 111              	.LFB3:
+ 101:Generated_Source\PSoC4/Comp_1_PM.c **** 
+ 102:Generated_Source\PSoC4/Comp_1_PM.c **** 
+ 103:Generated_Source\PSoC4/Comp_1_PM.c **** /*******************************************************************************
+ 104:Generated_Source\PSoC4/Comp_1_PM.c **** * Function Name: Comp_1_Wakeup
+ 105:Generated_Source\PSoC4/Comp_1_PM.c **** ********************************************************************************
+ 106:Generated_Source\PSoC4/Comp_1_PM.c **** *
+ 107:Generated_Source\PSoC4/Comp_1_PM.c **** * Summary:
+ 108:Generated_Source\PSoC4/Comp_1_PM.c **** *  This is the preferred API to restore the component to the state when Sleep() 
+ 109:Generated_Source\PSoC4/Comp_1_PM.c **** *  was called. The Wakeup() function will also re-enable the component. 
+ 110:Generated_Source\PSoC4/Comp_1_PM.c **** *  The "Deep sleep operation" option has an influence on this function
+ 111:Generated_Source\PSoC4/Comp_1_PM.c **** *  implementation.
+ 112:Generated_Source\PSoC4/Comp_1_PM.c **** *
+ 113:Generated_Source\PSoC4/Comp_1_PM.c **** * Parameters:
+ 114:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+ 115:Generated_Source\PSoC4/Comp_1_PM.c **** *
+ 116:Generated_Source\PSoC4/Comp_1_PM.c **** * Return:
+ 117:Generated_Source\PSoC4/Comp_1_PM.c **** *  None
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 5
+
+
+ 118:Generated_Source\PSoC4/Comp_1_PM.c **** *
+ 119:Generated_Source\PSoC4/Comp_1_PM.c **** *******************************************************************************/
+ 120:Generated_Source\PSoC4/Comp_1_PM.c **** void Comp_1_Wakeup(void)
+ 121:Generated_Source\PSoC4/Comp_1_PM.c **** {
+ 112              		.loc 1 121 0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116 0000 10B5     		push	{r4, lr}
+ 117              		.cfi_def_cfa_offset 8
+ 118              		.cfi_offset 4, -8
+ 119              		.cfi_offset 14, -4
+ 122:Generated_Source\PSoC4/Comp_1_PM.c **** #if(!Comp_1_CHECK_DEEPSLEEP_SUPPORT)
+ 123:Generated_Source\PSoC4/Comp_1_PM.c ****     if(0u != Comp_1_backup.enableState)
+ 120              		.loc 1 123 0
+ 121 0002 034B     		ldr	r3, .L10
+ 122 0004 1B78     		ldrb	r3, [r3]
+ 123 0006 002B     		cmp	r3, #0
+ 124 0008 01D0     		beq	.L8
+ 124:Generated_Source\PSoC4/Comp_1_PM.c ****     {
+ 125:Generated_Source\PSoC4/Comp_1_PM.c ****         /* Enable Comp's operation */
+ 126:Generated_Source\PSoC4/Comp_1_PM.c ****         Comp_1_Enable();
+ 125              		.loc 1 126 0
+ 126 000a FFF7FEFF 		bl	Comp_1_Enable
+ 127              	.LVL1:
+ 128              	.L8:
+ 127:Generated_Source\PSoC4/Comp_1_PM.c ****     } /* Do nothing if Comp was disabled before */
+ 128:Generated_Source\PSoC4/Comp_1_PM.c **** #endif /* (Comp_1_CHECK_DEEPSLEEP_SUPPORT) */
+ 129:Generated_Source\PSoC4/Comp_1_PM.c **** }
+ 129              		.loc 1 129 0
+ 130              		@ sp needed
+ 131 000e 10BD     		pop	{r4, pc}
+ 132              	.L11:
+ 133              		.align	2
+ 134              	.L10:
+ 135 0010 00000000 		.word	.LANCHOR0
+ 136              		.cfi_endproc
+ 137              	.LFE3:
+ 138              		.size	Comp_1_Wakeup, .-Comp_1_Wakeup
+ 139              		.bss
+ 140              		.align	2
+ 141              		.set	.LANCHOR0,. + 0
+ 142              		.type	Comp_1_backup, %object
+ 143              		.size	Comp_1_backup, 1
+ 144              	Comp_1_backup:
+ 145 0000 00       		.space	1
+ 146              		.text
+ 147              	.Letext0:
+ 148              		.file 2 "Generated_Source\\PSoC4\\cytypes.h"
+ 149              		.file 3 "Generated_Source\\PSoC4\\Comp_1.h"
+ 150              		.section	.debug_info,"",%progbits
+ 151              	.Ldebug_info0:
+ 152 0000 5B010000 		.4byte	0x15b
+ 153 0004 0400     		.2byte	0x4
+ 154 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 155 000a 04       		.byte	0x4
+ 156 000b 01       		.uleb128 0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 6
+
+
+ 157 000c 7C010000 		.4byte	.LASF24
+ 158 0010 0C       		.byte	0xc
+ 159 0011 48020000 		.4byte	.LASF25
+ 160 0015 05010000 		.4byte	.LASF26
+ 161 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 162 001d 00000000 		.4byte	0
+ 163 0021 00000000 		.4byte	.Ldebug_line0
+ 164 0025 02       		.uleb128 0x2
+ 165 0026 01       		.byte	0x1
+ 166 0027 06       		.byte	0x6
+ 167 0028 1D020000 		.4byte	.LASF0
+ 168 002c 02       		.uleb128 0x2
+ 169 002d 01       		.byte	0x1
+ 170 002e 08       		.byte	0x8
+ 171 002f C2000000 		.4byte	.LASF1
+ 172 0033 02       		.uleb128 0x2
+ 173 0034 02       		.byte	0x2
+ 174 0035 05       		.byte	0x5
+ 175 0036 35020000 		.4byte	.LASF2
+ 176 003a 02       		.uleb128 0x2
+ 177 003b 02       		.byte	0x2
+ 178 003c 07       		.byte	0x7
+ 179 003d 0A020000 		.4byte	.LASF3
+ 180 0041 02       		.uleb128 0x2
+ 181 0042 04       		.byte	0x4
+ 182 0043 05       		.byte	0x5
+ 183 0044 F5000000 		.4byte	.LASF4
+ 184 0048 02       		.uleb128 0x2
+ 185 0049 04       		.byte	0x4
+ 186 004a 07       		.byte	0x7
+ 187 004b 79000000 		.4byte	.LASF5
+ 188 004f 02       		.uleb128 0x2
+ 189 0050 08       		.byte	0x8
+ 190 0051 05       		.byte	0x5
+ 191 0052 00000000 		.4byte	.LASF6
+ 192 0056 02       		.uleb128 0x2
+ 193 0057 08       		.byte	0x8
+ 194 0058 07       		.byte	0x7
+ 195 0059 8B000000 		.4byte	.LASF7
+ 196 005d 03       		.uleb128 0x3
+ 197 005e 04       		.byte	0x4
+ 198 005f 05       		.byte	0x5
+ 199 0060 696E7400 		.ascii	"int\000"
+ 200 0064 02       		.uleb128 0x2
+ 201 0065 04       		.byte	0x4
+ 202 0066 07       		.byte	0x7
+ 203 0067 21000000 		.4byte	.LASF8
+ 204 006b 04       		.uleb128 0x4
+ 205 006c 73000000 		.4byte	.LASF9
+ 206 0070 02       		.byte	0x2
+ 207 0071 FB01     		.2byte	0x1fb
+ 208 0073 2C000000 		.4byte	0x2c
+ 209 0077 04       		.uleb128 0x4
+ 210 0078 0E000000 		.4byte	.LASF10
+ 211 007c 02       		.byte	0x2
+ 212 007d FD01     		.2byte	0x1fd
+ 213 007f 48000000 		.4byte	0x48
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 7
+
+
+ 214 0083 02       		.uleb128 0x2
+ 215 0084 04       		.byte	0x4
+ 216 0085 04       		.byte	0x4
+ 217 0086 A2000000 		.4byte	.LASF11
+ 218 008a 02       		.uleb128 0x2
+ 219 008b 08       		.byte	0x8
+ 220 008c 04       		.byte	0x4
+ 221 008d FE000000 		.4byte	.LASF12
+ 222 0091 02       		.uleb128 0x2
+ 223 0092 01       		.byte	0x1
+ 224 0093 08       		.byte	0x8
+ 225 0094 DE000000 		.4byte	.LASF13
+ 226 0098 04       		.uleb128 0x4
+ 227 0099 76010000 		.4byte	.LASF14
+ 228 009d 02       		.byte	0x2
+ 229 009e A702     		.2byte	0x2a7
+ 230 00a0 A4000000 		.4byte	0xa4
+ 231 00a4 05       		.uleb128 0x5
+ 232 00a5 77000000 		.4byte	0x77
+ 233 00a9 02       		.uleb128 0x2
+ 234 00aa 08       		.byte	0x8
+ 235 00ab 04       		.byte	0x4
+ 236 00ac 29020000 		.4byte	.LASF15
+ 237 00b0 02       		.uleb128 0x2
+ 238 00b1 04       		.byte	0x4
+ 239 00b2 07       		.byte	0x7
+ 240 00b3 3F020000 		.4byte	.LASF16
+ 241 00b7 06       		.uleb128 0x6
+ 242 00b8 01       		.byte	0x1
+ 243 00b9 03       		.byte	0x3
+ 244 00ba 20       		.byte	0x20
+ 245 00bb CC000000 		.4byte	0xcc
+ 246 00bf 07       		.uleb128 0x7
+ 247 00c0 15000000 		.4byte	.LASF27
+ 248 00c4 03       		.byte	0x3
+ 249 00c5 22       		.byte	0x22
+ 250 00c6 6B000000 		.4byte	0x6b
+ 251 00ca 00       		.byte	0
+ 252 00cb 00       		.byte	0
+ 253 00cc 08       		.uleb128 0x8
+ 254 00cd 5E000000 		.4byte	.LASF17
+ 255 00d1 03       		.byte	0x3
+ 256 00d2 23       		.byte	0x23
+ 257 00d3 B7000000 		.4byte	0xb7
+ 258 00d7 09       		.uleb128 0x9
+ 259 00d8 E3000000 		.4byte	.LASF18
+ 260 00dc 01       		.byte	0x1
+ 261 00dd 2B       		.byte	0x2b
+ 262 00de 00000000 		.4byte	.LFB0
+ 263 00e2 02000000 		.4byte	.LFE0-.LFB0
+ 264 00e6 01       		.uleb128 0x1
+ 265 00e7 9C       		.byte	0x9c
+ 266 00e8 09       		.uleb128 0x9
+ 267 00e9 3B000000 		.4byte	.LASF19
+ 268 00ed 01       		.byte	0x1
+ 269 00ee 3F       		.byte	0x3f
+ 270 00ef 00000000 		.4byte	.LFB1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 8
+
+
+ 271 00f3 02000000 		.4byte	.LFE1-.LFB1
+ 272 00f7 01       		.uleb128 0x1
+ 273 00f8 9C       		.byte	0x9c
+ 274 00f9 0A       		.uleb128 0xa
+ 275 00fa 2E000000 		.4byte	.LASF20
+ 276 00fe 01       		.byte	0x1
+ 277 00ff 57       		.byte	0x57
+ 278 0100 00000000 		.4byte	.LFB2
+ 279 0104 28000000 		.4byte	.LFE2-.LFB2
+ 280 0108 01       		.uleb128 0x1
+ 281 0109 9C       		.byte	0x9c
+ 282 010a 18010000 		.4byte	0x118
+ 283 010e 0B       		.uleb128 0xb
+ 284 010f 14000000 		.4byte	.LVL0
+ 285 0113 48010000 		.4byte	0x148
+ 286 0117 00       		.byte	0
+ 287 0118 0A       		.uleb128 0xa
+ 288 0119 A8000000 		.4byte	.LASF21
+ 289 011d 01       		.byte	0x1
+ 290 011e 78       		.byte	0x78
+ 291 011f 00000000 		.4byte	.LFB3
+ 292 0123 14000000 		.4byte	.LFE3-.LFB3
+ 293 0127 01       		.uleb128 0x1
+ 294 0128 9C       		.byte	0x9c
+ 295 0129 37010000 		.4byte	0x137
+ 296 012d 0B       		.uleb128 0xb
+ 297 012e 0E000000 		.4byte	.LVL1
+ 298 0132 53010000 		.4byte	0x153
+ 299 0136 00       		.byte	0
+ 300 0137 0C       		.uleb128 0xc
+ 301 0138 50000000 		.4byte	.LASF28
+ 302 013c 01       		.byte	0x1
+ 303 013d 16       		.byte	0x16
+ 304 013e CC000000 		.4byte	0xcc
+ 305 0142 05       		.uleb128 0x5
+ 306 0143 03       		.byte	0x3
+ 307 0144 00000000 		.4byte	Comp_1_backup
+ 308 0148 0D       		.uleb128 0xd
+ 309 0149 B6000000 		.4byte	.LASF22
+ 310 014d B6000000 		.4byte	.LASF22
+ 311 0151 03       		.byte	0x3
+ 312 0152 2C       		.byte	0x2c
+ 313 0153 0D       		.uleb128 0xd
+ 314 0154 D0000000 		.4byte	.LASF23
+ 315 0158 D0000000 		.4byte	.LASF23
+ 316 015c 03       		.byte	0x3
+ 317 015d 2A       		.byte	0x2a
+ 318 015e 00       		.byte	0
+ 319              		.section	.debug_abbrev,"",%progbits
+ 320              	.Ldebug_abbrev0:
+ 321 0000 01       		.uleb128 0x1
+ 322 0001 11       		.uleb128 0x11
+ 323 0002 01       		.byte	0x1
+ 324 0003 25       		.uleb128 0x25
+ 325 0004 0E       		.uleb128 0xe
+ 326 0005 13       		.uleb128 0x13
+ 327 0006 0B       		.uleb128 0xb
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 9
+
+
+ 328 0007 03       		.uleb128 0x3
+ 329 0008 0E       		.uleb128 0xe
+ 330 0009 1B       		.uleb128 0x1b
+ 331 000a 0E       		.uleb128 0xe
+ 332 000b 55       		.uleb128 0x55
+ 333 000c 17       		.uleb128 0x17
+ 334 000d 11       		.uleb128 0x11
+ 335 000e 01       		.uleb128 0x1
+ 336 000f 10       		.uleb128 0x10
+ 337 0010 17       		.uleb128 0x17
+ 338 0011 00       		.byte	0
+ 339 0012 00       		.byte	0
+ 340 0013 02       		.uleb128 0x2
+ 341 0014 24       		.uleb128 0x24
+ 342 0015 00       		.byte	0
+ 343 0016 0B       		.uleb128 0xb
+ 344 0017 0B       		.uleb128 0xb
+ 345 0018 3E       		.uleb128 0x3e
+ 346 0019 0B       		.uleb128 0xb
+ 347 001a 03       		.uleb128 0x3
+ 348 001b 0E       		.uleb128 0xe
+ 349 001c 00       		.byte	0
+ 350 001d 00       		.byte	0
+ 351 001e 03       		.uleb128 0x3
+ 352 001f 24       		.uleb128 0x24
+ 353 0020 00       		.byte	0
+ 354 0021 0B       		.uleb128 0xb
+ 355 0022 0B       		.uleb128 0xb
+ 356 0023 3E       		.uleb128 0x3e
+ 357 0024 0B       		.uleb128 0xb
+ 358 0025 03       		.uleb128 0x3
+ 359 0026 08       		.uleb128 0x8
+ 360 0027 00       		.byte	0
+ 361 0028 00       		.byte	0
+ 362 0029 04       		.uleb128 0x4
+ 363 002a 16       		.uleb128 0x16
+ 364 002b 00       		.byte	0
+ 365 002c 03       		.uleb128 0x3
+ 366 002d 0E       		.uleb128 0xe
+ 367 002e 3A       		.uleb128 0x3a
+ 368 002f 0B       		.uleb128 0xb
+ 369 0030 3B       		.uleb128 0x3b
+ 370 0031 05       		.uleb128 0x5
+ 371 0032 49       		.uleb128 0x49
+ 372 0033 13       		.uleb128 0x13
+ 373 0034 00       		.byte	0
+ 374 0035 00       		.byte	0
+ 375 0036 05       		.uleb128 0x5
+ 376 0037 35       		.uleb128 0x35
+ 377 0038 00       		.byte	0
+ 378 0039 49       		.uleb128 0x49
+ 379 003a 13       		.uleb128 0x13
+ 380 003b 00       		.byte	0
+ 381 003c 00       		.byte	0
+ 382 003d 06       		.uleb128 0x6
+ 383 003e 13       		.uleb128 0x13
+ 384 003f 01       		.byte	0x1
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 10
+
+
+ 385 0040 0B       		.uleb128 0xb
+ 386 0041 0B       		.uleb128 0xb
+ 387 0042 3A       		.uleb128 0x3a
+ 388 0043 0B       		.uleb128 0xb
+ 389 0044 3B       		.uleb128 0x3b
+ 390 0045 0B       		.uleb128 0xb
+ 391 0046 01       		.uleb128 0x1
+ 392 0047 13       		.uleb128 0x13
+ 393 0048 00       		.byte	0
+ 394 0049 00       		.byte	0
+ 395 004a 07       		.uleb128 0x7
+ 396 004b 0D       		.uleb128 0xd
+ 397 004c 00       		.byte	0
+ 398 004d 03       		.uleb128 0x3
+ 399 004e 0E       		.uleb128 0xe
+ 400 004f 3A       		.uleb128 0x3a
+ 401 0050 0B       		.uleb128 0xb
+ 402 0051 3B       		.uleb128 0x3b
+ 403 0052 0B       		.uleb128 0xb
+ 404 0053 49       		.uleb128 0x49
+ 405 0054 13       		.uleb128 0x13
+ 406 0055 38       		.uleb128 0x38
+ 407 0056 0B       		.uleb128 0xb
+ 408 0057 00       		.byte	0
+ 409 0058 00       		.byte	0
+ 410 0059 08       		.uleb128 0x8
+ 411 005a 16       		.uleb128 0x16
+ 412 005b 00       		.byte	0
+ 413 005c 03       		.uleb128 0x3
+ 414 005d 0E       		.uleb128 0xe
+ 415 005e 3A       		.uleb128 0x3a
+ 416 005f 0B       		.uleb128 0xb
+ 417 0060 3B       		.uleb128 0x3b
+ 418 0061 0B       		.uleb128 0xb
+ 419 0062 49       		.uleb128 0x49
+ 420 0063 13       		.uleb128 0x13
+ 421 0064 00       		.byte	0
+ 422 0065 00       		.byte	0
+ 423 0066 09       		.uleb128 0x9
+ 424 0067 2E       		.uleb128 0x2e
+ 425 0068 00       		.byte	0
+ 426 0069 3F       		.uleb128 0x3f
+ 427 006a 19       		.uleb128 0x19
+ 428 006b 03       		.uleb128 0x3
+ 429 006c 0E       		.uleb128 0xe
+ 430 006d 3A       		.uleb128 0x3a
+ 431 006e 0B       		.uleb128 0xb
+ 432 006f 3B       		.uleb128 0x3b
+ 433 0070 0B       		.uleb128 0xb
+ 434 0071 27       		.uleb128 0x27
+ 435 0072 19       		.uleb128 0x19
+ 436 0073 11       		.uleb128 0x11
+ 437 0074 01       		.uleb128 0x1
+ 438 0075 12       		.uleb128 0x12
+ 439 0076 06       		.uleb128 0x6
+ 440 0077 40       		.uleb128 0x40
+ 441 0078 18       		.uleb128 0x18
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 11
+
+
+ 442 0079 9742     		.uleb128 0x2117
+ 443 007b 19       		.uleb128 0x19
+ 444 007c 00       		.byte	0
+ 445 007d 00       		.byte	0
+ 446 007e 0A       		.uleb128 0xa
+ 447 007f 2E       		.uleb128 0x2e
+ 448 0080 01       		.byte	0x1
+ 449 0081 3F       		.uleb128 0x3f
+ 450 0082 19       		.uleb128 0x19
+ 451 0083 03       		.uleb128 0x3
+ 452 0084 0E       		.uleb128 0xe
+ 453 0085 3A       		.uleb128 0x3a
+ 454 0086 0B       		.uleb128 0xb
+ 455 0087 3B       		.uleb128 0x3b
+ 456 0088 0B       		.uleb128 0xb
+ 457 0089 27       		.uleb128 0x27
+ 458 008a 19       		.uleb128 0x19
+ 459 008b 11       		.uleb128 0x11
+ 460 008c 01       		.uleb128 0x1
+ 461 008d 12       		.uleb128 0x12
+ 462 008e 06       		.uleb128 0x6
+ 463 008f 40       		.uleb128 0x40
+ 464 0090 18       		.uleb128 0x18
+ 465 0091 9742     		.uleb128 0x2117
+ 466 0093 19       		.uleb128 0x19
+ 467 0094 01       		.uleb128 0x1
+ 468 0095 13       		.uleb128 0x13
+ 469 0096 00       		.byte	0
+ 470 0097 00       		.byte	0
+ 471 0098 0B       		.uleb128 0xb
+ 472 0099 898201   		.uleb128 0x4109
+ 473 009c 00       		.byte	0
+ 474 009d 11       		.uleb128 0x11
+ 475 009e 01       		.uleb128 0x1
+ 476 009f 31       		.uleb128 0x31
+ 477 00a0 13       		.uleb128 0x13
+ 478 00a1 00       		.byte	0
+ 479 00a2 00       		.byte	0
+ 480 00a3 0C       		.uleb128 0xc
+ 481 00a4 34       		.uleb128 0x34
+ 482 00a5 00       		.byte	0
+ 483 00a6 03       		.uleb128 0x3
+ 484 00a7 0E       		.uleb128 0xe
+ 485 00a8 3A       		.uleb128 0x3a
+ 486 00a9 0B       		.uleb128 0xb
+ 487 00aa 3B       		.uleb128 0x3b
+ 488 00ab 0B       		.uleb128 0xb
+ 489 00ac 49       		.uleb128 0x49
+ 490 00ad 13       		.uleb128 0x13
+ 491 00ae 02       		.uleb128 0x2
+ 492 00af 18       		.uleb128 0x18
+ 493 00b0 00       		.byte	0
+ 494 00b1 00       		.byte	0
+ 495 00b2 0D       		.uleb128 0xd
+ 496 00b3 2E       		.uleb128 0x2e
+ 497 00b4 00       		.byte	0
+ 498 00b5 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 12
+
+
+ 499 00b6 19       		.uleb128 0x19
+ 500 00b7 3C       		.uleb128 0x3c
+ 501 00b8 19       		.uleb128 0x19
+ 502 00b9 6E       		.uleb128 0x6e
+ 503 00ba 0E       		.uleb128 0xe
+ 504 00bb 03       		.uleb128 0x3
+ 505 00bc 0E       		.uleb128 0xe
+ 506 00bd 3A       		.uleb128 0x3a
+ 507 00be 0B       		.uleb128 0xb
+ 508 00bf 3B       		.uleb128 0x3b
+ 509 00c0 0B       		.uleb128 0xb
+ 510 00c1 00       		.byte	0
+ 511 00c2 00       		.byte	0
+ 512 00c3 00       		.byte	0
+ 513              		.section	.debug_aranges,"",%progbits
+ 514 0000 34000000 		.4byte	0x34
+ 515 0004 0200     		.2byte	0x2
+ 516 0006 00000000 		.4byte	.Ldebug_info0
+ 517 000a 04       		.byte	0x4
+ 518 000b 00       		.byte	0
+ 519 000c 0000     		.2byte	0
+ 520 000e 0000     		.2byte	0
+ 521 0010 00000000 		.4byte	.LFB0
+ 522 0014 02000000 		.4byte	.LFE0-.LFB0
+ 523 0018 00000000 		.4byte	.LFB1
+ 524 001c 02000000 		.4byte	.LFE1-.LFB1
+ 525 0020 00000000 		.4byte	.LFB2
+ 526 0024 28000000 		.4byte	.LFE2-.LFB2
+ 527 0028 00000000 		.4byte	.LFB3
+ 528 002c 14000000 		.4byte	.LFE3-.LFB3
+ 529 0030 00000000 		.4byte	0
+ 530 0034 00000000 		.4byte	0
+ 531              		.section	.debug_ranges,"",%progbits
+ 532              	.Ldebug_ranges0:
+ 533 0000 00000000 		.4byte	.LFB0
+ 534 0004 02000000 		.4byte	.LFE0
+ 535 0008 00000000 		.4byte	.LFB1
+ 536 000c 02000000 		.4byte	.LFE1
+ 537 0010 00000000 		.4byte	.LFB2
+ 538 0014 28000000 		.4byte	.LFE2
+ 539 0018 00000000 		.4byte	.LFB3
+ 540 001c 14000000 		.4byte	.LFE3
+ 541 0020 00000000 		.4byte	0
+ 542 0024 00000000 		.4byte	0
+ 543              		.section	.debug_line,"",%progbits
+ 544              	.Ldebug_line0:
+ 545 0000 A0000000 		.section	.debug_str,"MS",%progbits,1
+ 545      02005200 
+ 545      00000201 
+ 545      FB0E0D00 
+ 545      01010101 
+ 546              	.LASF6:
+ 547 0000 6C6F6E67 		.ascii	"long long int\000"
+ 547      206C6F6E 
+ 547      6720696E 
+ 547      7400
+ 548              	.LASF10:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 13
+
+
+ 549 000e 75696E74 		.ascii	"uint32\000"
+ 549      333200
+ 550              	.LASF27:
+ 551 0015 656E6162 		.ascii	"enableState\000"
+ 551      6C655374 
+ 551      61746500 
+ 552              	.LASF8:
+ 553 0021 756E7369 		.ascii	"unsigned int\000"
+ 553      676E6564 
+ 553      20696E74 
+ 553      00
+ 554              	.LASF20:
+ 555 002e 436F6D70 		.ascii	"Comp_1_Sleep\000"
+ 555      5F315F53 
+ 555      6C656570 
+ 555      00
+ 556              	.LASF19:
+ 557 003b 436F6D70 		.ascii	"Comp_1_RestoreConfig\000"
+ 557      5F315F52 
+ 557      6573746F 
+ 557      7265436F 
+ 557      6E666967 
+ 558              	.LASF28:
+ 559 0050 436F6D70 		.ascii	"Comp_1_backup\000"
+ 559      5F315F62 
+ 559      61636B75 
+ 559      7000
+ 560              	.LASF17:
+ 561 005e 436F6D70 		.ascii	"Comp_1_BACKUP_STRUCT\000"
+ 561      5F315F42 
+ 561      41434B55 
+ 561      505F5354 
+ 561      52554354 
+ 562              	.LASF9:
+ 563 0073 75696E74 		.ascii	"uint8\000"
+ 563      3800
+ 564              	.LASF5:
+ 565 0079 6C6F6E67 		.ascii	"long unsigned int\000"
+ 565      20756E73 
+ 565      69676E65 
+ 565      6420696E 
+ 565      7400
+ 566              	.LASF7:
+ 567 008b 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 567      206C6F6E 
+ 567      6720756E 
+ 567      7369676E 
+ 567      65642069 
+ 568              	.LASF11:
+ 569 00a2 666C6F61 		.ascii	"float\000"
+ 569      7400
+ 570              	.LASF21:
+ 571 00a8 436F6D70 		.ascii	"Comp_1_Wakeup\000"
+ 571      5F315F57 
+ 571      616B6575 
+ 571      7000
+ 572              	.LASF22:
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 14
+
+
+ 573 00b6 436F6D70 		.ascii	"Comp_1_Stop\000"
+ 573      5F315F53 
+ 573      746F7000 
+ 574              	.LASF1:
+ 575 00c2 756E7369 		.ascii	"unsigned char\000"
+ 575      676E6564 
+ 575      20636861 
+ 575      7200
+ 576              	.LASF23:
+ 577 00d0 436F6D70 		.ascii	"Comp_1_Enable\000"
+ 577      5F315F45 
+ 577      6E61626C 
+ 577      6500
+ 578              	.LASF13:
+ 579 00de 63686172 		.ascii	"char\000"
+ 579      00
+ 580              	.LASF18:
+ 581 00e3 436F6D70 		.ascii	"Comp_1_SaveConfig\000"
+ 581      5F315F53 
+ 581      61766543 
+ 581      6F6E6669 
+ 581      6700
+ 582              	.LASF4:
+ 583 00f5 6C6F6E67 		.ascii	"long int\000"
+ 583      20696E74 
+ 583      00
+ 584              	.LASF12:
+ 585 00fe 646F7562 		.ascii	"double\000"
+ 585      6C6500
+ 586              	.LASF26:
+ 587 0105 443A5C54 		.ascii	"D:\\Tesis MIB\\Proyecto de Tesis\\TESIS - Desarroll"
+ 587      65736973 
+ 587      204D4942 
+ 587      5C50726F 
+ 587      79656374 
+ 588 0135 6F5C5053 		.ascii	"o\\PSoC\\electroestimulador\\WorkspaceMIB2\\Electro"
+ 588      6F435C65 
+ 588      6C656374 
+ 588      726F6573 
+ 588      74696D75 
+ 589 0164 65737469 		.ascii	"estimulador.cydsn\000"
+ 589      6D756C61 
+ 589      646F722E 
+ 589      63796473 
+ 589      6E00
+ 590              	.LASF14:
+ 591 0176 72656733 		.ascii	"reg32\000"
+ 591      3200
+ 592              	.LASF24:
+ 593 017c 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 593      43313120 
+ 593      352E342E 
+ 593      31203230 
+ 593      31363036 
+ 594 01af 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 594      20726576 
+ 594      6973696F 
+ARM GAS  C:\Users\Jeremias\AppData\Local\Temp\cc8IqgbX.s 			page 15
+
+
+ 594      6E203233 
+ 594      37373135 
+ 595 01e2 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 595      66756E63 
+ 595      74696F6E 
+ 595      2D736563 
+ 595      74696F6E 
+ 596              	.LASF3:
+ 597 020a 73686F72 		.ascii	"short unsigned int\000"
+ 597      7420756E 
+ 597      7369676E 
+ 597      65642069 
+ 597      6E7400
+ 598              	.LASF0:
+ 599 021d 7369676E 		.ascii	"signed char\000"
+ 599      65642063 
+ 599      68617200 
+ 600              	.LASF15:
+ 601 0229 6C6F6E67 		.ascii	"long double\000"
+ 601      20646F75 
+ 601      626C6500 
+ 602              	.LASF2:
+ 603 0235 73686F72 		.ascii	"short int\000"
+ 603      7420696E 
+ 603      7400
+ 604              	.LASF16:
+ 605 023f 73697A65 		.ascii	"sizetype\000"
+ 605      74797065 
+ 605      00
+ 606              	.LASF25:
+ 607 0248 47656E65 		.ascii	"Generated_Source\\PSoC4\\Comp_1_PM.c\000"
+ 607      72617465 
+ 607      645F536F 
+ 607      75726365 
+ 607      5C50536F 
+ 608              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
