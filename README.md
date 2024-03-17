@@ -1,4 +1,5 @@
 # MIB_sistema_p_realimentacion_haptica
+<h4 align="left">DESCRIPCION DEL PROYECTO.</h4>
 <p align="justify"> 
 Respositorio del Proyecto asociado a la Tesis de la Maestría en Ingeniería Biomédica de la FI-UNER, titulada "Diseño de sistema háptico para realimentación táctil no invasiva en protesis de miembro superior".
 Con el desarrollo de este proyecto se busca diseñar un sistema que permita generar una realimentación táctil efectiva, de manera no invasiva, aplicable a prótesis de miembro superior para la incorporación de sensibilidad táctil a la misma.
@@ -39,5 +40,5 @@ En función de lo detallado precedentemente, se desprende que el PCB necesario c
 </p>
 
 <h4 align="left">REFERENCIAS.</h4>
-[[1]Electrocutaneous_Stimulation_System_for_Braille_Reading-2010](Documentacion/Referencias/[11]Electrocutaneous_Stimulation_System_for_Braille_Reading-2010.pdf)
-[[2]Electrical_stimulation_of_mechanoreceptors-2011](Documentación/Referencias/[10]Electrical_stimulation_of_mechanoreceptors-2011.pdf)
+[1-Electrocutaneous_Stimulation_System_for_Braille_Reading-2010](Documentacion/Referencias/[11]Electrocutaneous_Stimulation_System_for_Braille_Reading-2010.pdf)
+[2-Electrical_stimulation_of_mechanoreceptors-2011](Documentación/Referencias/[10]Electrical_stimulation_of_mechanoreceptors-2011.pdf)
