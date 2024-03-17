@@ -28,6 +28,14 @@ Mediante los comando ingresados con los mencionados pulsadores (tres) y la panta
 </p>
 <h4 align="center">Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.</h4>
 
+<p align="center">
+  <img
+    <div>
+        <img src="SEÑAL.png" alt="Figura 3" width="300" />
+        <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="300" />
+    </div
+</p>
+
 Tanto la estructura de la señal como los parámetros característicos de la misma, tienen su fundamento en antecedentes de trabajos basados en el uso de electroestimulación por corriente para la generación de sensación táctil en no videntes o disminuidos visuales, a fin de implementar dispositivos para la lectura de texto Braille digitalizado, como se expone en [1] y [2].
 El segundo bloque implementado (Interface Analógica) puede dividirse en dos etapas, en primera instancia y conectada directamente con el Sistema de Control, se encuentra un circuito basado en AO, que adaptan la señal del IDAC (Conversor Digital Analógico de Corriente) del PSoC 4, para la interacción con la fuente de corriente de salida, que conecta directamente con el usuario (sujeto que recibe la electroestimulación) y generan la limitación de corriente de salida por hardware.
 En segundo lugar se encuentra la fuente de corriente propiamente dicha, compuesta por seis transistores BJT complementarios, de alta tensión de colector-emisor y baja potencia. Esta última etapa se nutre de una fuente partida de alta tensión (±150V) para aplicar la corriente de electroestimulación de manera efectiva, para resistencias de interface electrodo-piel de hasta 75kΩ.
