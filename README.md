@@ -30,10 +30,14 @@ Mediante los comando ingresados con los mencionados pulsadores (tres) y la panta
         <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="250" />
     </div
 </p>
-<h4 align="left">Figura 3: Forma de onda de electroestimulación por corriente.<br>Tabla 1: Periodo, frec. y ciclo de trabajo para electroestimulación.</h4>
+<h4 align="left">Figura 3: Forma de onda de electroestimulación por corriente. Tabla 1: Periodo, frec. y ciclo de trabajo para electroestimulación.</h4>
 <p align="justify">
 Tanto la estructura de la señal como los parámetros característicos de la misma, tienen su fundamento en antecedentes de trabajos basados en el uso de electroestimulación por corriente para la generación de sensación táctil en no videntes o disminuidos visuales, a fin de implementar dispositivos para la lectura de texto Braille digitalizado, como se expone en [1] y [2].
 El segundo bloque implementado (Interface Analógica) puede dividirse en dos etapas, en primera instancia y conectada directamente con el Sistema de Control, se encuentra un circuito basado en AO, que adaptan la señal del IDAC (Conversor Digital Analógico de Corriente) del PSoC 4, para la interacción con la fuente de corriente de salida, que conecta directamente con el usuario (sujeto que recibe la electroestimulación) y generan la limitación de corriente de salida por hardware.
 En segundo lugar se encuentra la fuente de corriente propiamente dicha, compuesta por seis transistores BJT complementarios, de alta tensión de colector-emisor y baja potencia. Esta última etapa se nutre de una fuente partida de alta tensión (±150V) para aplicar la corriente de electroestimulación de manera efectiva, para resistencias de interface electrodo-piel de hasta 75kΩ.
 En función de lo detallado precedentemente, se desprende que el PCB necesario corresponde a una etapa del desarrollo de la Tesis, a los fines de dinamizar las pruebas del prototipo previo a su ensayo en pacientes. El mismo debe contener los dos bloques descriptos anteriormente, debiendo manipular señales rectangulares de hasta 1,1kHz y con los recaudos necesarios para los tramos de alta tensión de alimentación, tanto en la selección de los transistores de salida como en el distanciamiento entre pistas en la región del circuito correspondiente.
 </p>
+
+<h4 align="left">REFERENCIAS.</h4>
+[[1]Electrocutaneous Stimulation System for Braille Reading - 2010](Documentación/Referencias/[11]Electrocutaneous Stimulation System for Braille Reading - 2010.pdf)
+[[2]Electrical stimulation of mechanoreceptors - 2011](Documentación/Referencias/[10]Electrical stimulation of mechanoreceptors - 2011.pdf)
