@@ -40,5 +40,6 @@ En función de lo detallado precedentemente, se desprende que el PCB necesario c
 </p>
 
 <h4 align="left">REFERENCIAS.</h4>
+
 [1-Electrocutaneous_Stimulation_System_for_Braille_Reading-2010](Documentacion/Referencias/[11]Electrocutaneous_Stimulation_System_for_Braille_Reading-2010.pdf)
-[2-Electrical_stimulation_of_mechanoreceptors-2011](Documentación/Referencias/[10]Electrical_stimulation_of_mechanoreceptors-2011.pdf)
+[2-Electrical_stimulation_of_mechanoreceptors-2011](Documentacion/Referencias/[10]Electrical_stimulation_of_mechanoreceptors-2011.pdf)
