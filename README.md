@@ -5,6 +5,7 @@ Respositorio del Proyecto asociado a la Tesis de la Maestría en Ingeniería Bio
 Con el desarrollo de este proyecto se busca diseñar un sistema que permita generar una realimentación táctil efectiva, de manera no invasiva, aplicable a prótesis de miembro superior para la incorporación de sensibilidad táctil a la misma.
 Considerando la totalidad del sistema, el mismo puede ser representado mediante los bloques funcionales presentados en la Figura 1:
 </p>
+</p>
 
 <p align="center">
   <img src="Diagrama-en-bloques.png" alt="Figura 1" />
