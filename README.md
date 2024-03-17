@@ -3,7 +3,7 @@ Respositorio del Proyecto asociado a la Tesis de la Maestría en Ingeniería Bio
 Con el desarrollo de este proyecto se busca diseñar un sistema que permita generar una realimentación táctil efectiva, de manera no invasiva, aplicable a prótesis de miembro superior para la incorporación de sensibilidad táctil a la misma.
 Considerando la totalidad del sistema, el mismo puede ser representado mediante los bloques funcionales presentados en la Figura 1:
 
-![Figura 1: Diagrama en bloques del sistema completo.](Diagrama-en-bloques.png)
+![Figura 1: Diagrama en bloques del sistema completo.](Diagrama-en-bloques.png)*Subtítulo: Figura 1: Diagrama en bloques del sistema completo.*
 
 El primer bloque implementado (Sistema de Control), consta esencialmente de una placa de prototipado basada en un microcontrolador PSoC-4 de la empresa Cypress, bajo el código CY8CKIT-049-42xx, cuyo núcleo se vale del integrado CY8C4245AXI-483, el cual posee una estructura interna según el siguiente diagrama:
 
