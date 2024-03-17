@@ -21,8 +21,8 @@ Mediante los comando ingresados con los mencionados pulsadores (tres) y la panta
 <p align="center">
   <img
     <div>
-        <img src="SEÑAL.png" alt="Figura 3" width="250" />
-        <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="350" />
+        <img src="SEÑAL.png" alt="Figura 3" width="350" />
+        <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="250" />
     </div
 </p>
 <h4 align="center">Figura 3: Forma de onda de electroestimulación por corriente.</h4>
