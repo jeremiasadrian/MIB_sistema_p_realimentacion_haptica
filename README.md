@@ -19,22 +19,14 @@ Junto con la placa mencionada, se encuentran conectados unos periféricos básic
 Mediante los comando ingresados con los mencionados pulsadores (tres) y la pantalla LCD, se interactúa con un menú que permite configurar los parámetros de electroestimulación, dentro de rangos de frecuencia y ciclos de trabajo discretos estandarizados y niveles de corriente limitados por hardware en el bloque de interface analógica. La forma de onda de la señal de electroestimulación es cuadrada-bipolar de valor medio nulo, con frecuencias de trabajo configurables entre los 278Hz y 1111Hz, y ciclos de trabajo de 8%, 12% y 16%, según se detallan en la Figura 3 y Tabla 1 siguientes:
 
 <p align="center">
-  <img src="SEÑAL.png" alt="Figura 3" />
-</p>
-<h4 align="center">Figura 3: Forma de onda de electroestimulación por corriente.</h4>
-
-<p align="center">
-  <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" />
-</p>
-<h4 align="center">Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.</h4>
-
-<p align="center">
   <img
     <div>
-        <img src="SEÑAL.png" alt="Figura 3" width="300" />
-        <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="300" />
+        <img src="SEÑAL.png" alt="Figura 3" width="250" />
+        <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="350" />
     </div
 </p>
+<h4 align="center">Figura 3: Forma de onda de electroestimulación por corriente.</h4>
+<h4 align="center">Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.</h4>
 
 Tanto la estructura de la señal como los parámetros característicos de la misma, tienen su fundamento en antecedentes de trabajos basados en el uso de electroestimulación por corriente para la generación de sensación táctil en no videntes o disminuidos visuales, a fin de implementar dispositivos para la lectura de texto Braille digitalizado, como se expone en [1] y [2].
 El segundo bloque implementado (Interface Analógica) puede dividirse en dos etapas, en primera instancia y conectada directamente con el Sistema de Control, se encuentra un circuito basado en AO, que adaptan la señal del IDAC (Conversor Digital Analógico de Corriente) del PSoC 4, para la interacción con la fuente de corriente de salida, que conecta directamente con el usuario (sujeto que recibe la electroestimulación) y generan la limitación de corriente de salida por hardware.
