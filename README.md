@@ -25,14 +25,17 @@ Mediante los comando ingresados con los mencionados pulsadores (tres) y la panta
 </p>
 
 <p align="center">
-  <img
-    <div>
+    <div style="display: flex; justify-content: center;">
+      <div style="text-align: center;">
         <img src="SEÑAL.png" alt="Figura 3" width="350" />
+        <p>Figura 3: Forma de onda de electroestimulación por corriente.</p>
+      </div>
+      <div style="text-align: center;">
         <img src="VALORES_ELECTROESTIMULACION.png" alt="Tabla 1" width="250" />
-    </div
+        <p>Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.</p>
+      </div>
+    </div>
 </p>
-<h4 >Figura 3: Forma de onda de electroestimulación por corriente.</h4>
-<h4 align="center">Tabla 1: Valores de periodo, frecuencia y ciclo de trabajo para la señal de electroestimulación.</h4>
 
 <p align="justify">
 Tanto la estructura de la señal como los parámetros característicos de la misma, tienen su fundamento en antecedentes de trabajos basados en el uso de electroestimulación por corriente para la generación de sensación táctil en no videntes o disminuidos visuales, a fin de implementar dispositivos para la lectura de texto Braille digitalizado, como se expone en [1] y [2].
