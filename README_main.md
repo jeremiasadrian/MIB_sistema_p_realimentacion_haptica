@@ -1,4 +1,7 @@
 # MIB_sistema_p_realimentacion_haptica
+  + **Resultados:** Aquí se ecuentras las imagenes y planillas de datos de los relevamientos llevado adelante a los largo del desarrollo, algunos sobre componentes específicos, asi como sobre el sistema o partes del sistema.
+  + **Simulaciones:** En esta carpeta se podrán acceder a los archivos de simulación de distintas partes del circuito, mayormente implementadas en **Proteus VSM 8.13 SP1** aunque hay archivos en **LTSpice XVIII**.
+
 <h4 align="left">DESCRIPCION DEL REPOSITORIO.</h4>
 <p align="justify">
 El presente respositorio corresponde al Proyecto asociado a la Tesis de la Maestría en Ingeniería Biomédica de la FI-UNER, titulada "Diseño de sistema háptico para realimentación táctil no invasiva en protesis de miembro superior". El mismo esta estructurado con cinco carpetas principales accecibles desde la raiz, con el siguiente contenido:
@@ -7,7 +10,7 @@ El presente respositorio corresponde al Proyecto asociado a la Tesis de la Maest
   + **Documentacion:** Dentro podrá encontrar tres subcarpetas con información del --Anteproyecto-- de la Tesis en cuestión; en --Datasheets_relevantes-- estan las Hojas de Datos de los componentes principales del proyecto (PSoC4, transostires de alta tensión, regulador PWM de la fuente, sensor FSR); y finalmente en --Referencias-- se encuentras las publicaciones que se mencionan en el Anteproyecto y propocionan la base de investigación sobre la que se simentó el presente desarrollo.
   + **Esquemativos-y-PCB:** En esta parte podrá acceder a los archivos generador por el sotfware KiCAD con los circuitos esquemáticos y PCB de las dos placas principales del proyecto, por un lado la --Fuente de Alimentación-- y por otro la --Fuente de corriente con la interfaz de usuario---, ambos en su conjunto conforman el sistema de electroestimulación para la generación de la realimentación buscada.
   + **Resultados:** Aquí se ecuentras las imagenes y planillas de datos de los relevamientos llevado adelante a los largo del desarrollo, algunos sobre componentes específicos, asi como sobre el sistema o partes del sistema.
-  + **Simulaciones:** En esta carpeta se podrán acceder a los archivos de simulación de distintas partes del circuito, mayormente implementadas en --Proteus VSM 8.13 SP1-- aunque hay archivos en --LTSpice XVIII--.
+  + **Simulaciones:** En esta carpeta se podrán acceder a los archivos de simulación de distintas partes del circuito, mayormente implementadas en **Proteus VSM 8.13 SP1** aunque hay archivos en **LTSpice XVIII**.
 <p align="justify">
 Cada carpeta pricipal tiene su README.md asociado con mas detalles sobre su contenido.
 </p>
